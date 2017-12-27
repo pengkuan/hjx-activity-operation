@@ -127,7 +127,7 @@ import hjxLeftTitle from '@/base/hjx_left_title'
 import hjxUnderlineInput from '@/base/hjx_underline_input'
 import hjxSelectAlert from '@/base/hjx_select_alert'
 export default {
-    base: { hjxPart, hjxLeftTitle, hjxUnderlineInput, hjxSelectAlert },
+    components: { hjxPart, hjxLeftTitle, hjxUnderlineInput, hjxSelectAlert },
     data() {
         return {
             ifshowDetail:true, //查看详情时所以选项为禁用状态

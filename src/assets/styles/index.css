@@ -57,7 +57,7 @@ input[type="number"]{-moz-appearance:textfield;}
 .show-detail-box .el-message-box__content{max-height: 400px;overflow: auto;}
 
 .search-width{width: 200px}
-.el-date-editor.el-input, .el-date-editor.el-input__inner{width: 200px!important} /*控制所有搜索长度为 200px*/
+/*.el-date-editor.el-input, .el-date-editor.el-input__inner{width: 200px!important} /*控制所有搜索长度为 200px*/*/
 
 
 /*ad*/

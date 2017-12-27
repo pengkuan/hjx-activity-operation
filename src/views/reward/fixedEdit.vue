@@ -118,7 +118,7 @@ import hjxLeftTitle from '@/base/hjx_left_title'
 import hjxUnderlineInput from '@/base/hjx_underline_input'
 import hjxSelectAlert from '@/base/hjx_select_alert'
 export default {
-    base: { hjxPart, hjxLeftTitle, hjxUnderlineInput, hjxSelectAlert },
+    components: { hjxPart, hjxLeftTitle, hjxUnderlineInput, hjxSelectAlert },
     data() {
         return {
             amountLimitType: '1', //总金额限制类型 
