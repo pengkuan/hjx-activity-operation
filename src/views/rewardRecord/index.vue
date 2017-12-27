@@ -1,0 +1,174 @@
+<template>
+    <div>
+        <el-breadcrumb separator-class="el-icon-arrow-right">
+            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item>发放记录</el-breadcrumb-item>
+        </el-breadcrumb>
+        <br>
+        <!-- 搜索start -->
+        <el-form :inline="true" :model="search" ref="search" label-width="120px" size="small" class="demo-form-inline">
+            <el-form-item label="流水号:" prop="txnId">
+                <el-input v-model="search.txnId" placeholder="请输入流水号"></el-input>
+            </el-form-item>
+            <el-form-item label="活动ID:" prop="activityId">
+                <el-input v-model="search.activityId" placeholder="请输入活动ID"></el-input>
+            </el-form-item>
+            <el-form-item label="订单编号:" prop="orderNum">
+                <el-input v-model="search.orderNum" placeholder="请输入订单编号"></el-input>
+            </el-form-item>
+            <el-form-item label="奖励类型:" prop="activityType">
+                <el-select class="search-width" v-model="search.activityType" placeholder="请选择奖励类型">
+                    <el-option label="全部" value="0"></el-option>
+                    <el-option label="随机" value="1"></el-option>
+                    <el-option label="定额定向" value="2"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="发放时间:" prop="createTime">
+                <el-date-picker class="search-width" v-model="search.createTime" type="datetime" value-format="yy-MM-dd HH:mm:ss" placeholder="选择日期时间">
+                </el-date-picker>
+            </el-form-item>
+            <el-form-item label="领取时间:" prop="receiveTime">
+                <el-date-picker class="search-width" v-model="search.receiveTime" type="datetime" value-format="yy-MM-dd HH:mm:ss" placeholder="选择日期时间">
+                </el-date-picker>
+            </el-form-item>
+            <el-form-item label="红包状态:" prop="packetStatus">
+                <el-select class="search-width" v-model="search.packetStatus" placeholder="请选择红包状态">
+                    <el-option label="全部" value="0"></el-option>
+                    <el-option label="未领取" value="1"></el-option>
+                    <el-option label="已领取" value="2"></el-option>
+                    <el-option label="已失效" value="2"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="奖金状态:" prop="amountStatus">
+                <el-select class="search-width" v-model="search.amountStatus" placeholder="请选择奖金状态">
+                    <el-option label="全部" value="0"></el-option>
+                    <el-option label="未激活" value="1"></el-option>
+                    <el-option label="已激活" value="2"></el-option>
+                    <el-option label="已失效" value="2"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="S1手机号/姓名:" prop="s1Info">
+                <el-input v-model="search.s1Info" placeholder="请输入S1手机号/姓名"></el-input>
+            </el-form-item>
+            <el-form-item label="O4 ID/名称:" prop="o4Info">
+                <el-input v-model="search.o4Info" placeholder="请输入O4 ID/名称"></el-input>
+            </el-form-item>
+            <el-form-item label="O1 ID/名称:" prop="o1Info">
+                <el-input v-model="search.o1Info" placeholder="请输入O1 ID/名称"></el-input>
+            </el-form-item>
+            <el-form-item label="O1城市:" prop="o1City">
+                <el-input v-model="search.o1City" placeholder="请输入O1城市"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="init">查询</el-button>
+                <el-button @click="reset('search')">重置</el-button>
+            </el-form-item>
+        </el-form>
+        <br>
+        <!-- 搜索end -->
+        <el-table border :data="list" style="width: 100%,min-height:300px">
+            <el-table-column prop="txnId" label="流水号"></el-table-column>
+            <el-table-column prop="createTime" label="发放时间"></el-table-column>
+            <el-table-column prop="receiveTime" label="领取时间"></el-table-column>
+            <el-table-column prop="activityId" label="活动ID"></el-table-column>
+            <el-table-column prop="orderNum" label="订单编号"></el-table-column>
+            <el-table-column label="奖励类型">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.activityType == '1' ">随机</span>
+                    <span v-else-if="scope.row.activityType == '2' ">定向</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="amount" label="奖金"></el-table-column>
+            <el-table-column label="红包状态">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.packetStatus == '1' ">未领取</span>
+                    <span v-else-if="scope.row.packetStatus == '2' ">已领取</span>
+                    <span v-if="scope.row.packetStatus == '3' ">已失效</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="奖金状态">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.amountStatus == '1' ">未领取</span>
+                    <span v-else-if="scope.row.amountStatus == '2' ">未激活</span>
+                    <span v-if="scope.row.amountStatus == '3' ">已激活</span>
+                    <span v-else-if="scope.row.amountStatus == '4' ">已失效</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="S1手机号/姓名">
+                <template slot-scope="scope">
+                    {{scope.row.s1Info.phone}}/{{scope.row.s1Info.name}}
+                </template>
+            </el-table-column>
+            <el-table-column label="O4 ID/名称">
+                <template slot-scope="scope">
+                    {{scope.row.o4Info.id}}/{{scope.row.o4Info.name}}
+                </template>
+            </el-table-column>
+            <el-table-column label="O1 ID/名称">
+                <template slot-scope="scope">
+                    {{scope.row.o1Info.id}}/{{scope.row.o1Info.name}}
+                </template>
+            </el-table-column>
+            <el-table-column prop="o1City" label="O1城市"></el-table-column>
+        </el-table>
+        <div class="hjx-pagination">
+            <el-pagination @current-change="handleCurrentChange" :current-page="currentPage" layout="total, prev, pager, next, jumper" :total="total">
+            </el-pagination>
+        </div>
+    </div>
+</template>
+<script>
+import api from '@/api/index'
+import { mapGetters } from 'vuex'
+export default {
+    data() {
+        return {
+            list: [],
+            search: {
+                "txnId": "",
+                "activityId": "",
+                "activityType": "0",
+                "orderNum": "",
+                "s1Info": "",
+                "o1Info": "",
+                "o1City": "",
+                "o4Info": "",
+                "createTime": "",
+                "receiveTime": "",
+                "packetStatus": "",
+                "amountStatus": "",
+                "pageIndex": "0",
+                "pageSize": "10"
+            },
+            currentPage: 1,
+            total: 0
+
+        }
+    },
+    mounted() {
+        this.init()
+    },
+    methods: {
+        init() {
+            api.search_grant_record(this.search).then(res => {
+                if (res._ret != 0) {
+                    this.$alert(res._errStr)
+                    return
+                }
+                this.list = res.recordList
+                this.total = Number(res.pageInfo.total)
+            })
+        },
+        handleCurrentChange() {
+            this.currentPage = val
+            this.random_init()
+        },
+        reset(formName){
+            this.$refs[formName].resetFields()
+            this.init()
+        }
+    }
+
+}
+
+</script>

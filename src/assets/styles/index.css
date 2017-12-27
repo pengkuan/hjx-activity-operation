@@ -1,0 +1,68 @@
+/* 设置滚动条的样式 */
+::-webkit-scrollbar {width: 8px;}
+/* 滚动槽 */
+::-webkit-scrollbar-track {-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);border-radius: 8px;}
+/* 滚动条滑块 */
+::-webkit-scrollbar-thumb { border-radius: 8px; background: rgba(206,206,206,0.1);-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);}
+body{margin: 0;}
+button.indexFunBtn{margin: 4px 8px 4px 0 !important}
+.operate{text-align: right;margin-bottom: 20px;}
+.hjx-pagination{text-align: right;padding: 12px 0}
+.fl{float: left;}
+.fr{float: right;}
+.clear{clear: both;}
+.overflow{overflow: hidden;}
+/*位置配置*/
+.hjx-text-center{text-align: center;}
+.hjx-text-right{text-align: right;}
+.hjx-vertical-bottom{vertical-align: bottom;}
+/*字体大小配置*/
+.ft12{font-size: 12px}
+.ft13{font-size: 13px}
+.ft14{font-size: 14px}
+.ft15{font-size: 15px}
+.ft16{font-size: 16px}
+/*颜色配置*/
+.hjx-black{color:#1F2D3D}
+.hjx-lightblack{color:#324057}
+.hjx-lightblue{color:#58B7FF}
+.hjx-blue{color:#409EFF}
+.hjx-danger{color:#FA5555}
+.hjx-info{color:#878D99}
+.hjx-success{color:#67C23A}
+.hjx-warning{color:#EB9E05}
+.hjx-label{color: #48576a}
+.hjx-disabled{background-color: #f5f7fa;border-color: #e4e7ed;color: #c0c4cc!important;cursor: not-allowed;border-radius: 4px; border: 1px solid #dcdfe6;}
+.hjx-bg-Info{background-color: #f3f4f5}
+/*margin配置*/
+.mrg-b10{margin-bottom: 10px}
+.mrg-b12{margin-bottom: 12px}
+.mrg-b20{margin-bottom: 20px}
+.mrg-l14{margin-left: 14px;}
+.mrg-l20{margin-left: 20px;}
+.mrg-l40{margin-left: 40px;}
+.mrg-l120{margin-left: 120px;}
+/*input配置*/
+::-webkit-input-placeholder{color:#c0c4cc}
+::-ms-input-placeholder{color:#c0c4cc}
+::-moz-placeholder { color:#c0c4cc}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button{-webkit-appearance: none !important;margin: 0; }
+input[type="number"]{-moz-appearance:textfield;}
+/*hover配置*/
+.hjx-hover:hover{cursor: pointer;transition: color .2s cubic-bezier(.645,.045,.355,1);color: #409EFF;}
+.hjx-left-label {font-size: 14px;color: #48576a;line-height: 1;padding: 0px 12px 0px 40px;}
+/**/
+.spc-select{position: relative;margin-bottom: -3px}
+.show-detail-box .el-message-box__content{max-height: 400px;overflow: auto;}
+
+.search-width{width: 200px}
+.el-date-editor.el-input, .el-date-editor.el-input__inner{width: 200px!important} /*控制所有搜索长度为 200px*/
+
+
+/*ad*/
+.el-pagination{text-align: right;margin: 15px 0}
+
+.el-form .el-form-item { margin-bottom: 15px;} 
+.tool{text-align: right;margin-bottom: 10px;}
+.title{border-bottom: 1px solid #efefef;height: 40px ;line-height: 40px;margin-bottom: 15px;font-size: 14px;color: #97a8be;font-weight: bold;}
