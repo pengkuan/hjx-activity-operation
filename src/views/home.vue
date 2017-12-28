@@ -133,7 +133,7 @@ export default {
                     sub_menu: [
                         { name: '红包管理' }, 
                         { name: '发放记录' },
-                        {name:'红包时间设置'},
+                        { name:'设置有效期'},
                     ] 
                 },
                 { 

@@ -57,9 +57,8 @@ input[type="number"]{-moz-appearance:textfield;}
 .hjx-left-label {font-size: 14px;color: #48576a;line-height: 1;padding: 0px 12px 0px 40px;}
 /**/
 .spc-select{position: relative;margin-bottom: -3px}
-.show-detail-box .el-message-box__content{max-height: 400px;overflow: auto;}
-
-.search-width{width: 200px} 
+.show-detail-box .el-message-box__content{max-height: 400px;overflow: auto;} 
+.search-width{width: 200px}  
 
 
 /*ad*/

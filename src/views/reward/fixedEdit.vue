@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/reward/list' }">定额定向抽奖</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/reward/list' }">定额定向红包</el-breadcrumb-item>
             <el-breadcrumb-item>新增</el-breadcrumb-item>
         </el-breadcrumb>
         <br>

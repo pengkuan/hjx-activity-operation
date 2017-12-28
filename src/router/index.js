@@ -31,7 +31,7 @@ let router = new Router({
             name: '活动管理', 
             component: home,
             menuShow: true,
-            iconCls: 'iconfont icon-home_fill_light', // 图标样式class
+            iconCls: 'iconfont icon-huodong', // 图标样式class
             children: [
                 {path: '/reward/list', component: Reward.list, name: '红包管理', menuShow: true},
                 {path: '/reward/randomAdd', component: Reward.randomAdd, name: 'randomAdd', menuShow: false},
@@ -41,7 +41,7 @@ let router = new Router({
                 {path: '/reward/fixedEdit', component: Reward.fixedEdit, name: 'fixedEdit', menuShow: false},
                 {path: '/reward/fixedDetail', component: Reward.fixedDetail, name: 'fixedDetail', menuShow: false},
                 {path: '/rewardRecord/index', component: Reward.record, name: '发放记录', menuShow: true},
-                {path: '/setValidTime/index', component: Reward.setValidTime, name: '红包领取时效', menuShow: true}
+                {path: '/setValidTime/index', component: Reward.setValidTime, name: '设置有效期', menuShow: true}
             ]
         },
         {
@@ -49,7 +49,7 @@ let router = new Router({
             component: home,
             name: '广告列表',
             menuShow: true, 
-            iconCls: 'iconfont icon-more',  
+            iconCls: 'iconfont icon-guanggao',  
             children: [
                 {path: '/adList/hjxCustomer', component: addList.hjxCustomer, name: '换机侠顾客端-移动端', menuShow: true},
                 {path: '/adList/hjxD', component: addList.hjxD, name: '换机侠D端-移动端', menuShow: true},

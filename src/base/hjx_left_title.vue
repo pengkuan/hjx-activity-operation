@@ -6,6 +6,7 @@
 </template>
 <script type="text/javascript">
 export default {
+    name:'hjxLeftTitle',
     data() {
         return {}
     },

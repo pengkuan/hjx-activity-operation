@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/reward/list' }">随机抽奖</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/reward/list' }">随机红包</el-breadcrumb-item>
             <el-breadcrumb-item>新增</el-breadcrumb-item>
         </el-breadcrumb>
         <br>
@@ -35,8 +35,6 @@
                 </span>
                 
             </p>
-            
-            
         </div>
         <hjx-left-title label="算法"></hjx-left-title>
         <div class="mrg-b10 ">
