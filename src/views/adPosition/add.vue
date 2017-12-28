@@ -57,7 +57,7 @@
                     <el-radio :label="1">自定义时间</el-radio>
                 </el-radio-group>
                 <div v-show="form.adActiveTime == 1">
-                    <el-date-picker class="w500" v-model="form.timeRange" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期">
+                    <el-date-picker class="w475" v-model="form.timeRange" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期">
                     </el-date-picker> 
                 </div>
             </el-form-item>   
@@ -163,6 +163,9 @@ export default {
     }
     .w500 {
         width: 500px;
+    }
+    .w475 {
+        width: 475px;
     }
     .w300 {
         width: 300px;
