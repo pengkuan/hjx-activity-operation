@@ -59,13 +59,11 @@ input[type="number"]{-moz-appearance:textfield;}
 .spc-select{position: relative;margin-bottom: -3px}
 .show-detail-box .el-message-box__content{max-height: 400px;overflow: auto;}
 
-.search-width{width: 200px}
-/*.el-date-editor.el-input, .el-date-editor.el-input__inner{width: 200px!important} /*控制所有搜索长度为 200px*/*/
+.search-width{width: 200px} 
 
 
 /*ad*/
-.el-pagination{text-align: right;margin: 15px 0}
-
+.el-pagination{text-align: right;margin: 15px 0} 
 .el-form .el-form-item { margin-bottom: 15px;} 
 .tool{text-align: right;margin-bottom: 10px;}
 .title{border-bottom: 1px solid #efefef;height: 40px ;line-height: 40px;margin-bottom: 15px;font-size: 14px;color: #97a8be;font-weight: bold;}

@@ -8,7 +8,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 import '@/assets/fonts/iconfont.css'
 import store from './store/index'
 import Util from '@/util/index'
-import Config from '@/config/index'
+import Config from '@/config/index.js'
 
 Vue.config.productionTip = false
 Vue.prototype._Util = Util

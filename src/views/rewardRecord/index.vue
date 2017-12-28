@@ -159,7 +159,7 @@ export default {
                 this.total = Number(res.pageInfo.total)
             })
         },
-        handleCurrentChange() {
+        handleCurrentChange(val) {
             this.currentPage = val
             this.random_init()
         },

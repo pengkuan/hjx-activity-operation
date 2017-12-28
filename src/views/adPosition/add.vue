@@ -5,114 +5,217 @@
         </div>
         <el-form ref="form" :model="form" label-width="130px">
             <el-form-item label="广告类型" class="w600 border-no">
-                <el-button type="primary" class="stage-time" :class="{'active':form.adType==0}" @click="form.adType=0">阶段时间开启</el-button>
-                <el-button type="primary" class="forever-time" :class="{'active':form.adType==1}" @click="form.adType=1">永久开启</el-button> 
+                <el-button type="primary" class="stage-time" :class="{'active':form.positionType==1}" @click="form.positionType=1">阶段时间开启</el-button>
+                <el-button type="primary" class="forever-time" :class="{'active':form.positionType==2}" @click="form.positionType=2">永久开启</el-button> 
             </el-form-item>
             <el-form-item label="所属客户端" class="w600">
-                <el-select v-model="form.client" placeholder="请选择活动区域">
-                    <el-option label="换机侠顾客端-移动端" value="shanghai1"></el-option>
-                    <el-option label="换机侠S端-移动端" value="shanghai2"></el-option>
-                    <el-option label="换机侠D端-移动端" value="shanghai3"></el-option> 
+                <el-select v-model="form.clientName" placeholder="请选择所属客户端">
+                    <el-option :label="item.clientName" :value="item.clientId" v-for="(item,index) in form.clientList" :key="index"></el-option> 
                 </el-select> 
             </el-form-item>
             <el-form-item label="位置编码" class="w600">
-                <el-input v-model="form.code" placeholder="请向研发人员申请此编码"></el-input>
+                <el-input v-model="form.positionCode" placeholder="请向研发人员申请此编码" :maxlength="200"></el-input>
                 <div class="tips">最多200个字符</div>
             </el-form-item>
             <el-form-item label="广告位置" class="w600"> 
-                <el-input v-model="form.position" placeholder="请填写广告所在的位置名称"></el-input>
+                <el-input v-model="form.positionName" placeholder="请填写广告所在的位置名称" :maxlength="20"></el-input>
                 <div class="tips">最多20个字符</div> 
             </el-form-item>
-            <el-form-item label="位置描述（选填）" class="w600">
-                <el-input type="textarea" :maxlength="200" :autosize="{ minRows: 4, maxRows: 8}" v-model="form.posDesc"></el-input>
+            <el-form-item label="位置描述（选填）" class="w600">  
+                <el-input type="textarea" :maxlength="200" :autosize="{ minRows: 4, maxRows: 8}" v-model="form.positionDesc" placeholder="详细描述广告位置"></el-input>
                 <div class="tips pos-rel">支持中文、数字、字母<span class="control-font-count">{{fontCount}}/200</span></div>
             </el-form-item>
             <el-form-item label="广告素材类型" class="w600">
-                <el-radio-group v-model="form.AdresourceType">
-                    <el-radio :label="0">文字</el-radio>
-                    <el-radio :label="1">图片</el-radio>
+                <el-radio-group v-model="form.adType">
+                    <el-radio :label="1">文字</el-radio>
+                    <el-radio :label="2">图片</el-radio>
                 </el-radio-group>
             </el-form-item>
-            <el-form-item label="" class="w600 pos-rel" v-show="form.AdresourceType == 1">
+            <el-form-item label="" class="w600 pos-rel" v-show="form.adType == 2">
                 <p>
-                    尺寸：&nbsp;&nbsp;&nbsp;&nbsp;长 <el-input v-model="form.width" class="w80"></el-input> 像素&nbsp;&nbsp;*&nbsp;&nbsp;高 <el-input v-model="form.height" class="w80"></el-input> 像素
+                    尺寸：&nbsp;&nbsp;&nbsp;&nbsp;长 <el-input v-model.number="form.imgWidth" type="number" class="w80"></el-input> 像素&nbsp;&nbsp;*&nbsp;&nbsp;高 <el-input v-model.number="form.imgHigh" type="number" class="w80"></el-input> 像素
                 </p>  
             </el-form-item> 
             <el-form-item label="最多展示素材数量" class="w600">
-                <el-select v-model="form.count" placeholder="请选择活动区域">
-                    <el-option label="1" value="shanghai1"></el-option> 
-                    <el-option label="2" value="shanghai2"></el-option> 
-                    <el-option label="3" value="shanghai3"></el-option> 
+                <el-select v-model="form.adNum" placeholder="请选择素材数量">
+                    <el-option :label="item" :value="item" v-for="(item,index) in form.adNumList" :key="index"></el-option>  
                 </el-select> 
             </el-form-item>
             <el-form-item label="广告状态">
-                <el-radio-group v-model="form.adStatus">
-                    <el-radio :label="0">启用</el-radio>
-                    <el-radio :label="1">不启用</el-radio>
+                <el-radio-group v-model="form.isUse">
+                    <el-radio :label="1">启用</el-radio>
+                    <el-radio :label="0">不启用</el-radio>
                 </el-radio-group>
             </el-form-item>
-            <el-form-item label="投放时间" v-show="form.adStatus==0">
-                <el-radio-group v-model="form.adActiveTime">
-                    <el-radio :label="0">投放后立即开始</el-radio>
-                    <el-radio :label="1">自定义时间</el-radio>
+            <el-form-item label="投放时间" v-show="form.isUse=='1'">
+                <el-radio-group v-model="form.useType">
+                    <el-radio :label="1">投放后立即开始</el-radio>
+                    <el-radio :label="2">自定义时间</el-radio>
                 </el-radio-group>
-                <div v-show="form.adActiveTime == 1">
-                    <el-date-picker class="w475" v-model="form.timeRange" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期">
+                <div v-show="form.useType == '2'"> 
+                    <el-date-picker
+                        v-model="form.startTime"
+                        type="datetime"
+                        placeholder="开始日期">
+                    </el-date-picker> 
+                    <el-date-picker
+                        v-model="form.endTime"
+                        type="datetime"
+                        placeholder="结束日期">
                     </el-date-picker> 
                 </div>
             </el-form-item>   
             <el-form-item>
-                <el-button type="primary" @click="onSubmit" v-show="form.adType==0">确认修改</el-button>
-                <el-button type="primary" @click="onSubmit_next" v-show="form.adType==1">下一步，添加默认广告</el-button>
+                <el-button type="primary" @click="onSubmit" v-show="form.positionType==1">确认修改</el-button>
+                <el-button type="primary" @click="onSubmit_next" v-show="form.positionType==2">下一步，添加默认广告</el-button>
                 <el-button @click="back">取消</el-button>
             </el-form-item>
         </el-form>  
     </div>
 </template>
 <script>
+import api from '@/api/ad'
 export default {
     data() {
         return {
             form: {
-                adType: 1, //广告类型
-                client: '广东移动', //客户端
-                code: '2000000300004000', //编码
-                position: '我的广告位置', //位置
-                posDesc: '位置描述', //位置描述
-                AdresourceType: 0,
-                width: '200', //图片宽度
-                height: '400', //图片高度
-                count: 3, //展示素材数量
-                adStatus: 0, //0是启用 1是不启用
-                timeRange: [new Date(1504454400000), new Date(1513134122000)], //时间范围,放在form中会报错
-                adActiveTime: 0, //0是立即生效 1是自定义时间 
-            },  
-            timeRange: [new Date(1504454400000), new Date(1513134122000)], //时间范围,放在form中会报错
+                positionType: 1, //广告类型 1是阶段开启，2是永久开启，新建广告位时不传，因为接口是分开的
+                clientName: '', //客户端
+                clientList: [], //客户端列表
+                positionCode: '', //编码
+                positionName: '', //位置
+                positionDesc: '', //位置描述
+                adType: 1, //广告素材类型，1是文字广告，2是图片广告
+                imgWidth: '', //图片宽度
+                imgHigh: '', //图片高度
+                adNum: '', //展示素材数量
+                adNumList: 9, //展示素材数量,固定为9
+                isUse: 1, //1是启用 0是不启用
+                useType: 1, //1是立即生效 2是自定义时间  
+                startTime: null, //直接传数字时间戳，或者空字符串，不能是字符串 开始时间
+                endTime: null, //直接传数字时间戳，或者空字符串，不能是字符串 结束时间  
+            },   
         }
     },
     methods: {  
+        validata() {
+            if (!this.form.clientName) {
+                this.$message('所属客户端不能为空')
+                return false
+            }
+            if (!this.form.positionCode) {
+                this.$message('位置编码不能为空') 
+                return false 
+            }
+            if (/[\u4e00-\u9fa5]+/.test(this.form.positionCode)) {
+                this.$message('位置编码不能包含中文') 
+                return false 
+            }  
+            if (!this.form.positionName) {
+                this.$message('广告位置不能为空') 
+                return false 
+            }
+            if (!/^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(this.form.positionName)) {
+                this.$message('广告位置只能输入中文，数字和字母') 
+                return false
+            } 
+            if (!this.form.positionDesc) {
+                this.$message('位置描述不能为空') 
+                return false 
+            } 
+            if (!/^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(this.form.positionDesc)) {
+                this.$message('位置描述只能输入中文，数字和字母') 
+                return false
+            }
+            if (this.form.adType == '2') {   
+                if (!this.form.imgWidth || !this.form.imgHigh) {
+                    this.$message('图片像素不能为空') 
+                    return false 
+                }
+            }
+            if (!this.form.adNum) {
+                this.$message('素材数量不能为空') 
+                return false 
+            }
+            if (this.form.isUse == '1' && this.form.useType == '2') {
+                if (!this.form.startTime) {
+                    this.$message('开始时间不能为空')  //结束时间可不校验
+                    return false 
+                }
+            } 
+            if (this.form.isUse == '1' && this.form.useType == '2') {
+                if (!this.form.endTime) {
+                    this.$message('结束时间不能为空')  
+                    return false 
+                }
+            }  
+            if (this.form.isUse == '1' && this.form.useType == '2') { 
+                 if (this.form.endTime - this.form.startTime < 0) {
+                    this.$message('结束时间不能小于开始时间')  //结束时间存在就必须比较大小
+                    return false
+                }
+            } 
+            return true //都验证ok，返回true
+        },
         back() { //返回和取消
             this.$router.back()
         },
         onSubmit() { //阶段性开启
-
+            if (!this.validata()) return  
+            let params = {
+                clientId: this.form.clientName,
+                positionCode: this.form.positionCode,
+                positionName: this.form.positionName,
+                positionDesc: this.form.positionDesc,
+                adNum: this.form.adNum,
+                adType: this.form.adType,
+                imgWidth: this.form.imgWidth,
+                imgHigh: this.form.imgHigh,
+                isUse: this.form.isUse,
+                useType: this.form.useType,
+                startTime: '',
+                endTime: ''
+            }
+            params.startTime = this.form.startTime != null ? Math.floor(this.form.startTime.getTime()/1000): '' 
+            params.endTime = this.form.endTime != null ? Math.floor(this.form.endTime.getTime()/1000): '' 
+            api.ad_addAdPositionDeadline(params).then((res)=> {
+                if (res._ret != '0') {
+                    this.$message(res._errStr)
+                    return
+                }
+                this.$message({
+                    type: 'success',
+                    message: '添加成功!'
+                })
+                this.$router.push({path: '/adPosition/adPosSet'})
+            })
         },
         onSubmit_next() { //如果是永久开启，需要添加一个默认广告
 
-        }
+        },
+        clientList() { //获取客户端列表数据
+            api.ad_getClient({}).then((res)=>{
+                if (res._ret != '0') {
+                    this.$message(res._errStr)
+                    return
+                }
+                this.form.clientList = res.clientList
+
+            })
+        },
     },
     computed: {
         fontCount() { //文本框倒计数
-            return this.form.posDesc.length
+            return this.form.positionDesc.length
         } 
     }, 
     watch: {
-        // ['form.timeRange'](val) {
-        //     console.log(val[0])
-        //     console.log(val[1])
-        // }
+        ['form.endTime'](val) {
+            console.log(val) 
+        }
     },
-    mounted() {   
+    mounted() { 
+        this.clientList()  
     }
 }
 
