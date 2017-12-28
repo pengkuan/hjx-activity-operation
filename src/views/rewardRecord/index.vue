@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id = "rewardRecord">
         <el-breadcrumb separator-class="el-icon-arrow-right">
             <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
             <el-breadcrumb-item>发放记录</el-breadcrumb-item>
@@ -159,8 +159,9 @@ export default {
                 this.total = Number(res.pageInfo.total)
             })
         },
-        handleCurrentChange() {
+        handleCurrentChange(val) {
             this.currentPage = val
+            this.search.pageIndex = String(val - 1)
             this.random_init()
         },
         reset(formName){
@@ -172,3 +173,9 @@ export default {
 }
 
 </script>
+<style lang="scss">
+#rewardRecord {
+    .el-date-editor.el-input,.el-date-editor.el-input__inner{width: 200px!important} /*控制所有搜索长度为 200px*/
+}
+    
+</style>

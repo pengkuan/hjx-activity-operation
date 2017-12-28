@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/reward/list' }">定额定向抽奖</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/reward/list' }">定额定向红包</el-breadcrumb-item>
             <el-breadcrumb-item>新增</el-breadcrumb-item>
         </el-breadcrumb>
         <br>
@@ -111,12 +111,14 @@
     </div>
 </template>
 <script>
+console.log('hjxPart')
 import api from '@/api/index'
 import { mapGetters } from 'vuex'
 import hjxPart from '@/base/hjx_part'
 import hjxLeftTitle from '@/base/hjx_left_title'
 import hjxUnderlineInput from '@/base/hjx_underline_input'
 import hjxSelectAlert from '@/base/hjx_select_alert'
+
 export default {
     components: { hjxPart, hjxLeftTitle, hjxUnderlineInput, hjxSelectAlert },
     data() {

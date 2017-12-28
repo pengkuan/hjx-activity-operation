@@ -2,7 +2,7 @@
   <transition name="fade" v-if="ifshow">
       <div class="el-message-box__wrapper" style="z-index:2006">
         <div class="el-message-box">
-          <div class="title hjx-text-center hjx-blue">选择一级和二级</div>
+          <div class="alert-title hjx-text-center hjx-blue">选择一级和二级</div>
           <div class="clear choose-container">
             <div class="fl box-left">
               <p class="second-title">选择：</p>
@@ -16,9 +16,9 @@
                   <div class="list-container">
                     <p class="left-item overflow" v-for="item in preChooseL1" v-show="item.ifshow || showSearchL1">
                       <el-checkbox class="fl" v-model="item.ifChoosed" :key="item[mappingResult[0]]" @change="handleL1(item.ifChoosed,item[mappingResult[1]],item[mappingResult[0]])">
-                        <i class="iconfont icon-form_fill_light"></i>{{item[mappingResult[1]]}}
+                        <i class="iconfont icon-wenjianjia"></i>{{item[mappingResult[1]]}}
                       </el-checkbox>
-                      <el-button @click="setSecond(item[mappingResult[0]])" type="text" size="mini" class="fr clear-padding" :disabled="item.ifChoosed"><i class="iconfont icon-form_fill_light"></i>下级</el-button>
+                      <el-button @click="setSecond(item[mappingResult[0]])" type="text" size="mini" class="fr clear-padding" :disabled="item.ifChoosed"><i class="iconfont icon-xiajiicon"></i>下级</el-button>
                     </p>
                   </div>
                 </div>
@@ -31,7 +31,7 @@
                   <div class="list-container">
                     <p class="left-item" v-for="item in preChooseL2" v-show="item.ifshow || showSearchL2">
                       <el-checkbox v-model="item.ifChoosed" :key="item[mappingResult[3]]" @change="handleL2(item.ifChoosed,item[mappingResult[4]],item[mappingResult[3]])">
-                        <i class="iconfont icon-form_fill_light"></i>{{item[mappingResult[4]]}}
+                        <i class="iconfont icon-dian"></i>{{item[mappingResult[4]]}}
                       </el-checkbox>
                     </p>
                   </div>
@@ -43,8 +43,8 @@
               <div class="choose-field list-container-choosed">
                 <div v-for="(list,key) in choosedList">
                   <p class="right-item clear" v-for="(item,index) in list">
-                    <span v-if="key=='L1'" class="fl hjx-blue"><i class="iconfont icon-form_fill_light"></i> {{item[mappingResult[1]]}}</span>
-                    <span v-else class="fl hjx-blue"> {{item[mappingResult[4]]}}</span>
+                    <span v-if="key=='L1'" class="fl hjx-blue"><i class="iconfont icon-wenjianjia"></i> {{item[mappingResult[1]]}}</span>
+                    <span v-else class="fl hjx-blue"><i class="iconfont icon-dian"></i> {{item[mappingResult[4]]}}</span>
                     <i @click="delRightItem(key,index)" class="iconfont icon-round_close_fill_light fr hjx-hover"></i>
                   </p>
                 </div>
@@ -63,9 +63,9 @@
 import api from '@/api'
 import { mapGetters, mapActions } from 'vuex'
 export default {
+  name:'hjxSelectAlert',
   data() {
     return {
-      
       mapping:{ //接口字段映射表
         /**数组参数说明
         *@ 一级列表字段id、一级列表字段name、二级查询id字段、二级列表字段id、二级列表字段name、
@@ -287,7 +287,7 @@ export default {
 
 </script>
 <style type="text/css" scoped="scoped">
-.title {
+.alert-title {
   background-color: #f3f4f5;
   /*color: #324057;*/
   font-size: 16px;

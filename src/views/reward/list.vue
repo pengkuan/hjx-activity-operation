@@ -2,7 +2,7 @@
     <div>
         <el-breadcrumb separator-class="el-icon-arrow-right">
             <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-            <el-breadcrumb-item>抽奖设置</el-breadcrumb-item>
+            <el-breadcrumb-item>红包管理</el-breadcrumb-item>
         </el-breadcrumb>
         <br>
         <el-tabs type="border-card">
@@ -249,8 +249,9 @@ export default {
                 this.random_reward.total =Number(res.pageInfo.total)
             })
         },
-        random_handleCurrentChange(){
+        random_handleCurrentChange(val){
             this.currentPage = val
+            this.random_reward.search.pageIndex = String(val - 1)
             this.random_init()
         },
         random_check(id,status){
@@ -279,8 +280,9 @@ export default {
                 this.fixed_reward.total =Number(res.pageInfo.total)
             })
         },
-        fixed_handleCurrentChange(){
+        fixed_handleCurrentChange(val){
             this.currentPage = val
+            this.fixed_reward.search.pageIndex = String(val - 1)
             this.fixed_init()
         },
         fixed_check(id,status){
