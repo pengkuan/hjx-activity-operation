@@ -367,8 +367,7 @@ export default {
             return true //都验证ok，返回true
         },
         onSubmit() { //确认添加广告
-            if (!this.validata()) return 
-            return
+            if (!this.validata()) return  
 
             let params = {   //直接传form是否会有风险？？？？？
                 clientId: this.form.clientId,
@@ -387,28 +386,33 @@ export default {
                 range: this.form.range, 
                 rangeList: {
                     channel: {
-                        status: this.rangeList.channel.status,  
-                        values: this.rangeList.channel.values,  
+                        status: this.form.rangeList.channel.status,  
+                        values: this.form.rangeList.channel.values,  
                     },
                     store: {
-                        status: this.rangeList.store.status,  
-                        values: this.rangeList.store.values,  
+                        status: this.form.rangeList.store.status,  
+                        values: this.form.rangeList.store.values,  
                     },
                     amount: {
-                        status: this.rangeList.amount.status,  
-                        values: this.rangeList.amount.values,  
+                        status: this.form.rangeList.amount.status,  
+                        values: this.form.rangeList.amount.values,  
                     }
                 }
             }
-            //不跳转，屏蔽跳转链接，广告不生效(或生效，但是立即开始)，屏蔽开始和结束时间
-            if(this.form.isJump == 1) this.form.jumpUrl = ''
-            if(this.form.isUse == 2) this.form.startTime = ''
-            if(this.form.isUse == 2) this.form.endTime = ''
-            if(this.form.useType == 1 && this.form.isUse == 2) this.form.startTime = ''
-            if(this.form.useType == 1 && this.form.isUse == 2) this.form.endTime = ''
+            //容错处理
+            //文字 图片是唯一的，不需要处理
+            if(this.form.isJump == 1) params.jumpUrl = ''  //不需要跳转，则取消跳转链接
+            if(this.form.isUse == 2) params.startTime = '' //不生效，则取消时间 
+            if(this.form.isUse == 2) params.endTime = ''   //不生效，则取消时间
+            if(this.form.isUse == 1 && this.form.useType == 1) params.startTime = '' //生效且，立即生效，则取消时间
+            if(this.form.isUse == 1 && this.form.useType == 1) params.endTime = ''   //生效且，立即生效，则取消时间 
+            if(this.form.isUse == 1 && this.form.useType == 2) { //启动，且阶段生效
+               params.startTime = Math.floor(this.form.startTime.getTime()/1000)
+               params.endTime = Math.floor(this.form.endTime.getTime()/1000) 
+            }
 
-            //表单验证
-
+            console.log(params)
+            return
 
             api.ad_addAdInfo(params).then((res)=>{
                 console.log(res)
