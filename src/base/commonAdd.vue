@@ -10,7 +10,7 @@
                 </el-select> 
             </el-form-item>
             <el-form-item label="广告位置" class="w600">
-                <el-select v-model="form.region" placeholder="请选择广告位置">  
+                <el-select v-model="form.positionCode" placeholder="请选择广告位置">  
                     <el-option :label="item.positionName" :value="item.positionCode" v-for="(item,index) in form.positionList" :key="index"></el-option>  
                 </el-select>
                 <div class="tips">提示：此广告位线上已发布5个广告，最多可发布6个广告</div>
@@ -21,11 +21,11 @@
             </el-form-item>
             <el-form-item label="广告素材类型" class="w600">
                 <el-radio-group v-model="form.AdresourceType">
-                    <el-radio :label="0">文字</el-radio>
-                    <el-radio :label="1">图片</el-radio>
+                    <el-radio :label="1">文字</el-radio>
+                    <el-radio :label="2">图片</el-radio>
                 </el-radio-group>
             </el-form-item>
-            <el-form-item label="广告素材" class="w600 pos-rel" v-show="form.AdresourceType == 1">
+            <el-form-item label="广告素材" class="w600 pos-rel" v-show="form.AdresourceType == 2">
                 <p>
                     <el-input v-model="form.adImg" class="inline-block"></el-input>
                     <el-upload class="upload-demo inline my-close" action="https://jsonplaceholder.typicode.com/posts/" :on-preview="handlePreview" :on-remove="handleRemove" multiple :limit="3" :on-exceed="handleExceed" :file-list="form.fileList">
@@ -37,7 +37,7 @@
                 </div>
                 <div class="tips">支持长仅1200*高仅500的图片 png、jpeg格式，4M以内</div>
             </el-form-item>
-            <el-form-item label="广告素材" class="w600" v-show="form.AdresourceType == 0">
+            <el-form-item label="广告素材" class="w600" v-show="form.AdresourceType == 1">
                 <el-input type="textarea" :rows="4" v-model="form.adText" :maxlength="100" placeholder="请输入广告文字，前端将展示此文字"></el-input>
                 <div class="tips pos-rel">最多可输入100字符</div>
             </el-form-item>
@@ -150,13 +150,7 @@
             <el-form-item label="广告排序" class="w300 pos-rel">
                 <el-input v-model="form.sort" disabled></el-input>
                 <el-button type="primary" size="mini" class="my-select-sort" @click="ad_sort">选择</el-button>
-            </el-form-item>
-            <el-form-item label="操作人" class="w600">
-                <el-input v-model="form.operator" disabled></el-input>
-            </el-form-item>
-            <el-form-item label="更新时间" class="w600">
-                <el-input v-model="form.name" disabled></el-input>
-            </el-form-item>
+            </el-form-item>  
             <el-form-item>
                 <el-button type="primary" @click="onSubmit">确认添加</el-button>
                 <el-button @click="back">取消</el-button>
@@ -167,16 +161,22 @@
                 <el-col :span="12">
                     <div class="search">
                         <el-input v-model.trim="searchKey" class="input" @input="searchByKey"></el-input>
-                        <ul class="search-ul">
-                            <li v-for="(item,index) in defaulSearchList" :key="index" @click="part_add_info(item)">{{item}}</li> 
+                        <ul class="search-ul" v-show="part_detail_tit == '门店类'">
+                            <li v-for="(item,index) in defaulSearchList" :key="index" @click="part_add_info(item)">{{item.storeName}}</li>  
+                        </ul>
+                        <ul class="search-ul" v-show="part_detail_tit == '渠道类'"> 
+                            <li v-for="(item,index) in defaulSearchList" :key="index" @click="part_add_info(item)">{{item.channelName}}</li> 
                         </ul>
                     </div>
                 </el-col>
                 <el-col :span="12">
                     <div class="has-select">
                         <p>已选{{defaultResultList.length}}/100</p>
-                        <ul class="has-select-ul">
-                            <li class="pos-rel" v-for="(item,index) in defaultResultList" :key="index">{{item}}<span @click="part_del_has_select(item,index)" class="iconfont icon-roundclosefill"></span></li>
+                        <ul class="has-select-ul" v-show="part_detail_tit == '门店类'">
+                            <li class="pos-rel" v-for="(item,index) in defaultResultList" :key="index">{{item.storeName}}<span @click="part_del_has_select(item,index)" class="iconfont icon-roundclosefill"></span></li>
+                        </ul>
+                        <ul class="has-select-ul" v-show="part_detail_tit == '渠道类'">
+                            <li class="pos-rel" v-for="(item,index) in defaultResultList" :key="index">{{item.channelName}}<span @click="part_del_has_select(item,index)" class="iconfont icon-roundclosefill"></span></li>
                         </ul>
                     </div>
                 </el-col>
@@ -225,14 +225,15 @@ export default {
             form: {
                 clientId: this.$route.query.clientId, //客户端
                 clientList: [], //客户端列表，用于循环
+                positionCode: '1212', //广告位置
                 positionList: [], //广告位列表
                 adTitle: '', //广告标题
-                adImg: 'www.baidu.com/img', //图片链接描述，如果是图片
-                AdresourceType: 0,
+                adImg: '', //图片链接描述，如果是图片
+                AdresourceType: 1, //文字还是图片 1是文字 2是图片 由广告位决定
                 adDesc: '', //广告描述
-                fileList: [],
-                isJump: 2, //1是不需要调整 2是需要跳转
-                jumpUrl: 'm.huishoubao.com11', //需要跳转的跳转链接
+                fileList: [], //文件相关
+                isJump: 2, //1是不需要跳转 2是需要跳转
+                jumpUrl: '', //需要跳转的跳转链接
                 adText: '', //文字描述，如果是文字
                 range: 1, //可见范围 1是全部 2是部分
                 rangeList: { //条件范围，range为2时必传
@@ -246,18 +247,11 @@ export default {
                     },
                     amount: {
                         status: '3', //3是大于等于 4是小于等于
-                        values: '888' //金额
+                        values: '' //金额
                     }
-                },
-                rangePart: {
-                    channel: '华为公司',
-                    store: '华为门店',
-                    money: '8888'
-                },
+                }, 
                 isUse: 1, //1是生效 0是不生效
-                useType: 2, //1是立即生效 2是自定义时间 
-                timeRange: '',
-                operator: '张三',
+                useType: 2, //1是立即生效 2是自定义时间  
                 startTime: '', //开始时间
                 endTime: '', //结束时间
                 sort: 1, //广告排序
@@ -265,36 +259,182 @@ export default {
             // 部分可见数据
             addConditionValue: '', //选择什么条件添加
             addCondition: [{ label: '渠道类', options: [{ value: 'channel', label: '渠道' }, { value: 'store', label: '门店' }] }, { label: '订单类', options: [{ value: 'money', label: '金额付款' }] }],
-            part_detail_tit: '',//选择渠道和门店弹框的标题
-            payMoneyCount: '', //部分用户金额设置
-            partChannel: '0', //部分用户渠道数据，0是包含，1是不包含
-            partChannelShow: false,
-            partStore: '0', //部分用户门店数据，0是包含，1是不包含
-            partStoreShow: false,
-            moneyLimit: '0',//付款限制，目前是大于等于
+            part_detail_tit: '',//选择渠道和门店弹框的标题  
+            partChannelShow: false, 
+            partStoreShow: false, 
             moneyLimitShow: false,
             dialog1: false, //选择渠道和门店
             dialog2: false, //广告排序
             // 排序数据(之前的广告列表)
-            sortData: [{name: '轮播图'},{name: '轮播图'},{name: '轮播图'},{name: '轮播图'} ],
+            sortData: [{name: '轮播图0'},{name: '轮播图1'},{name: '轮播图2'},{name: '轮播图3'} ],
             temporary_sortData: [], //广告临时数据
             needChangeAdFlag: true, //广告取消标志位
             // 部分用户dialog1弹框搜索数据和已选数据
             searchKey: '', //搜索关键字
-            defaulSearchList: [],
-            defaultResultList: [], 
-            channelSearchLish: ['华为科技公司','中兴科技公司','回收宝科技公司',],
-            channelResultList: ['华为科技公司','魅族科技公司'],
-            storeSearchLish: ['华为科技公司','中兴科技公司','回收宝科技公司','小米科技公司','魅族科技公司'],
-            storeResultList: [],
+            defaulSearchList: [], //默认搜索数据，用来赋值用
+            defaultResultList: [],  //默认结果数据，用来赋值用
+            channelSearchLish: [], //渠道搜索数据
+            channelResultList: [], //渠道结果数据，如果是修改广告，就不为空，新增应该为空
+            storeSearchLish: [], //门店搜索数据
+            storeResultList: [], //门店结果数据，如果是修改广告，就不为空，新增应该为空
             // 临时数据，若不保存，需要回到数据操作前的数据
             temporary_channelResultList: [], //渠道临时数据
             temporary_storeResultList: [], //门店临时数据
-            needChange: true
+            needChange: true, //添加渠道或者门店取消标志位，如果取消，那么不保存，确认才保存 
         }
     },
     methods: {
-        getClientList() {
+        validata() { //提交前表单验证 
+            if (!this.form.positionCode) {
+                this.$message.error('广告位置不能为空') 
+                return false 
+            } 
+            if (!this.form.adTitle) {
+                this.$message.error('广告标题不能为空') 
+                return false 
+            }
+            if (!/^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(this.form.adTitle)) {
+                this.$message.error('广告标题只能输入中文，数字和字母') 
+                return false
+            } 
+            if (this.form.AdresourceType == 1) {
+                if (!this.form.adText) {
+                    this.$message.error('广告素材不能为空') 
+                    return false 
+                }
+                if (!/^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(this.form.adText)) {
+                    this.$message.error('广告素材只能输入中文，数字和字母') 
+                    return false
+                }
+            }
+            if (this.form.AdresourceType == 2) {
+                if (!this.form.adImg) {
+                    this.$message.error('广告素材不能为空') 
+                    return false 
+                }
+                if (/[\u4e00-\u9fa5]+/.test(this.form.adImg)) {
+                    this.$message.error('广告素材不能包含中文') 
+                    return false 
+                } 
+            }  
+            if (!this.form.adDesc) {
+                this.$message.error('广告描述不能为空') 
+                return false 
+            }
+            if (!/^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(this.form.adDesc)) {
+                this.$message.error('广告描述只能输入中文，数字和字母') 
+                return false
+            }  
+            if (this.form.isJump == 2) {
+                if (!this.form.jumpUrl) {
+                    this.$message.error('跳转链接不能为空')  //跳转链接可能传中文的参数
+                    return false 
+                }
+            }  
+            if (this.form.range == 2 && this.partChannelShow == true) { //部分用户，且点出了渠道
+                if (!this.form.rangeList.channel.values) {
+                    this.$message.error('请选择渠道')  //跳转链接可能传中文的参数
+                    return false
+                }
+            }
+            if (this.form.range == 2 && this.partStoreShow == true) { //部分用户，且点出了门店
+                if (!this.form.rangeList.store.values) {
+                    this.$message.error('请选择门店')  //跳转链接可能传中文的参数
+                    return false
+                }
+            }
+            if (this.form.range == 2 && this.moneyLimitShow == true) { //部分用户，且点出了金额
+                if (!this.form.rangeList.amount.values) {
+                    this.$message.error('请输入金额')  //跳转链接可能传中文的参数
+                    return false
+                }
+            }
+
+            if (this.form.isUse == 1 && this.form.useType == 2) { //广告生效且自定义时间 就校验时间
+                if (!this.form.startTime) {
+                    this.$message.error('开始时间不能为空')  //结束时间可不校验
+                    return false 
+                }
+                if (!this.form.endTime) {
+                    this.$message.error('结束时间不能为空')  
+                    return false 
+                }
+                if (this.form.endTime - this.form.startTime < 0) {
+                    this.$message.error('结束时间不能小于开始时间')  //结束时间存在就必须比较大小
+                    return false
+                }
+            } 
+            return true //都验证ok，返回true
+        },
+        onSubmit() { //确认添加广告
+            if (!this.validata()) return 
+            return
+
+            let params = {   //直接传form是否会有风险？？？？？
+                clientId: this.form.clientId,
+                positionCode: this.form.positionCode,
+                adTitle: this.form.adTitle,
+                adDesc: this.form.adDesc,
+                adText: this.form.adText,
+                adImg: this.form.adImg,
+                isJump: this.form.isJump,
+                jumpUrl: this.form.jumpUrl,
+                isUse: this.form.isUse,
+                useType: this.form.useType,
+                startTime: this.form.startTime,
+                endTime: this.form.endTime,
+                sort: this.form.sort,
+                range: this.form.range, 
+                rangeList: {
+                    channel: {
+                        status: this.rangeList.channel.status,  
+                        values: this.rangeList.channel.values,  
+                    },
+                    store: {
+                        status: this.rangeList.store.status,  
+                        values: this.rangeList.store.values,  
+                    },
+                    amount: {
+                        status: this.rangeList.amount.status,  
+                        values: this.rangeList.amount.values,  
+                    }
+                }
+            }
+            //不跳转，屏蔽跳转链接，广告不生效(或生效，但是立即开始)，屏蔽开始和结束时间
+            if(this.form.isJump == 1) this.form.jumpUrl = ''
+            if(this.form.isUse == 2) this.form.startTime = ''
+            if(this.form.isUse == 2) this.form.endTime = ''
+            if(this.form.useType == 1 && this.form.isUse == 2) this.form.startTime = ''
+            if(this.form.useType == 1 && this.form.isUse == 2) this.form.endTime = ''
+
+            //表单验证
+
+
+            api.ad_addAdInfo(params).then((res)=>{
+                console.log(res)
+            })
+        },
+        getChannel() { //获取渠道列表数据
+            api.ad_getChannel({}).then((res)=> {
+                console.log(res)
+                if (res._ret != '0') {
+                    this.$message.error(res._errStr)
+                    return
+                }
+                this.channelSearchLish = res.list
+            })
+        },
+        getStore() { //获取门店列表数据
+            api.ad_getStore({}).then((res)=> {
+                console.log(res)
+                if (res._ret != '0') {
+                    this.$message.error(res._errStr)
+                    return
+                }
+                this.storeSearchLish = res.list
+            })
+        },
+        getClientList() { //获取客户端列表数据
             api.ad_getClient({}).then((res)=>{
                 if (res._ret != '0') {
                     this.$message.error(res._errStr)
@@ -317,12 +457,7 @@ export default {
         // 文件处理函数
         select1() {
             alert(1)
-        },
-        onSubmit() {
-            api.ad_addAdInfo({}).then((res)=>{
-                console.log(res)
-            })
-        },
+        }, 
         handleRemove(file, fileList) {
             console.log(file, fileList);
         },
@@ -399,7 +534,7 @@ export default {
             this.temporary_channelResultList = [...this.channelResultList]
             this.temporary_storeResultList = [...this.storeResultList]
             if (flag == 'channel') {
-                this.part_detail_tit = '渠道类'
+                this.part_detail_tit = '渠道类' 
                 this.defaulSearchList = this.channelSearchLish
                 this.defaultResultList = this.channelResultList
             }
@@ -450,24 +585,32 @@ export default {
         searchKey(val) {//关键字搜索
             let arr1 = [] 
             if (this.part_detail_tit == '渠道类') {
-                this.channelSearchLish.forEach(function(item){ 
-                    if (item.indexOf(val) != -1) {
+                this.channelSearchLish.forEach(function(item){  
+                    if (item.channelName.indexOf(val) != -1) {
                         arr1.push(item)
                     }
                 })
             } else if (this.part_detail_tit == '门店类') {
                 this.storeSearchLish.forEach(function(item){ 
-                    if (item.indexOf(val) != -1) {
+                    if (item.storeName.indexOf(val) != -1) {
                         arr1.push(item)
                     }
                 })
             }  
             this.defaulSearchList = arr1  
+        },
+        channelResultList(val) {
+            console.log(val)
+        },
+        storeResultList(val) {
+            console.log(val)
         }
     },
     mounted() {  
         this.getClientList() //客户端列表
         this.getAdPosList() //广告位列表
+        this.getChannel() //渠道列表
+        this.getStore() //渠道列表
         this.form.sort = this.sortData.length + 1 
     }
 }

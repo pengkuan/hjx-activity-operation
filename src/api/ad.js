@@ -13,5 +13,7 @@ export default {
     // 广告列表
     ad_getAdList(params) {return jsonp('ad_getAdList', params)}, 							//广告列表
     ad_getAdPosition(params) {return jsonp('ad_getAdPosition', params)}, 					//广告位列表
-    ad_addAdInfo(params) {return jsonp('ad_addAdInfo', params)}, 						    //添加广告
+    ad_addAdInfo(params) {return jsonp('ad_addAdInfo', params)},                            //添加广告
+    ad_getChannel(params) {return jsonp('ad_getChannel', params)},                          //渠道列表
+    ad_getStore(params) {return jsonp('ad_getStore', params)}, 						        //门店列表
 } 
