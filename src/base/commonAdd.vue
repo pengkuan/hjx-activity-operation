@@ -3,19 +3,20 @@
         <div class="title">添加新广告
             <el-button type="primary" size="mini" @click="back">关闭</el-button>
         </div>
-        <el-form ref="form" :model="form" label-width="100px">
-            <el-form-item label="所属客户端" class="w600 border-no">
-                <el-input v-model="form.client" disabled></el-input>
+        <el-form ref="form" :model="form" label-width="100px"> 
+            <el-form-item label="所属客户端" class="w600">
+                <el-select v-model="form.clientId" placeholder="" disabled>
+                    <el-option :label="item.clientName" :value="item.clientId" v-for="(item,index) in form.clientList" :key="index"></el-option> 
+                </el-select> 
             </el-form-item>
             <el-form-item label="广告位置" class="w600">
-                <el-select v-model="form.region" placeholder="请选择活动区域">
-                    <el-option label="区域一" value="shanghai"></el-option>
-                    <el-option label="区域二" value="beijing"></el-option>
+                <el-select v-model="form.region" placeholder="请选择广告位置">  
+                    <el-option :label="item.positionName" :value="item.positionCode" v-for="(item,index) in form.positionList" :key="index"></el-option>  
                 </el-select>
                 <div class="tips">提示：此广告位线上已发布5个广告，最多可发布6个广告</div>
             </el-form-item>
             <el-form-item label="广告标题" class="w600">
-                <el-input v-model="form.title"></el-input>
+                <el-input v-model="form.adTitle" placeholder="请输入广告标题" :maxlength="20"></el-input>
                 <div class="tips">最多20个字符</div>
             </el-form-item>
             <el-form-item label="广告素材类型" class="w600">
@@ -26,7 +27,7 @@
             </el-form-item>
             <el-form-item label="广告素材" class="w600 pos-rel" v-show="form.AdresourceType == 1">
                 <p>
-                    <el-input v-model="form.resource" class="inline-block"></el-input>
+                    <el-input v-model="form.adImg" class="inline-block"></el-input>
                     <el-upload class="upload-demo inline my-close" action="https://jsonplaceholder.typicode.com/posts/" :on-preview="handlePreview" :on-remove="handleRemove" multiple :limit="3" :on-exceed="handleExceed" :file-list="form.fileList">
                         <el-button size="small" type="primary" class="my-close">选择图片</el-button>
                     </el-upload>
@@ -37,35 +38,35 @@
                 <div class="tips">支持长仅1200*高仅500的图片 png、jpeg格式，4M以内</div>
             </el-form-item>
             <el-form-item label="广告素材" class="w600" v-show="form.AdresourceType == 0">
-                <el-input type="textarea" :rows="4" v-model="form.adTextDesc" :maxlength="100" placeholder="请输入广告文字，前端将展示此文字"></el-input>
+                <el-input type="textarea" :rows="4" v-model="form.adText" :maxlength="100" placeholder="请输入广告文字，前端将展示此文字"></el-input>
                 <div class="tips pos-rel">最多可输入100字符</div>
             </el-form-item>
             <el-form-item label="广告描述" class="w600">
-                <el-input type="textarea" :maxlength="200" :autosize="{ minRows: 4, maxRows: 8}" v-model="form.desc"></el-input>
+                <el-input type="textarea" :maxlength="200" :autosize="{ minRows: 4, maxRows: 8}" v-model="form.adDesc"></el-input>
                 <div class="tips pos-rel">支持中文、数字、字母<span class="control-font-count">{{fontCount}}/200</span></div>
             </el-form-item>
             <el-form-item label="跳转链接" class="w600">
-                <el-radio-group v-model="form.needSrc">
-                    <el-radio :label="0">无跳转</el-radio>
-                    <el-radio :label="1">超链接</el-radio>
+                <el-radio-group v-model="form.isJump">
+                    <el-radio :label="1">无跳转</el-radio>
+                    <el-radio :label="2">超链接</el-radio>
                 </el-radio-group>
-                <el-input v-model="form.srcAddr" v-show="form.needSrc == 1" placeholder="请输入超链接地址"></el-input>
+                <el-input v-model="form.jumpUrl" v-show="form.isJump == 2" placeholder="请输入超链接地址"></el-input>
             </el-form-item>
             <el-form-item label="可见范围" class="w600">
                 <el-radio-group v-model="form.range">
-                    <el-radio :label="0">全部用户</el-radio>
-                    <el-radio :label="1">部分用户</el-radio>
+                    <el-radio :label="1">全部用户</el-radio>
+                    <el-radio :label="2">部分用户</el-radio>
                 </el-radio-group>
-                <div class="usrs-set" v-show="form.range == 1">
+                <div class="usrs-set" v-show="form.range == 2">
                     <el-row class="mb8" v-show="partChannelShow">
                         <el-col :span="4" class="text-right">
                             <p>渠道</p>
                         </el-col>
                         <el-col :span="20">
                             <p class="pos-rel">
-                                <el-select v-model="partChannel" placeholder="包含" class="selct-channel">
-                                    <el-option label="包含" value="0"></el-option> 
-                                    <el-option label="不包含" value="1"></el-option> 
+                                <el-select v-model="form.rangeList.channel.status" placeholder="" class="selct-channel">
+                                    <el-option label="包含"   value="1"></el-option> 
+                                    <el-option label="不包含" value="2"></el-option> 
                                 </el-select>
                                 <p class="channel-list-test" v-show="this.channelResultList.length"><span>{{this.hasSelectChannel}}</span>等{{this.channelResultList.length}}个渠道</p>
                                 <span class="add-channel" @click="part_add_detail('channel')">+添加渠道</span>
@@ -79,9 +80,9 @@
                         </el-col>
                         <el-col :span="20">
                             <p class="pos-rel">
-                                <el-select v-model="partStore" placeholder="包含" class="selct-channel">
-                                    <el-option label="包含" value="0"></el-option> 
-                                    <el-option label="不包含" value="1"></el-option> 
+                                <el-select v-model="form.rangeList.store.status" placeholder="" class="selct-channel">
+                                    <el-option label="包含" value="1"></el-option> 
+                                    <el-option label="不包含" value="2"></el-option> 
                                 </el-select>
                                 <span class="channel-list-test add-stroe" @click="part_add_detail('store')">+添加门店</span>
                                 <i class="iconfont icon-roundclosefill channell-close" @click="del_condition('store')"></i>
@@ -94,10 +95,11 @@
                         </el-col>
                         <el-col :span="20">
                             <p class="pos-rel">
-                                <el-select v-model="moneyLimit" placeholder="大于等于" class="selct-channel">
-                                    <el-option label="大于等于" value="0"></el-option> 
+                                <el-select v-model="form.rangeList.amount.status" placeholder="" class="selct-channel">
+                                    <el-option label="大于等于" value="3"></el-option> 
+                                    <!-- <el-option label="小于等于" value="4"></el-option>  -->
                                 </el-select>
-                                <el-input placeholder="请输入内容" class="pay-money" v-model.number="payMoneyCount" type="number">
+                                <el-input placeholder="请输入内容" class="pay-money" v-model.number="form.rangeList.amount.values" type="number">
                                     <template slot="append">元</template>
                                 </el-input>
                                 <i class="iconfont icon-roundclosefill channell-close" @click="del_condition('money')"></i>
@@ -122,23 +124,31 @@
                 </div>
             </el-form-item>
             <el-form-item label="广告状态">
-                <el-radio-group v-model="form.adStatus">
-                    <el-radio :label="0">生效</el-radio>
-                    <el-radio :label="1">不生效</el-radio>
+                <el-radio-group v-model="form.isUse">
+                    <el-radio :label="1">生效</el-radio>
+                    <el-radio :label="0">不生效</el-radio>
                 </el-radio-group>
             </el-form-item>
-            <el-form-item label="投放时间" v-show="form.adStatus==0">
-                <el-radio-group v-model="form.adActiveTime">
-                    <el-radio :label="0">投放后立即开始</el-radio>
-                    <el-radio :label="1">自定义时间</el-radio>
+            <el-form-item label="投放时间" v-show="form.isUse==1">
+                <el-radio-group v-model="form.useType">
+                    <el-radio :label="1">投放后立即开始</el-radio>
+                    <el-radio :label="2">自定义时间</el-radio>
                 </el-radio-group>
-                <div v-show="form.adActiveTime == 1">
-                    <el-date-picker class="w500" v-model="form.timeRange" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期">
+                <div v-show="form.useType == 2">
+                    <el-date-picker
+                        v-model="form.startTime"
+                        type="datetime"
+                        placeholder="开始日期">
+                    </el-date-picker> 
+                    <el-date-picker
+                        v-model="form.endTime"
+                        type="datetime"
+                        placeholder="结束日期">
                     </el-date-picker> 
                 </div>
             </el-form-item>
-            <el-form-item label="广告排序" class="w300 pos-rel" v-show="form.adStatus==0">
-                <el-input v-model="form.adOrder" disabled></el-input>
+            <el-form-item label="广告排序" class="w300 pos-rel">
+                <el-input v-model="form.sort" disabled></el-input>
                 <el-button type="primary" size="mini" class="my-select-sort" @click="ad_sort">选择</el-button>
             </el-form-item>
             <el-form-item label="操作人" class="w600">
@@ -148,7 +158,7 @@
                 <el-input v-model="form.name" disabled></el-input>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" @click="onSubmit">确认修改</el-button>
+                <el-button type="primary" @click="onSubmit">确认添加</el-button>
                 <el-button @click="back">取消</el-button>
             </el-form-item>
         </el-form>
@@ -207,33 +217,50 @@
     </div>
 </template>
 <script>
+import api from '@/api/ad'
+import util from '@/util'
 export default {
     data() {
         return {
             form: {
-                client: '广东移动',
-                title: '我的babber',
-                resource: 'www.baidu.com/img',
+                clientId: this.$route.query.clientId, //客户端
+                clientList: [], //客户端列表，用于循环
+                positionList: [], //广告位列表
+                adTitle: '', //广告标题
+                adImg: 'www.baidu.com/img', //图片链接描述，如果是图片
                 AdresourceType: 0,
-                desc: '',
+                adDesc: '', //广告描述
                 fileList: [],
-                needSrc: 0, //0是不需要调整 1是需要跳转
-                srcAddr: 'm.huishoubao.com',
-                adTextDesc: '',
-                range: 0, //0是全部 1是部分
+                isJump: 2, //1是不需要调整 2是需要跳转
+                jumpUrl: 'm.huishoubao.com11', //需要跳转的跳转链接
+                adText: '', //文字描述，如果是文字
+                range: 1, //可见范围 1是全部 2是部分
+                rangeList: { //条件范围，range为2时必传
+                    channel: {
+                        status: '1', //1是包含，2是不包含
+                        values: '', //渠道id,多个用逗号隔开
+                    },
+                    store: {
+                        status: '1', //1是包含，2是不包含
+                        values: '',//门店id,多个用逗号隔开
+                    },
+                    amount: {
+                        status: '3', //3是大于等于 4是小于等于
+                        values: '888' //金额
+                    }
+                },
                 rangePart: {
                     channel: '华为公司',
                     store: '华为门店',
                     money: '8888'
                 },
-                adStatus: 0, //0是生效 1是不生效
-                adActiveTime: 0, //0是立即生效 1是自定义时间
-                // timeRange: [new Date(2000, 10, 10, 10, 10), new Date(2000, 10, 11, 10, 10)],
+                isUse: 1, //1是生效 0是不生效
+                useType: 2, //1是立即生效 2是自定义时间 
                 timeRange: '',
                 operator: '张三',
-                startTime: '',
-                endTime: '',
-                adOrder: '1'
+                startTime: '', //开始时间
+                endTime: '', //结束时间
+                sort: 1, //广告排序
             },
             // 部分可见数据
             addConditionValue: '', //选择什么条件添加
@@ -267,12 +294,34 @@ export default {
         }
     },
     methods: {
+        getClientList() {
+            api.ad_getClient({}).then((res)=>{
+                if (res._ret != '0') {
+                    this.$message.error(res._errStr)
+                    return
+                }
+                this.form.clientList = res.clientList
+            })
+        },
+        getAdPosList() { //获取广告位列表
+            let params = {clientId: this.form.clientId}
+            api.ad_getAdPosition(params).then((res)=>{
+                if (res._ret != '0') {
+                    this.$message.error(res._errStr)
+                    return
+                }  
+                this.form.positionList = res.positionList
+                console.log(this.form.positionList)
+            })
+        },
         // 文件处理函数
         select1() {
             alert(1)
         },
         onSubmit() {
-            alert(1)
+            api.ad_addAdInfo({}).then((res)=>{
+                console.log(res)
+            })
         },
         handleRemove(file, fileList) {
             console.log(file, fileList);
@@ -326,8 +375,8 @@ export default {
             } else {
                 this.sortData.forEach((item,index)=>{
                     if(item.name == '本条广告') {
-                        console.log(index,121212)
-                        this.form.adOrder = index + 1
+                        // console.log(index,121212)
+                        this.form.sort = index + 1
                         this.dialog2 = false  
                     }
                 }) 
@@ -390,8 +439,8 @@ export default {
         }
     },
     computed: {
-        fontCount() {
-            return this.form.desc.length
+        fontCount() { //文字倒计数
+            return this.form.adDesc.length
         },
         hasSelectChannel() { //已选渠道列表的文字描述
             return this.channelResultList.join()
@@ -417,7 +466,9 @@ export default {
         }
     },
     mounted() {  
-        this.form.adOrder = this.sortData.length + 1 
+        this.getClientList() //客户端列表
+        this.getAdPosList() //广告位列表
+        this.form.sort = this.sortData.length + 1 
     }
 }
 

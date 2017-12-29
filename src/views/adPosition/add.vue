@@ -75,6 +75,7 @@
 </template>
 <script>
 import api from '@/api/ad'
+import util from '@/util'
 export default {
     data() {
         return {
@@ -100,58 +101,58 @@ export default {
     methods: {  
         validata() {
             if (!this.form.clientName) {
-                this.$message('所属客户端不能为空')
+                this.$message.error('所属客户端不能为空')
                 return false
             }
             if (!this.form.positionCode) {
-                this.$message('位置编码不能为空') 
+                this.$message.error('位置编码不能为空') 
                 return false 
             }
             if (/[\u4e00-\u9fa5]+/.test(this.form.positionCode)) {
-                this.$message('位置编码不能包含中文') 
+                this.$message.error('位置编码不能包含中文') 
                 return false 
             }  
             if (!this.form.positionName) {
-                this.$message('广告位置不能为空') 
+                this.$message.error('广告位置不能为空') 
                 return false 
             }
             if (!/^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(this.form.positionName)) {
-                this.$message('广告位置只能输入中文，数字和字母') 
+                this.$message.error('广告位置只能输入中文，数字和字母') 
                 return false
             } 
             if (!this.form.positionDesc) {
-                this.$message('位置描述不能为空') 
+                this.$message.error('位置描述不能为空') 
                 return false 
             } 
             if (!/^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(this.form.positionDesc)) {
-                this.$message('位置描述只能输入中文，数字和字母') 
+                this.$message.error('位置描述只能输入中文，数字和字母') 
                 return false
             }
             if (this.form.adType == '2') {   
                 if (!this.form.imgWidth || !this.form.imgHigh) {
-                    this.$message('图片像素不能为空') 
+                    this.$message.error('图片像素不能为空') 
                     return false 
                 }
             }
             if (!this.form.adNum) {
-                this.$message('素材数量不能为空') 
+                this.$message.error('素材数量不能为空') 
                 return false 
             }
             if (this.form.isUse == '1' && this.form.useType == '2') {
                 if (!this.form.startTime) {
-                    this.$message('开始时间不能为空')  //结束时间可不校验
+                    this.$message.error('开始时间不能为空')  //结束时间可不校验
                     return false 
                 }
             } 
             if (this.form.isUse == '1' && this.form.useType == '2') {
                 if (!this.form.endTime) {
-                    this.$message('结束时间不能为空')  
+                    this.$message.error('结束时间不能为空')  
                     return false 
                 }
             }  
             if (this.form.isUse == '1' && this.form.useType == '2') { 
                  if (this.form.endTime - this.form.startTime < 0) {
-                    this.$message('结束时间不能小于开始时间')  //结束时间存在就必须比较大小
+                    this.$message.error('结束时间不能小于开始时间')  //结束时间存在就必须比较大小
                     return false
                 }
             } 
@@ -180,23 +181,41 @@ export default {
             params.endTime = this.form.endTime != null ? Math.floor(this.form.endTime.getTime()/1000): '' 
             api.ad_addAdPositionDeadline(params).then((res)=> {
                 if (res._ret != '0') {
-                    this.$message(res._errStr)
+                    this.$message.error(res._errStr)
                     return
                 }
                 this.$message({
-                    type: 'success',
+                    type: 'success', 
                     message: '添加成功!'
                 })
                 this.$router.push({path: '/adPosition/adPosSet'})
             })
         },
         onSubmit_next() { //如果是永久开启，需要添加一个默认广告
-
+            if (!this.validata()) return  
+            let params = {
+                clientId: this.form.clientName,
+                positionCode: this.form.positionCode,
+                positionName: this.form.positionName,
+                positionDesc: this.form.positionDesc,
+                adNum: this.form.adNum,
+                adType: this.form.adType,
+                imgWidth: this.form.imgWidth,
+                imgHigh: this.form.imgHigh,
+                isUse: this.form.isUse,
+                useType: this.form.useType,
+                startTime: '',
+                endTime: ''
+            }
+            params.startTime = this.form.startTime != null ? Math.floor(this.form.startTime.getTime()/1000): '' 
+            params.endTime = this.form.endTime != null ? Math.floor(this.form.endTime.getTime()/1000): ''  
+            util.Set_lsdata('adParams',params) //本地缓存数据
+            this.$router.push({path: '/commonAdd', query:{from:'adPosition'}})
         },
         clientList() { //获取客户端列表数据
             api.ad_getClient({}).then((res)=>{
                 if (res._ret != '0') {
-                    this.$message(res._errStr)
+                    this.$message.error(res._errStr)
                     return
                 }
                 this.form.clientList = res.clientList

@@ -122,6 +122,7 @@ export default {
                 this.form.height = res.positionInfo.imgHigh 
                 this.form.count = res.positionInfo.adNum  
                 this.form.adStatus = res.positionInfo.isUse   
+                this.form.adActiveTime = res.positionInfo.useType   
                 this.form.startTime = res.positionInfo.startTime == 0 ? '' : res.positionInfo.startTime*1000    
                 this.form.endTime = res.positionInfo.endTime == 0 ? '' : res.positionInfo.endTime*1000  
                 this.form.runingCount = res.positionInfo.effectiveAdNum 

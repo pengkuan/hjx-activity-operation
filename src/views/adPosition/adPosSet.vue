@@ -4,16 +4,16 @@
         <div class="search-box">
             <el-form :inline="true" :model="formData" class="demo-form-inline">
                 <el-form-item label="所属客户端">
-                    <el-select v-model="formData.client" placeholder="请输入广告位置搜索" size="small">
+                    <el-select v-model="formData.clientId" placeholder="请输入广告位置搜索" size="small">
                         <el-option label="全部" value=""></el-option>
                         <el-option :label="item.clientName" :value="item.clientId" v-for="(item,index) in formData.clientList" :key="index"></el-option> 
                     </el-select>
                 </el-form-item>
                 <el-form-item label="广告位置">
-                    <el-input v-model="formData.position" placeholder="请输入广告标题搜索" size="small"></el-input>
+                    <el-input v-model="formData.positionName" placeholder="请输入广告位置" size="small"></el-input>
                 </el-form-item>
                 <el-form-item label="广告位状态">
-                    <el-select v-model="formData.status" placeholder="请选择投放时间" size="small">
+                    <el-select v-model="formData.positionStatus" placeholder="" size="small">
                         <el-option label="全部" value="0"></el-option>
                         <el-option label="启用" value="1"></el-option>
                         <el-option label="不启用" value="2"></el-option> 
@@ -66,10 +66,10 @@ export default {
     data() {
         return {
             formData: { //搜索条件
-                client: '', //广告位置
+                clientId: '', //客户端
                 clientList: [], //广告位置列表数据
-                position: '', //广告标题
-                status: '0' //投放时间
+                positionName: '', //广告位置
+                positionStatus: '0' //投放状态
             },
             pagination: { //页码数据
                 currentPage: 1, //  当前页,最小为1,
@@ -97,7 +97,7 @@ export default {
                 api.ad_deleteAdPosition(params).then((res)=>{ 
                     console.log(res)
                     if (res._ret != '0') {
-                        this.$message(res._errStr)
+                        this.$message.error(res._errStr)
                         return
                     }   
                     this.$message({
@@ -105,8 +105,7 @@ export default {
                         message: '删除成功!'
                     }) 
                     this.showList()
-                })  
-                
+                })   
             }).catch(() => {})
         },
         addNewAd() {//添加新广告位
@@ -121,15 +120,15 @@ export default {
         },
         showList() { //广告位列表
             let params = {
-                clientId: this.formData.client,
-                positionName: this.formData.position,
-                positionStatus: this.formData.status, 
+                clientId: this.formData.clientId,
+                positionName: this.formData.positionName,
+                positionStatus: this.formData.positionStatus, 
                 pageIndex: this.pagination.pageIndex, 
                 pageSize: this.pagination.pageSize + ''
             }
             api.ad_adPositionList(params).then((res)=>{ 
                 if (res._ret != '0') {
-                    this.$message(res._errStr)
+                    this.$message.error(res._errStr)
                     return
                 } 
                 this.tableData = res.positionlist
@@ -139,7 +138,7 @@ export default {
         clientList() { //获取客户端列表数据
             api.ad_getClient({}).then((res)=>{
                 if (res._ret != '0') {
-                    this.$message(res._errStr)
+                    this.$message.error(res._errStr)
                     return
                 }
                 this.formData.clientList = res.clientList
@@ -147,6 +146,7 @@ export default {
             })
         },
         search() { //搜索查询
+            if (!this.formData.clientId && !this.formData.positionName && this.formData.positionStatus == '0') return
             this.pagination.currentPage = 1
             this.pagination.pageIndex = 0
             this.showList()

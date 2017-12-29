@@ -9,4 +9,9 @@ export default {
     ad_deleteAdPosition(params) {return jsonp('ad_deleteAdPosition', params)}, 	    		//删除广告位
     ad_addAdPositionDeadline(params) {return jsonp('ad_addAdPositionDeadline', params)}, 	//添加新广告位 - 阶段时间
     ad_addAdPositionPermanent(params) {return jsonp('ad_addAdPositionPermanent', params)}, 	//添加新广告位 - 永久开启
+
+    // 广告列表
+    ad_getAdList(params) {return jsonp('ad_getAdList', params)}, 							//广告列表
+    ad_getAdPosition(params) {return jsonp('ad_getAdPosition', params)}, 					//广告位列表
+    ad_addAdInfo(params) {return jsonp('ad_addAdInfo', params)}, 						    //添加广告
 } 

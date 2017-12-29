@@ -141,39 +141,39 @@ export default {
         },
         onSubmit() { // 修改广告位
             if (!this.form.positionName) {
-                this.$message('广告位置不能为空')
+                this.$message.error('广告位置不能为空')
                 return
             }
             if (!this.form.positionDesc) {
-                this.$message('位置描述不能为空') 
+                this.$message.error('位置描述不能为空') 
                 return 
             }
             let reg = /^[a-zA-Z0-9\u4e00-\u9fa5]+$/ //验证中文数字和字母
             if (!reg.test(this.form.positionDesc)) {
-                this.$message('位置描述只能输入中文，数字和字母') 
+                this.$message.error('位置描述只能输入中文，数字和字母') 
                 return
             }
             if (this.form.adType == 2) {
                 if (!this.form.imgWidth || !this.form.imgHigh) {
-                    this.$message('图片尺寸不能为空或者0')  
+                    this.$message.error('图片尺寸不能为空或者0')  
                     return  
                 }
             }
             if (this.form.isUse == '1' && this.form.useType == '2') {
                 if (!this.form.startTime) {
-                    this.$message('开始时间不能为空')  
+                    this.$message.error('开始时间不能为空')  
                     return  
                 }
             } 
             if (this.form.isUse == '1' && this.form.useType == '2') {
                 if (!this.form.endTime) {
-                    this.$message('结束时间不能为空')  
+                    this.$message.error('结束时间不能为空')  
                     return  
                 }
             }  
             if (this.form.isUse == '1' && this.form.useType == '2') { 
                  if (this.form.endTime - this.form.startTime < 0) {
-                    this.$message('结束时间不能小于开始时间')  //结束时间存在就必须比较大小
+                    this.$message.error('结束时间不能小于开始时间')  //结束时间存在就必须比较大小
                     return  
                 }
             }
@@ -196,7 +196,7 @@ export default {
             api.ad_editAdPosition(params).then((res)=>{
                 console.log(res)
                 if (res._ret != '0') {
-                    this.$message(res._errStr)
+                    this.$message.error(res._errStr)
                     return
                 } 
                 this.$message({
