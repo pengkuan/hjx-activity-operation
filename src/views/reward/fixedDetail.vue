@@ -10,8 +10,10 @@
         </div>
         <el-alert title="基本信息" type="success" :closable="false"></el-alert>
         <hjx-left-title label="名称"></hjx-left-title>
-        <span class="hjx-left-label">活动名称：</span>
-        <span class='detailData'>{{activityName}}</span>
+        <p>
+            <span class="hjx-left-label">活动名称：</span>
+            <span class='detailData'>{{activityName}}</span>
+        </p>
         <p>
             <span class="hjx-left-label">活动描述：</span>
             <span class='detailData'>{{activityDesc}}</span>
@@ -82,11 +84,13 @@
         <el-alert title="发放规则" type="success" :closable="false"></el-alert>
         <hjx-left-title label="订单"></hjx-left-title>
         <div class="mrg-b10">
-            <span class="hjx-left-label">订单回收方式：</span>
-            <span class="detailData" v-for="item in recycleTypeList" v-if="item.ifChoosed">
-                <el-checkbox disabled v-model="item.ifChoosed" :key="item.id"></el-checkbox>
-                {{item.name}}&nbsp;
-            </span>
+            <p>
+                <span class="hjx-left-label">订单回收方式：</span>
+                <span class="detailData" v-for="item in recycleTypeList" v-if="item.ifChoosed">
+                    <el-checkbox disabled v-model="item.ifChoosed" :key="item.id"></el-checkbox>
+                    {{item.name}}&nbsp;
+                </span>
+            </p>
             <p class="reward-remind mrg-l40 hjx-info">(勾选的回收方式，可参与到活动中)</p>
         </div>
         <hjx-left-title label="机型"></hjx-left-title>
@@ -250,10 +254,10 @@ export default {
         showChooseDetail(list,nameL1,nameL2){
             let html = ''
             this[list].L1.forEach(item =>{
-                html+=`<p class="hjx-blue"><i class="iconfont icon-form_fill_light"></i> ${item[nameL1]}</p>`
+                html+=`<p class="hjx-blue"><i class="iconfont icon-wenjianjia"></i> ${item[nameL1]}</p>`
             })
             this[list].L2.forEach(item =>{
-                html+=`<p class="hjx-blue"> ${item[nameL2]}</p>`
+                html+=`<p class="hjx-blue"><i class="iconfont icon-dian"></i> ${item[nameL2]}</p>`
             })
             this.$alert(html, '详情', {
                 showClose:false,
@@ -288,6 +292,7 @@ export default {
 
 </style>
 <style type="text/css" scoped="scoped">
+p{margin-bottom: 10px}
 .reward-remind {
     font-size: 12px;
 }

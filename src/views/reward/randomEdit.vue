@@ -2,7 +2,7 @@
     <div>
         <el-breadcrumb separator-class="el-icon-arrow-right">
             <el-breadcrumb-item :to="{ path: '/reward/list' }">随机红包</el-breadcrumb-item>
-            <el-breadcrumb-item>新增</el-breadcrumb-item>
+            <el-breadcrumb-item>编辑</el-breadcrumb-item>
         </el-breadcrumb>
         <br>
         <el-alert title="基本信息" type="success" :closable="false"></el-alert>
@@ -25,7 +25,9 @@
         <el-alert title="生成规则" type="success" :closable="false"></el-alert>
         <hjx-left-title label="时间"></hjx-left-title>
         <div class="mrg-b10">
-            <span class="hjx-left-label">生效时间：</span><span class="reward-remind hjx-info">（该时间段内，将按规则进行活动）</span>
+            <p>
+                <span class="hjx-left-label">生效时间：</span><span class="reward-remind hjx-info">（该时间段内，将按规则进行活动）</span>
+            </p>
             <p class="mrg-l120" v-for="item in timeLimitTypeList" >
                 <el-radio v-model="timeLimitType" :label="item.id" :key="item.id">{{item.name}}</el-radio>
                 <span class="mrg-l40" v-if="item.id == '2' && timeLimitType == '2'">
@@ -72,8 +74,10 @@
         <el-alert title="发放规则" type="success" :closable="false"></el-alert>
         <hjx-left-title label="订单"></hjx-left-title>
         <div class="mrg-b10">
-            <span class="hjx-left-label">订单回收方式：</span>
-            <el-checkbox v-for="item in recycleTypeList" v-model="item.ifChoosed" :key="item.id">{{item.name}}</el-checkbox>
+            <p>
+                <span class="hjx-left-label">订单回收方式：</span>
+                <el-checkbox v-for="item in recycleTypeList" v-model="item.ifChoosed" :key="item.id">{{item.name}}</el-checkbox>
+            </p>
             <p class="reward-remind mrg-l40 hjx-info">（勾选的回收方式，可参与到活动中）</p>
         </div>
         <hjx-left-title label="机型"></hjx-left-title>
@@ -380,7 +384,6 @@ export default {
                 this.$message({ message: '请至少设置一个参与对象', type: 'error' })
                 return
             }
-            return
             /********** 提交 ***********/
             api.add_activity_info(submitData).then(res=>{
                 if(res._ret != 0){
@@ -495,6 +498,7 @@ export default {
 	.spc-select{position: relative;margin-bottom: -3px}
 </style>
 <style type="text/css" scoped="scoped">
+    p{margin-bottom: 10px}
     .icon-duigou{color:#67c23a;margin-left: 5px;}
 	.reward-remind{font-size: 12px;}
 	.underline-text{

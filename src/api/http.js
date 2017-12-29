@@ -1,8 +1,10 @@
 import axios from 'axios'
 // axios 配置
-axios.defaults.timeout = 5000;
-axios.defaults.headers.post['Content-Type'] = 'application/json';
-axios.defaults.baseURL = 'https://business.huishoubao.com/api/';
+axios.defaults.timeout = 5000
+axios.defaults.headers.post['Content-Type'] = 'application/json'
+// axios.defaults.withCredentials = true
+// axios.defaults.baseURL = 'http://localhost:8884/api/test1'
+axios.defaults.baseURL = 'https://business.huishoubao.com/api/'
 
 import { Message } from 'element-ui'
 //POST传参序列化
@@ -20,6 +22,10 @@ axios.interceptors.response.use((res) => {
     let _this = this
     if (res.status != 200) {
         return Promise.reject(res)
+    }
+    if(res.data._data._errCode == '900006'){
+        Message({ message: res.data._data._errStr, type: 'warning' })
+        window.location.href = `${this._Config.power_center_login_page}/login?system_id=${this._Config.system_home_id}&jump_url=${host}`
     }
     return res.data._data
 }, (error) => {

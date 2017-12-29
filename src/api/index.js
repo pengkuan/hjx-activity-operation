@@ -32,4 +32,9 @@ export default {
     get_valid_time(params) {return http.fetch('operation_center','get_valid_time', params)},//获取红包有效时间
     update_valid_time(params) {return http.fetch('operation_center','update_valid_time', params)},//设置红包有效时间
 
+
+
+
+    test(params) {return http.fetch('','', params)},//test
+
 }

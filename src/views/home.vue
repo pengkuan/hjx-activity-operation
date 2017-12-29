@@ -6,6 +6,7 @@
                 <div class="topbar-logo topbar-btn">
                     <a href="/"><img src="../assets/images/logo.png" style="margin: 10px 0 0 10px;height:30px;border:0"></a>
                 </div>
+                <span style="color:red;">您正在访问测试环境！</span>
             </el-col>
             <!--中间-->
             <el-col :span="24" class="main">
@@ -124,9 +125,9 @@ export default {
         // 本地环境，虚拟菜单
         get_user_authority_test() { 
             // 防止一些接口需要登录信息,而跳转到登录页面
-            this._Util.setCookie('userid', '694')
-            this._Util.setCookie('username', '测试')
-            this._Util.setCookie('useruuid', 'bfa1ac797d85704806ba200c19f2af01')
+            // this._Util.setCookie('user_id', '694')
+            // this._Util.setCookie('user_name', '测试')
+            // this._Util.setCookie('login_token', 'bfa1ac797d85704806ba200c19f2af01')
             this.menuList = [
                 { 
                     name: '活动管理',
@@ -219,6 +220,10 @@ export default {
                     // 接收权限数据,同步到vuex
                     let powerList = res.access_flags
                     this.setPowerList(powerList)  
+                    /************* 设置cookie ***************/
+                    this._Util.setCookie('user_id', res.user_info.user_id)
+                    this._Util.setCookie('user_name', res.user_info.username)
+                    this._Util.setCookie('login_token', this._Util.getQueryStringByName('login_token'))
                 })
             }
         }
@@ -334,7 +339,7 @@ export default {
             line-height: 26px;
             cursor: pointer;
             a {
-                display: block;
+                display: inline-block;
             }
         }
         .topbar-title {

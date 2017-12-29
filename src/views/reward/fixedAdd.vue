@@ -25,7 +25,9 @@
         <el-alert title="生成规则" type="success" :closable="false"></el-alert>
         <hjx-left-title label="时间"></hjx-left-title>
         <div class="mrg-b10">
-            <span class="hjx-left-label">生效时间：</span><span class="reward-remind hjx-info">（该时间段内，将按规则进行活动）</span>
+            <p>
+                <span class="hjx-left-label">生效时间：</span><span class="reward-remind hjx-info">（该时间段内，将按规则进行活动）</span>
+            </p>
             <p class="mrg-l120" v-for="item in timeLimitTypeList" >
                 <el-radio v-model="timeLimitType" :label="item.id" :key="item.id">{{item.name}}</el-radio>
                 <span class="mrg-l40" v-if="item.id == '2' && timeLimitType == '2'">
@@ -42,8 +44,10 @@
         </div>
         <hjx-left-title label="促收"></hjx-left-title>
         <div class="mrg-b10">
-            <span class="hjx-left-label">工号开通时间：</span>
-            <span class="reward-remind hjx-info">（该时间段内，将按规则进行活动）</span>
+            <p>
+                <span class="hjx-left-label">工号开通时间：</span>
+                <span class="reward-remind hjx-info">（该时间段内，将按规则进行活动）</span>
+            </p>
             <p class="mrg-l120">
                 <el-radio v-for="item in isCheckUserCreateTimeList" v-model="isCheckUserCreateTime" :label="item.id" :key="item.id">{{item.name}}</el-radio>
             </p>
@@ -71,8 +75,10 @@
         <el-alert title="发放规则" type="success" :closable="false"></el-alert>
         <hjx-left-title label="订单"></hjx-left-title>
         <div class="mrg-b10">
-            <span class="hjx-left-label">订单回收方式：</span>
-            <el-checkbox v-for="item in recycleTypeList" v-model="item.ifChoosed" :key="item.id">{{item.name}}</el-checkbox>
+            <p>
+                <span class="hjx-left-label">订单回收方式：</span>
+                <el-checkbox v-for="item in recycleTypeList" v-model="item.ifChoosed" :key="item.id">{{item.name}}</el-checkbox>
+            </p>
             <p class="reward-remind mrg-l40 hjx-info">（勾选的回收方式，可参与到活动中）</p>
         </div>
         <hjx-left-title label="机型"></hjx-left-title>
@@ -111,7 +117,6 @@
     </div>
 </template>
 <script>
-console.log('hjxPart')
 import api from '@/api/index'
 import { mapGetters } from 'vuex'
 import hjxPart from '@/base/hjx_part'
@@ -382,6 +387,7 @@ export default {
 
 </style>
 <style type="text/css" scoped="scoped">
+p{margin-bottom: 10px}
 .icon-duigou{color:#67c23a;margin-left: 5px;}
 .underline-text {
     font-size: 14px;
