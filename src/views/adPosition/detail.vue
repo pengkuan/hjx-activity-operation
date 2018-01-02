@@ -1,11 +1,11 @@
 <template>
     <div class="adDetail-wrap">
-        <div class="title">修改广告位  
+        <div class="title">广告详情页  
             <el-button type="primary" size="mini" @click="back">关闭</el-button>
         </div>
         <el-form ref="form" :model="form" label-width="130px">
-            <el-form-item label="广告类型" class="w600 border-no">
-                <el-input v-model="form.adType" disabled></el-input> 
+            <el-form-item label="广告位类型" class="w600 border-no">
+                <el-input disabled v-model="form.adType"></el-input>  
             </el-form-item>
             <el-form-item label="所属客户端" class="w600">
                 <el-input v-model="form.client" disabled></el-input> 
@@ -21,11 +21,11 @@
             </el-form-item>
             <el-form-item label="广告素材类型" class="w600">
                 <el-radio-group v-model="form.AdresourceType">
-                    <el-radio :label="0" v-show="form.AdresourceType=='0'">文字</el-radio>
-                    <el-radio :label="1" v-show="form.AdresourceType=='1'">图片</el-radio>
+                    <el-radio :label="1" v-show="form.AdresourceType=='1'">文字</el-radio>
+                    <el-radio :label="2" v-show="form.AdresourceType=='2'">图片</el-radio>
                 </el-radio-group>
             </el-form-item>
-            <el-form-item label="" class="w600 pos-rel" v-show="form.AdresourceType == 1">
+            <el-form-item label="" class="w600 pos-rel" v-show="form.AdresourceType == 2">
                 <p>
                     尺寸：&nbsp;&nbsp;&nbsp;&nbsp;长 <el-input v-model="form.width" class="w80" disabled></el-input> 像素&nbsp;&nbsp;*&nbsp;&nbsp;高 <el-input v-model="form.height" class="w80" disabled></el-input> 像素
                 </p>  
@@ -33,23 +33,29 @@
             <el-form-item label="最多展示素材数量" class="w600">
                 <el-input v-model="form.count" disabled></el-input> 
             </el-form-item>
-            <el-form-item label="广告状态">
+            <el-form-item label="广告状态" v-show="form.adType=='2'">
                 <el-radio-group v-model="form.adStatus">
-                    <el-radio :label="0" v-show="form.adStatus=='0'">启用</el-radio>
-                    <el-radio :label="1" v-show="form.adStatus=='1'">不启用</el-radio>
+                    <el-radio :label="1" v-show="form.adStatus=='1'">启用</el-radio>
+                    <el-radio :label="0" v-show="form.adStatus=='0'">不启用</el-radio>
                 </el-radio-group>
             </el-form-item>
-            <el-form-item label="投放时间" v-show="form.adStatus==0">
+            <el-form-item label="投放时间" v-show="form.adStatus==1">
                 <el-radio-group v-model="form.adActiveTime"> 
-                    <el-radio :label="1">自定义时间</el-radio>
+                    <el-radio :label="1" v-show="form.adActiveTime==1">投放后立即开始</el-radio>
+                    <el-radio :label="2" v-show="form.adActiveTime==2">自定义时间</el-radio>
                 </el-radio-group>
-                <div v-show="form.adActiveTime == 1">
-                    <el-date-picker class="w470" 
-                    v-model="timeRange" disabled
-                    type="datetimerange"   
-                    range-separator="至" 
-                    start-placeholder="开始日期"  
-                    end-placeholder="结束日期"> 
+                <div v-show="form.adActiveTime == 2">
+                    <el-date-picker
+                        v-model="form.startTime"
+                        type="datetime"
+                        disabled
+                        placeholder="开始日期">
+                    </el-date-picker> 
+                    <el-date-picker
+                        v-model="form.endTime"
+                        type="datetime"
+                        disabled
+                        placeholder="结束日期">
                     </el-date-picker> 
                 </div>
             </el-form-item>
@@ -70,48 +76,75 @@
     </div>
 </template>
 <script>
+import api from '@/api/ad'
 export default {
     data() {
         return {
             form: {
-                adType: '阶段性开启', //广告类型
-                client: '广东移动', //客户端
-                code: '2000000300004000', //编码
-                position: '我的广告位置', //位置
-                posDesc: '位置描述', //位置描述
-                AdresourceType: 1, //广告位类型，0是文字广告，1是图片广告
-                width: '200', //图片宽度
-                height: '400', //图片高度
-                count: 3, //展示素材数量
-                adStatus: 1, //0是启用 1是不启用
+                adType: '', //广告位类型
+                client: '', //客户端
+                code: '', //编码
+                position: '', //位置
+                posDesc: '', //位置描述
+                AdresourceType: 1, //广告位类型，1是文字广告，2是图片广告
+                width: '', //图片宽度
+                height: '', //图片高度
+                count: '0', //展示素材数量
+                adStatus: 1, //1是启用 0是不启用
                 adActiveTime: 1, //如果启用，则存在自定义时间
-                runingCount: 4, //已启用广告数量
+                startTime: '',
+                endTime: '', 
+                runingCount: '0', //已启用广告数量
                 operator: '张三', //操作人 
-                updataTime: '2017.8.8 23:23:23'
+                updataTime: '2018.8.8 8:8:8'
             }, 
-            timeRange: [new Date(1504454400000), new Date(1513134122000)] //这个属性不能放到form中，否则点击清除会报错
+            
         }
     },
     methods: {  
+        showDetail() {
+            let params = {
+                positionCode: this.$route.query.code
+            }
+            api.ad_getAdPositionInfo(params).then((res)=>{
+                console.log(res)
+                if (res._ret != '0') {
+                    this.$message(res._errStr)
+                    return
+                }
+                this.form.adType = res.positionInfo.positionType == '1' ?'永久开启':'阶段性开启'
+                this.form.client = res.positionInfo.clientName.clientName
+                this.form.code = res.positionInfo.positionCode
+                this.form.position = res.positionInfo.positionName //位置就是名称
+                this.form.posDesc = res.positionInfo.positionDesc  
+                this.form.AdresourceType = res.positionInfo.adType
+                this.form.width = res.positionInfo.imgWidth
+                this.form.height = res.positionInfo.imgHigh 
+                this.form.count = res.positionInfo.adNum  
+                this.form.adStatus = res.positionInfo.isUse   
+                this.form.adActiveTime = res.positionInfo.useType   
+                this.form.startTime = res.positionInfo.startTime == 0 ? '' : res.positionInfo.startTime*1000    
+                this.form.endTime = res.positionInfo.endTime == 0 ? '' : res.positionInfo.endTime*1000  
+                this.form.runingCount = res.positionInfo.effectiveAdNum 
+                this.form.operator = res.positionInfo.modifier 
+                this.form.updataTime = res.positionInfo.modifyTime  
+            })
+        },
         back() { //返回和取消
             this.$router.back()
         },
-        onSubmit() { //跳到到对应的修改组件
-
+        onSubmit() { //跳到到对应的修改组件  
+            this.$router.push({path:'/adPosition/edit', query:{code:this.$route.query.code, from:'detailPage'}})
         }, 
+        
     },
     computed: {
         fontCount() { //文本框倒计数
             return this.form.posDesc.length
         } 
     }, 
-    watch: {
-        timeRange(val) {
-            console.log(val[0].getTime())
-            console.log(val[1].getTime())
-        }
-    },
     mounted() {   
+        this.showDetail()  
     }
 }
 

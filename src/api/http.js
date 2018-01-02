@@ -1,13 +1,13 @@
 import axios from 'axios'
 import store from '../store/index'
-import Config from '@/config/index'
-
+import config from '@/config/index.js'
+import originJsonp from 'jsonp'
 
 let UserInfo = 'user_name=pengkuan; user_id=514; login_token=bcb9ecafc59290558497c8e38c63b7ac;'
 // axios 配置
 axios.defaults.timeout = 5000
 axios.defaults.headers.post['Content-Type'] = 'application/json'
-axios.defaults.headers['User-Info'] = UserInfo
+// axios.defaults.headers['User-Info'] = UserInfo
 // axios.defaults.withCredentials = true
 axios.defaults.baseURL = 'https://business.huishoubao.com/api/'
 
@@ -29,7 +29,7 @@ axios.interceptors.response.use((res) => {
     }
     if(res.data._data._errCode == '900006'){
         // Message({ message: res.data._data._errStr, type: 'warning' })
-        // window.location.href = `${Config.power_center_login_page}/login?system_id=${Config.system_home_id}&jump_url=${Config.return_url}`
+        // window.location.href = `${config.power_center_login_page}/login?system_id=${config.system_home_id}&jump_url=${config.return_url}`
     }
     return res.data._data
 }, (error) => {
@@ -72,3 +72,64 @@ export function fetch(Interface,api,params) {
             })
     })
 }
+
+function get_cookie(name) {
+    var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)")
+    if (arr = document.cookie.match(reg)) {
+        return unescape(arr[2]) 
+    }   
+    else {
+        return null
+    } 
+}
+
+/* jsonp接口开始 */ 
+export function jsonp(_interface, params) { 
+    let url = `${config.jsonpUrl}?type=jsonp`,
+        token = get_cookie('useruuid'),
+        userid = get_cookie('userid') ,
+        timestamps = Math.floor(new Date().getTime()/1000) + ''
+
+    let resParams = {     
+        "_head": {        
+            "_version": "0.01",
+            "_msgType": "request",
+            "_timestamps": timestamps,
+            "_interface": _interface,
+            "_remark": "",    
+        },
+        "_param": {           
+            "userid": userid, 
+            "token": token,   
+        }
+    }
+    if (process.env.NODE_ENV != 'production') resParams._param.userid = '测试694'
+    if (process.env.NODE_ENV != 'production') resParams._param.token = '3077a9e5c2c6ea2c21c57c5bd95ccb8e'
+    // 合并参数 
+    resParams._param = Object.assign({}, resParams._param, params) 
+    // 拼接参数,注意jsonp不能直接字符串化json,后台解析不了
+    for (let i in resParams) { 
+        for(let j in resParams[i] ) {
+            // console.log(j,resParams[i][j]) 
+            url += `&${i}[${j}]=${resParams[i][j]}` 
+        }
+    }  
+    // url = `${url}&head[version]=0.01&head[msgtype]=request&head[interface]=newSystem&head[remark]=&params[system]=test&params[number]=12345678`   
+    return new Promise((resolve, reject) => {
+        originJsonp(url, {param: 'callback'}, (err, data) => {
+            if (!err) {
+                // 登录超时处理
+                if (process.env.NODE_ENV == 'production') {
+                    if (data._data._ret == '1' && data._data._errCode == '1001') {
+                        let host = encodeURIComponent(config.return_url)
+                        window.location.href = config.power_center_login_page + '/login?system_id=' + config.system_home_id + '&jump_url=' + host
+                    }
+                } 
+                resolve(data._data)
+            } else {
+                reject(err)
+            }
+        })
+    })
+}
+/* jsonp接口结束 */
