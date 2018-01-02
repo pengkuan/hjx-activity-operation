@@ -5,50 +5,54 @@
         </div>
         <el-form ref="form" :model="form" label-width="100px" class="commonDetail-form-wrap">
             <el-form-item label="所属客户端" class="w600 border-no">
-                <el-input v-model="form.client" disabled></el-input>
+                <el-input v-model="form.clientId" disabled></el-input>
             </el-form-item>
             <el-form-item label="广告位置" class="w600">
-                <el-input v-model="form.region" disabled></el-input>
+                <el-input v-model="form.positionCode" disabled></el-input>
             </el-form-item>
             <el-form-item label="广告标题" class="w600">
-                <el-input v-model="form.title" disabled></el-input>
+                <el-input v-model="form.adTitle" disabled></el-input>
             </el-form-item>
             <el-form-item label="广告素材类型" class="w600">
                 <el-radio-group v-model="form.AdresourceType">
-                    <el-radio :label="0" v-show="form.AdresourceType=='0'">文字</el-radio>
-                    <el-radio :label="1" v-show="form.AdresourceType=='1'">图片</el-radio>
+                    <el-radio :label="1" v-show="form.AdresourceType=='1'">文字</el-radio>
+                    <el-radio :label="2" v-show="form.AdresourceType=='2'">图片</el-radio>
                 </el-radio-group>
             </el-form-item>
-            <el-form-item label="广告素材" class="w600 pos-rel" v-show="form.AdresourceType == 1">
-                <el-input v-model="form.resource" disabled></el-input>
+            <el-form-item label="广告素材" class="w600 pos-rel" v-show="form.AdresourceType == 2">
+                <el-input v-model="form.adImg" disabled></el-input>
                 <div class="thumbnail">图片缩略图 210*140</div>
             </el-form-item>
-            <el-form-item label="广告素材" class="w600" v-show="form.AdresourceType == 0">
-                <el-input v-model="form.adTextDesc" disabled></el-input>
+            <el-form-item label="广告素材" class="w600" v-show="form.AdresourceType == 1">
+                <el-input v-model="form.adText" disabled></el-input>
             </el-form-item>
             <el-form-item label="广告描述" class="w600">
-                <el-input type="textarea" :maxlength="200" disabled :autosize="{ minRows: 4, maxRows: 8}" v-model="form.desc"></el-input>
+                <el-input type="textarea" :maxlength="200" disabled :autosize="{ minRows: 4, maxRows: 8}" v-model="form.adDesc"></el-input>
             </el-form-item>
             <el-form-item label="跳转链接" class="w600">
-                <el-radio-group v-model="form.needSrc">
-                    <el-radio :label="0" v-show="form.needSrc=='0'">无跳转</el-radio>
-                    <el-radio :label="1" v-show="form.needSrc=='1'">超链接</el-radio>
+                <el-radio-group v-model="form.isJump">
+                    <el-radio :label="1" v-show="form.isJump=='1'">无跳转</el-radio>
+                    <el-radio :label="2" v-show="form.isJump=='2'">超链接</el-radio>
                 </el-radio-group>
-                <el-input v-model="form.srcAddr" disabled v-show="form.needSrc == 1" placeholder="请输入超链接地址"></el-input>
+                <el-input v-model="form.jumpUrl" disabled v-show="form.isJump == 2" placeholder="请输入超链接地址"></el-input>
             </el-form-item>
             <el-form-item label="可见范围" class="w600">
                 <el-radio-group v-model="form.range">
-                    <el-radio :label="0" v-show="form.range=='0'">全部用户</el-radio>
-                    <el-radio :label="1" v-show="form.range=='1'">部分用户</el-radio>
+                    <el-radio :label="1" v-show="form.range=='1'">全部用户</el-radio>
+                    <el-radio :label="2" v-show="form.range=='2'">部分用户</el-radio>
                 </el-radio-group>
-                <div class="usrs-set" v-show="form.range == 1">
+                <div class="usrs-set" v-show="form.range == 2">
                     <el-row class="mb8">
                         <el-col :span="6" class="text-right">
                             <p>渠道：</p>
                         </el-col>
                         <el-col :span="18">
                             <p class="part-channel-text">
-                                包含&nbsp;&nbsp;<span>{{form.rangePart.channel}}</span>等50个渠道
+                                <i v-show="this.form.rangeList.channel.status == 1">包含</i> 
+                                <i v-show="this.form.rangeList.channel.status == 2">不包含</i>
+                                &nbsp;&nbsp;<span>{{channel_values}}</span>
+                                <i v-show="this.form.rangeList.channel.values.length>1">等</i>
+                                <i>{{this.form.rangeList.channel.values.length}}</i>个渠道
                             </p>
                         </el-col>
                     </el-row>
@@ -58,35 +62,48 @@
                         </el-col>
                         <el-col :span="18">
                             <p class="pos-rel">
-                                大于等于&nbsp;&nbsp;{{form.rangePart.money}}元
+                                <i v-show="this.form.rangeList.amount.status == 3">大于等于</i>
+                                <i v-show="this.form.rangeList.amount.status == 4">小于等于</i>
+                                &nbsp;&nbsp;{{money}}元
                             </p>
                         </el-col>
                     </el-row>
                 </div>
             </el-form-item>
             <el-form-item label="广告状态">
-                <el-radio-group v-model="form.adStatus">
-                    <el-radio :label="0" v-show="form.adStatus=='0'">生效</el-radio>
-                    <el-radio :label="1" v-show="form.adStatus=='1'">不生效</el-radio>
+                <el-radio-group v-model="form.isUse">
+                    <el-radio :label="1" v-show="form.isUse=='1'">生效</el-radio>
+                    <el-radio :label="0" v-show="form.isUse=='0'">不生效</el-radio>
                 </el-radio-group>
             </el-form-item>
-            <el-form-item label="投放时间" v-show="form.adStatus==0">
-                <el-radio-group v-model="form.adActiveTime">
-                    <el-radio :label="1">自定义时间</el-radio>
+            <el-form-item label="投放时间" v-show="form.isUse==1">
+                <el-radio-group v-model="form.useType">
+                    <el-radio :label="1" v-show="form.useType=='1'">立即开始</el-radio>
+                    <el-radio :label="2" v-show="form.useType=='2'">自定义时间</el-radio>
                 </el-radio-group>
-                <div v-show="form.adActiveTime == 1">
-                    <el-date-picker class="w500" disabled v-model="form.timeRange" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期">
-                    </el-date-picker>    
+                <div v-show="form.useType == 2">
+                    <el-date-picker
+                        v-model="form.startTime"
+                        type="datetime"
+                        disabled
+                        placeholder="开始日期">
+                    </el-date-picker> 
+                    <el-date-picker
+                        v-model="form.endTime"
+                        type="datetime"
+                        disabled
+                        placeholder="结束日期">
+                    </el-date-picker>   
                 </div>
             </el-form-item>
-            <el-form-item label="广告排序" class="w600 pos-rel" v-show="form.adStatus==0">
-                <el-input v-model="form.adOrder" disabled></el-input>
+            <el-form-item label="广告排序" class="w600 pos-rel" v-show="form.isUse==1">
+                <el-input v-model="form.sort" disabled></el-input>
             </el-form-item>
             <el-form-item label="操作人" class="w600">
-                <el-input v-model="form.operator" disabled></el-input>
+                <el-input v-model="form.modifier" disabled></el-input>
             </el-form-item>
             <el-form-item label="更新时间" class="w600">
-                <el-input v-model="form.updataTime" disabled></el-input>
+                <el-input v-model="form.modifyTime" disabled></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="onSubmit">修改</el-button>
@@ -99,40 +116,72 @@
 export default {
     data() {
         return {
-            form: {
-                client: '广东移动', //所属客户端
-                region: '广告位置', //广告位置
-                title: '我的babber', //广告位置
-                resource: 'www.baidu.com/img', //广告图片链接
-                AdresourceType: 1, //0是文字广告，1是图片广告
-                desc: '我是广告描述', //我是广告描述
-                fileList: [], //
-                needSrc: 1, //0是不需要跳转 1是需要跳转
-                srcAddr: 'm.huishoubao.com', //有跳转时的跳转链接
-                adTextDesc: '只有中文的描述', //无跳转只有文字的描述
-                range: 1, //0是全部 1是部分
-                rangePart: { //部分用户数据
-                    channel: '华为公司华为公司华为公司华为公司华为公司华为公司华为公司华为公司', // 渠道 
-                    money: '8888' // 金额
-                },
-                adStatus: 0, //0是生效 1是不生效
-                adActiveTime: 1, //0是立即生效 1是自定义时间 
-                timeRange: [new Date(1504454400000), new Date(1513134122000)], //时间范围,放在form中会报错
-                operator: '张三', // 修改人 
-                adOrder: '1', //广告排序
-                updataTime: '2018.6.6 20:20:20' //更新时间
+            form: {   
+                clientId: this.$route.query.clientId, //客户端
+                clientIdList: [], //客户端列表，用于循环
+                positionCode: 'sadfsdgsdg', //广告位置
+                positionList: [], //广告位列表
+                adTitle: '标题', //广告标题
+                adImg: 'www.hsb.com/img', //图片链接描述，如果是图片
+                AdresourceType: 2, //文字还是图片 1是文字 2是图片 由广告位决定
+                adDesc: '广告描述', //广告描述
+                fileList: [], //文件相关
+                isJump: 2, //1是不需要跳转 2是需要跳转
+                jumpUrl: '', //需要跳转的跳转链接
+                adText: '文字素材', //文字描述，如果是文字
+                range: 2, //可见范围 1是全部 2是部分
+                rangeList: { //条件范围，range为2时必传
+                    channel: {
+                        status: '2', //1是包含，2是不包含
+                        values: [{channelName:'华为科技公司'},{channelName:'华为科技公司'}], //渠道id,多个用逗号隔开
+                    },
+                    store: {
+                        status: '1', //1是包含，2是不包含
+                        values: [],//门店id,多个用逗号隔开
+                    },
+                    amount: {
+                        status: '3', //3是大于等于 4是小于等于
+                        values: '888' //金额
+                    }
+                },   
+                isUse: 1, //1是生效 0是不生效
+                useType: 2, //1是立即生效 2是自定义时间  
+                startTime: 1514875485021, //开始时间
+                endTime: 1514875485021, //结束时间
+                sort: 5, //广告排序
+                modifier: '张三', //操作人
+                modifyTime: '2017-10-10 20.20.20', //操作时间
             }, 
         }
     },
     methods: {
         onSubmit() {//跳转到修改页
-            
+            let returnPath = this.$route.query.pagePath,
+                clientId = this.$route.query.clientId
+            this.$router.push({path:'/commonEdit', query:{clientId:clientId, pagePath:returnPath}})
         },
         back() { 
-            this.$router.back()
+            let returnPath = this.$route.query.pagePath
+            this.$router.push({path:returnPath}) 
         }
     },
-    computed: {},
+    computed: {
+        channel_values() {
+            let str = '',
+                len = this.form.rangeList.channel.values.length
+            this.form.rangeList.channel.values.forEach(function(item, index){ 
+                if (len == index+1) {
+                    str += item.channelName
+                } else {
+                    str += item.channelName + ','
+                } 
+            })
+            return str
+        },
+        money() {
+            return this.form.rangeList.amount.values
+        }
+    },
     watch: {},
     mounted() {}
 }
@@ -174,7 +223,7 @@ export default {
         .part-channel-text {
             span {
                 display: inline-block;
-                width: 220px;
+                max-width: 220px;
                 overflow: hidden;
                 white-space: nowrap;
                 text-overflow: ellipsis;

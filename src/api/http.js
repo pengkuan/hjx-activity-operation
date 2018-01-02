@@ -98,11 +98,27 @@ export function jsonp(_interface, params) {
     if (process.env.NODE_ENV != 'production') resParams._param.token = '3077a9e5c2c6ea2c21c57c5bd95ccb8e'
     // 合并参数 
     resParams._param = Object.assign({}, resParams._param, params) 
-    // 拼接参数,注意jsonp不能直接字符串化json,后台解析不了
+    // 拼接参数,注意jsonp不能直接字符串化json,后台解析不了   递归方法
     for (let i in resParams) { 
         for(let j in resParams[i] ) {
             // console.log(j,resParams[i][j]) 
-            url += `&${i}[${j}]=${resParams[i][j]}` 
+            if (typeof resParams[i][j] == 'object') {
+                // console.log('我是对象')
+                // console.log(resParams[i][j])
+                for (let k in resParams[i][j]) {
+                    // console.log('进来了')
+                    // console.log(resParams[i][j][k])
+                    if (typeof resParams[i][j][k] == 'object') { 
+                        for (let m in resParams[i][j][k]) {
+                            url += `&${i}[${j}][${k}][${m}]=${resParams[i][j][k][m]}`
+                        }
+                    }else {
+                        url += `&${i}[${j}][${k}]=${resParams[i][j][k]}`
+                    }
+                }
+            } else {
+                url += `&${i}[${j}]=${resParams[i][j]}` 
+            } 
         }
     }  
     // url = `${url}&head[version]=0.01&head[msgtype]=request&head[interface]=newSystem&head[remark]=&params[system]=test&params[number]=12345678`   
@@ -111,7 +127,7 @@ export function jsonp(_interface, params) {
             if (!err) {
                 // 登录超时处理
                 if (process.env.NODE_ENV == 'production') {
-                    if (data._data._ret == '1' && data._data._errCode == '1001') {
+                    if (data._data._ret == '1' && data._data._errCode == '1001') { //无登录约定错误码1001
                         let host = encodeURIComponent(config.return_url)
                         window.location.href = config.power_center_login_page + '/login?system_id=' + config.system_home_id + '&jump_url=' + host
                     }

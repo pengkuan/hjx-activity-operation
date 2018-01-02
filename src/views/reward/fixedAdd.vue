@@ -111,7 +111,7 @@
     </div>
 </template>
 <script>
-console.log('hjxPart')
+// console.log('hjxPart')
 import api from '@/api/index'
 import { mapGetters } from 'vuex'
 import hjxPart from '@/base/hjx_part'

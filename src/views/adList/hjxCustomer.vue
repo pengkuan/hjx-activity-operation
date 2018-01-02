@@ -134,27 +134,42 @@ export default {
             this.isIng = val.name
             console.log(this.isIng) 
         },
-        del() { //删除广告
+        del(item) { //删除广告
             this.$confirm('广告删除将不可修复，确认删除？', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-            	console.log('处理删除操作')
-                this.$message({
-                    type: 'success',
-                    message: '删除成功!'
-                });
+                let params = {
+                    adId: item.row.adId
+                }
+                console.log(this.isIng)
+            	api.ad_deleteAdInfo(params).then((res)=> {
+                    if (res._ret != '0') {
+                        this.$message.error(res._errStr)
+                        return
+                    }
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    })
+                    this.showList_not_ing()
+                    // this.isIng == 'ing' ? this.showList_ing() : this.showList_not_ing() //虽然目前只有未运行列表
+                })
+                
             }).catch(() => {})
         },
         addNewAd() {//添加新广告
-        	this.$router.push({path:'/commonAdd',query:{clientId:1}})
+            let path = this.$route.path
+        	this.$router.push({path:'/commonAdd',query:{clientId:this.clientId,pagePath:path}})
         },
         lookDetail() {//查看詳情  
-            this.$router.push({path:'/commonDetail'})
+            let path = this.$route.path
+            this.$router.push({path:'/commonDetail',query:{clientId:this.clientId,pagePath:path}})
         },
         edit() {//编辑广告
-            this.$router.push({path:'/commonEdit'})
+            let path = this.$route.path
+            this.$router.push({path:'/commonEdit',query:{clientId:this.clientId,pagePath:path}})
         },
         onSearch() { //搜索
             if (!this.search.positionId && !this.search.positionId && !this.search.positionId) return
