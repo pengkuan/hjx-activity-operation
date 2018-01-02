@@ -8,13 +8,13 @@
         <!-- 搜索start -->
         <el-form :inline="true" :model="search" ref="search" label-width="120px" size="small" class="demo-form-inline">
             <el-form-item label="流水号:" prop="txnId">
-                <el-input v-model="search.txnId" placeholder="请输入流水号"></el-input>
+                <el-input v-model="search.txnId" @keyup.13.native="init($event)" @change="search.txnId = _Util.Trim(search.txnId)" placeholder="请输入流水号"></el-input>
             </el-form-item>
             <el-form-item label="活动ID:" prop="activityId">
-                <el-input v-model="search.activityId" placeholder="请输入活动ID"></el-input>
+                <el-input v-model="search.activityId" @keyup.13.native="init($event)" @change="search.activityId = _Util.Trim(search.activityId)" placeholder="请输入活动ID"></el-input>
             </el-form-item>
             <el-form-item label="订单编号:" prop="orderNum">
-                <el-input v-model="search.orderNum" placeholder="请输入订单编号"></el-input>
+                <el-input v-model="search.orderNum" @keyup.13.native="init($event)" @change="search.orderNum = _Util.Trim(search.orderNum)" placeholder="请输入订单编号"></el-input>
             </el-form-item>
             <el-form-item label="奖励类型:" prop="activityType">
                 <el-select class="search-width" v-model="search.activityType" placeholder="请选择奖励类型">
@@ -48,20 +48,20 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="S1手机号/姓名:" prop="s1Info">
-                <el-input v-model="search.s1Info" placeholder="请输入S1手机号/姓名"></el-input>
+                <el-input v-model="search.s1Info" @keyup.13.native="init($event)" @change="search.s1Info = _Util.Trim(search.s1Info)" placeholder="请输入S1手机号/姓名"></el-input>
             </el-form-item>
             <el-form-item label="O4 ID/名称:" prop="o4Info">
-                <el-input v-model="search.o4Info" placeholder="请输入O4 ID/名称"></el-input>
+                <el-input v-model="search.o4Info" @keyup.13.native="init($event)" @change="search.o4Info = _Util.Trim(search.o4Info)" placeholder="请输入O4 ID/名称"></el-input>
             </el-form-item>
             <el-form-item label="O1 ID/名称:" prop="o1Info">
-                <el-input v-model="search.o1Info" placeholder="请输入O1 ID/名称"></el-input>
+                <el-input v-model="search.o1Info" @keyup.13.native="init($event)" @change="search.o1Info = _Util.Trim(search.o1Info)" placeholder="请输入O1 ID/名称"></el-input>
             </el-form-item>
             <el-form-item label="O1城市:" prop="o1City">
-                <el-input v-model="search.o1City" placeholder="请输入O1城市"></el-input>
+                <el-input v-model="search.o1City" @keyup.13.native="init($event)" @change="search.o1City = _Util.Trim(search.o1City)" placeholder="请输入O1城市（模糊搜索）"></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="init">查询</el-button>
-                <el-button @click="reset('search')">重置</el-button>
+                <el-button @click="reset('search')">清空</el-button>
             </el-form-item>
         </el-form>
         <br>

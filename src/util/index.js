@@ -294,6 +294,19 @@ export default {
             return true
         },
         /**
+        *@名称校验 
+        *@4~50个字符（汉字算2个字符，字母算1个）
+        */
+        nameLength(val,msg){ 
+            let value = Trim(val),
+                len = value.gblen()
+            if (len < 4 || len > 50) {
+                Message({ message: msg, type: 'error' })
+                return false
+            }
+            return true
+        },
+        /**
         *@描述校验 
         *@4~50个字符（汉字算2个字符，字母算1个）
         */

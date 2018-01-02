@@ -1,9 +1,14 @@
 import axios from 'axios'
+import store from '../store/index'
+import Config from '@/config/index'
+
+
+let UserInfo = 'user_name=pengkuan; user_id=514; login_token=bcb9ecafc59290558497c8e38c63b7ac;'
 // axios 配置
 axios.defaults.timeout = 5000
 axios.defaults.headers.post['Content-Type'] = 'application/json'
+axios.defaults.headers['User-Info'] = UserInfo
 // axios.defaults.withCredentials = true
-// axios.defaults.baseURL = 'http://localhost:8884/api/test1'
 axios.defaults.baseURL = 'https://business.huishoubao.com/api/'
 
 import { Message } from 'element-ui'
@@ -19,18 +24,17 @@ axios.interceptors.request.use((config) => {
 
 //返回状态判断
 axios.interceptors.response.use((res) => {
-    let _this = this
     if (res.status != 200) {
         return Promise.reject(res)
     }
     if(res.data._data._errCode == '900006'){
-        Message({ message: res.data._data._errStr, type: 'warning' })
-        window.location.href = `${this._Config.power_center_login_page}/login?system_id=${this._Config.system_home_id}&jump_url=${host}`
+        // Message({ message: res.data._data._errStr, type: 'warning' })
+        // window.location.href = `${Config.power_center_login_page}/login?system_id=${Config.system_home_id}&jump_url=${Config.return_url}`
     }
     return res.data._data
 }, (error) => {
     if (error.response) {
-        Message({ message: error.response.data._data._errStr, type: 'warning' })
+        // Message({ message: error.response.data._data._errStr, type: 'warning' })
         switch (error.response.status) {
             case 403:
 
@@ -40,6 +44,7 @@ axios.interceptors.response.use((res) => {
 })
 
 export function fetch(Interface,api,params) {
+    // UserInfo = 'test'
     var resParams = {    
         '_head': {   
             '_version': "0.01",  

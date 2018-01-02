@@ -29,12 +29,14 @@
                 <span class="hjx-left-label">生效时间：</span><span class="reward-remind hjx-info">（该时间段内，将按规则进行活动）</span>
             </p>
             <p class="mrg-l120" v-for="item in timeLimitTypeList" >
-                <el-radio v-model="timeLimitType" :label="item.id" :key="item.id">{{item.name}}</el-radio>
-                <span class="mrg-l40" v-if="item.id == '2' && timeLimitType == '2'">
-                    <el-date-picker v-model="dateLimitRange" value-format="yyyy-MM-dd" size="small" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
-                    <el-time-picker is-range size="small" value-format="HH:mm:ss" v-model="timeLimitRange" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" placeholder="选择时间范围">
-                    </el-time-picker>
-                </span>
+                <el-radio v-model="timeLimitType" :label="item.id" :key="item.id">
+                    <span v-if="item.id == '2' && timeLimitType == '2'">
+                        <el-date-picker v-model="dateLimitRange" value-format="yyyy-MM-dd" size="small" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
+                        <el-time-picker is-range size="small" value-format="HH:mm:ss" v-model="timeLimitRange" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" placeholder="选择时间范围">
+                        </el-time-picker>
+                    </span>
+                    <span v-else>{{item.name}}</span>
+                </el-radio>
             </p>
         </div>
         <hjx-left-title label="算法"></hjx-left-title>
@@ -337,7 +339,7 @@ export default {
         },
         /*********** 校验 *************/
         Validate(submitData){
-            if(!this._Util.validate.name(submitData.activityName,'请输入活动名称（4~50字符）')) return false
+            if(!this._Util.validate.nameLength(submitData.activityName,'请输入活动名称（4~50字符）')) return false
             if(!this._Util.validate.desc(submitData.activityDesc,'请输入活动描述（4~50字符）')) return false
             
             if(!this._Util.validate.fixed2(submitData.upperLimitAmount,'请输入发放总额上限（最多2位小数）')) return false

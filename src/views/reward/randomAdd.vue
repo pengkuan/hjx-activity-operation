@@ -298,7 +298,7 @@ export default {
 
             /********** 校验 *********/
             
-            if(!this._Util.validate.name(submitData.activityName,'请输入活动名称（4~50字符）')) return
+            if(!this._Util.validate.nameLength(submitData.activityName,'请输入活动名称（4~50字符）')) return
             if(!this._Util.validate.desc(submitData.activityDesc,'请输入活动描述（4~50字符）')) return
             if(!this._Util.validate.precenteFixed2(submitData.publicAlgorithmCoefficient,'请输入0~100算法系数（最多2位小数）')) return
             if(!this._Util.validate.fixed2(submitData.upperLimitAmount,'请输入发放总额上限（最多2位小数）')) return

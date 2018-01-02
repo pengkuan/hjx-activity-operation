@@ -75,7 +75,12 @@ export default {
         }
     },
     methods: {
-        ...mapMutations({setPowerList:'userInfo/SET_POWER_LIST'}), 
+        ...mapMutations({
+            setPowerList:'userInfo/SET_POWER_LIST',
+            setUserName:'userInfo/SET_USERNAME',
+            setUserId:'userInfo/SET_USERID',
+            setLoginToken:'userInfo/SET_LOGIN_TOKEN',
+        }), 
         setCollapsed() {
             this.collapsed = !this.collapsed
         },
@@ -155,8 +160,9 @@ export default {
             this.getDeepModule(this.menuList) 
 
             setTimeout(() =>{
-                let powerList = [ 'active_reward_look', 'active_reward_setpower', 'active_reward_setpriority','active_reward_add']
+                let powerList = [ 'active_reward_look', 'active_reward_setStatus', 'active_reward_setpriority','active_reward_add','active_reward_edit']
                 this.setPowerList(powerList)
+                this.setLoginToken('55555555')
             }  ,1000)
 
 
@@ -198,7 +204,7 @@ export default {
             } else {
                 const loading = this.$loading({
                     lock: true,
-                    text: '玩命加载中......',
+                    text: '玩命加载中...',
                     spinner: 'el-icon-loading',
                     background: 'rgba(0, 0, 0, 0.7)'
                 })
@@ -220,10 +226,11 @@ export default {
                     // 接收权限数据,同步到vuex
                     let powerList = res.access_flags
                     this.setPowerList(powerList)  
-                    /************* 设置cookie ***************/
-                    this._Util.setCookie('user_id', res.user_info.user_id)
-                    this._Util.setCookie('user_name', res.user_info.username)
-                    this._Util.setCookie('login_token', this._Util.getQueryStringByName('login_token'))
+                    /****** 设置用户信息 *****/
+                    this.setUserName(res.user_info.username)
+                    this.setUserId(res.user_info.user_id)
+                    this.setLoginToken(this._Util.getQueryStringByName('login_token'))
+
                 })
             }
         }

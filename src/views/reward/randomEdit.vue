@@ -35,7 +35,6 @@
                     <el-time-picker is-range size="small" value-format="HH:mm:ss" v-model="timeLimitRange" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" placeholder="选择时间范围">
                     </el-time-picker>
                 </span>
-                
             </p>
         </div>
         <hjx-left-title label="算法"></hjx-left-title>
@@ -67,7 +66,7 @@
 
         <hjx-left-title label="风控"></hjx-left-title>
         <div class="mrg-b10 ">
-            <hjx-underline-input label="发放总额上限" type='number' width="50" v-model="upperLimitAmount" :textCenter="true"></hjx-underline-input><span class="underline-text">元 / 整个时间段</span>
+            <hjx-underline-input label="发放总额上限" type='number' disabled width="50" v-model="upperLimitAmount" :textCenter="true"></hjx-underline-input><span class="underline-text">元 / 整个时间段</span>
             <span class="reward-remind underline-text">（周期内发放金额达到上限后，每笔红包将按单笔最低值发放）</span>
         </div>
 
@@ -367,7 +366,7 @@ export default {
 
             /********** 校验 *********/
             
-            if(!this._Util.validate.name(submitData.activityName,'请输入活动名称（4~50字符）')) return
+            if(!this._Util.validate.nameLength(submitData.activityName,'请输入活动名称（4~50字符）')) return
             if(!this._Util.validate.desc(submitData.activityDesc,'请输入活动描述（4~50字符）')) return
             if(!this._Util.validate.precenteFixed2(submitData.publicAlgorithmCoefficient,'请输入0~100算法系数（最多2位小数）')) return
             if(!this._Util.validate.fixed2(submitData.upperLimitAmount,'请输入发放总额上限（最多2位小数）')) return
@@ -385,7 +384,7 @@ export default {
                 return
             }
             /********** 提交 ***********/
-            api.add_activity_info(submitData).then(res=>{
+            api.update_activity_info(submitData).then(res=>{
                 if(res._ret != 0){
                     this.$alert(res._errStr)
                     return
