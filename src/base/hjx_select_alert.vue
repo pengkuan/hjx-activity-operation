@@ -30,7 +30,7 @@
                   </p>
                   <div class="list-container">
                     <p class="left-item" v-for="item in preChooseL2" v-show="item.ifshow || showSearchL2">
-                      <el-checkbox v-model="item.ifChoosed" :key="item[mappingResult[3]]" @change="handleL2(item.ifChoosed,item[mappingResult[4]],item[mappingResult[3]])">
+                      <el-checkbox v-model="item.ifChoosed" :key="item[mappingResult[3]]" @change="handleL2(item.ifChoosed,item[mappingResult[4]],item[mappingResult[3]],item.parentId)">
                         <i class="iconfont icon-dian"></i>{{item[mappingResult[4]]}}
                       </el-checkbox>
                     </p>
@@ -174,17 +174,36 @@ export default {
       let reqData = {}
       reqData[this.mappingResult[2]] = id
       api[this.mappingResult[7]](reqData).then(res => {
-        if(!res[this.mappingResult[8]]) this.initPreChooseL2 = []
-        else this.initPreChooseL2 = res[this.mappingResult[8]]
+        if(!res[this.mappingResult[8]]) {
+          this.initPreChooseL2 = []
+        }else{
+          this.initPreChooseL2 = res[this.mappingResult[8]]
+          this.initPreChooseL2.forEach(item=>{
+            item.parentId = id
+          })
+        } 
       })
     },
     /********/
+    //单选L1
     handleL1(val, name, id) {
       if (val) {
         let pushObj = {}
         pushObj[this.mappingResult[0]] = id
         pushObj[this.mappingResult[1]] = name
         this.choosedList.L1.push(pushObj)
+        //判断是否存在该L1下的L2，有则移除该L2
+        // this.choosedList.L2.forEach((item,index)=>{
+        //   if(item.parentId == id) this.choosedList.L2.splice(index,1)
+        // })
+        let len = this.choosedList.L2.length
+        for(let index = 0 ; index <this.choosedList.L2.length ; index++){
+          if (this.choosedList.L2[index].parentId == id) {
+
+            this.choosedList.L2.splice(index, 1)
+            index--
+          }
+        }
       } else {
         this.choosedList.L1.forEach((item, index) => {
           if (item[this.mappingResult[0]] == id) {
@@ -193,11 +212,14 @@ export default {
         })
       }
     },
+    //全选L1
     changeL1(val) {
       if (val) {
         this.initPreChooseL1.map(item => {
           item.ifChoosed = true
           this.choosedList.L1 = [...this.initPreChooseL1]
+          //全选一级，则包含所有二级，所以选的二级清空
+          this.choosedList.L2 = []
         })
       } else {
         this.initPreChooseL1.map(item => {
@@ -216,7 +238,6 @@ export default {
               item.ifshow = true 
               this.showSearchL1 = false
           }else{
-              console.log(654444444)
               item.ifshow = false
           }
         })
@@ -224,11 +245,12 @@ export default {
     },
     /**************************@L2************************/
     //单个change事件
-    handleL2(val, name, id) {
+    handleL2(val, name, id ,parentId) {
       if (val) {
         let pushObj = {}
         pushObj[this.mappingResult[3]] = id
         pushObj[this.mappingResult[4]] = name
+        pushObj.parentId = parentId
         this.choosedList.L2.push(pushObj)
       } else {
         this.choosedList.L2.forEach((item, index) => {
@@ -269,7 +291,6 @@ export default {
               item.ifshow = true 
               this.showSearchL2 = false
           }else{
-              console.log('L222')
               item.ifshow = false
           }
         })

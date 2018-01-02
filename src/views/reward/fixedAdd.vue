@@ -25,14 +25,18 @@
         <el-alert title="生成规则" type="success" :closable="false"></el-alert>
         <hjx-left-title label="时间"></hjx-left-title>
         <div class="mrg-b10">
-            <span class="hjx-left-label">生效时间：</span><span class="reward-remind hjx-info">（该时间段内，将按规则进行活动）</span>
+            <p>
+                <span class="hjx-left-label">生效时间：</span><span class="reward-remind hjx-info">（该时间段内，将按规则进行活动）</span>
+            </p>
             <p class="mrg-l120" v-for="item in timeLimitTypeList" >
-                <el-radio v-model="timeLimitType" :label="item.id" :key="item.id">{{item.name}}</el-radio>
-                <span class="mrg-l40" v-if="item.id == '2' && timeLimitType == '2'">
-                    <el-date-picker v-model="dateLimitRange" value-format="yyyy-MM-dd" size="small" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
-                    <el-time-picker is-range size="small" value-format="HH:mm:ss" v-model="timeLimitRange" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" placeholder="选择时间范围">
-                    </el-time-picker>
-                </span>
+                <el-radio v-model="timeLimitType" :label="item.id" :key="item.id">
+                    <span v-if="item.id == '2' && timeLimitType == '2'">
+                        <el-date-picker v-model="dateLimitRange" value-format="yyyy-MM-dd" size="small" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
+                        <el-time-picker is-range size="small" value-format="HH:mm:ss" v-model="timeLimitRange" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" placeholder="选择时间范围">
+                        </el-time-picker>
+                    </span>
+                    <span v-else>{{item.name}}</span>
+                </el-radio>
             </p>
         </div>
         <hjx-left-title label="算法"></hjx-left-title>
@@ -42,8 +46,10 @@
         </div>
         <hjx-left-title label="促收"></hjx-left-title>
         <div class="mrg-b10">
-            <span class="hjx-left-label">工号开通时间：</span>
-            <span class="reward-remind hjx-info">（该时间段内，将按规则进行活动）</span>
+            <p>
+                <span class="hjx-left-label">工号开通时间：</span>
+                <span class="reward-remind hjx-info">（该时间段内，将按规则进行活动）</span>
+            </p>
             <p class="mrg-l120">
                 <el-radio v-for="item in isCheckUserCreateTimeList" v-model="isCheckUserCreateTime" :label="item.id" :key="item.id">{{item.name}}</el-radio>
             </p>
@@ -71,8 +77,10 @@
         <el-alert title="发放规则" type="success" :closable="false"></el-alert>
         <hjx-left-title label="订单"></hjx-left-title>
         <div class="mrg-b10">
-            <span class="hjx-left-label">订单回收方式：</span>
-            <el-checkbox v-for="item in recycleTypeList" v-model="item.ifChoosed" :key="item.id">{{item.name}}</el-checkbox>
+            <p>
+                <span class="hjx-left-label">订单回收方式：</span>
+                <el-checkbox v-for="item in recycleTypeList" v-model="item.ifChoosed" :key="item.id">{{item.name}}</el-checkbox>
+            </p>
             <p class="reward-remind mrg-l40 hjx-info">（勾选的回收方式，可参与到活动中）</p>
         </div>
         <hjx-left-title label="机型"></hjx-left-title>
@@ -110,8 +118,7 @@
         <div v-show="ifshowModel||ifshowAddr||ifshowChannel" class="v-modal" style="z-index:2005"></div>
     </div>
 </template>
-<script>
-// console.log('hjxPart')
+<script> 
 import api from '@/api/index'
 import { mapGetters } from 'vuex'
 import hjxPart from '@/base/hjx_part'
@@ -332,7 +339,7 @@ export default {
         },
         /*********** 校验 *************/
         Validate(submitData){
-            if(!this._Util.validate.name(submitData.activityName,'请输入活动名称（4~50字符）')) return false
+            if(!this._Util.validate.nameLength(submitData.activityName,'请输入活动名称（4~50字符）')) return false
             if(!this._Util.validate.desc(submitData.activityDesc,'请输入活动描述（4~50字符）')) return false
             
             if(!this._Util.validate.fixed2(submitData.upperLimitAmount,'请输入发放总额上限（最多2位小数）')) return false
@@ -382,6 +389,7 @@ export default {
 
 </style>
 <style type="text/css" scoped="scoped">
+p{margin-bottom: 10px}
 .icon-duigou{color:#67c23a;margin-left: 5px;}
 .underline-text {
     font-size: 14px;

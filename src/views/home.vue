@@ -6,6 +6,7 @@
                 <div class="topbar-logo topbar-btn">
                     <a href="/"><img src="../assets/images/logo.png" style="margin: 10px 0 0 10px;height:30px;border:0"></a>
                 </div>
+                <span style="color:red;">您正在访问测试环境！</span>
             </el-col>
             <!--中间-->
             <el-col :span="24" class="main">
@@ -74,7 +75,12 @@ export default {
         }
     },
     methods: {
-        ...mapMutations({setPowerList:'userInfo/SET_POWER_LIST'}), 
+        ...mapMutations({
+            setPowerList:'userInfo/SET_POWER_LIST',
+            setUserName:'userInfo/SET_USERNAME',
+            setUserId:'userInfo/SET_USERID',
+            setLoginToken:'userInfo/SET_LOGIN_TOKEN',
+        }), 
         setCollapsed() {
             this.collapsed = !this.collapsed
         },
@@ -124,9 +130,9 @@ export default {
         // 本地环境，虚拟菜单
         get_user_authority_test() { 
             // 防止一些接口需要登录信息,而跳转到登录页面
-            this._Util.setCookie('userid', '694')
-            this._Util.setCookie('username', '测试')
-            this._Util.setCookie('useruuid', 'bfa1ac797d85704806ba200c19f2af01')
+            // this._Util.setCookie('user_id', '694')
+            // this._Util.setCookie('user_name', '测试')
+            // this._Util.setCookie('login_token', 'bfa1ac797d85704806ba200c19f2af01')
             this.menuList = [
                 { 
                     name: '活动管理',
@@ -154,8 +160,9 @@ export default {
             this.getDeepModule(this.menuList) 
 
             setTimeout(() =>{
-                let powerList = [ 'active_reward_look', 'active_reward_setpower', 'active_reward_setpriority','active_reward_add']
+                let powerList = [ 'active_reward_look', 'active_reward_setStatus', 'active_reward_setpriority','active_reward_add','active_reward_edit']
                 this.setPowerList(powerList)
+                this.setLoginToken('55555555')
             }  ,1000)
 
 
@@ -197,7 +204,7 @@ export default {
             } else {
                 const loading = this.$loading({
                     lock: true,
-                    text: '玩命加载中......',
+                    text: '玩命加载中...',
                     spinner: 'el-icon-loading',
                     background: 'rgba(0, 0, 0, 0.7)'
                 })
@@ -219,6 +226,11 @@ export default {
                     // 接收权限数据,同步到vuex
                     let powerList = res.access_flags
                     this.setPowerList(powerList)  
+                    /****** 设置用户信息 *****/
+                    this.setUserName(res.user_info.username)
+                    this.setUserId(res.user_info.user_id)
+                    this.setLoginToken(this._Util.getQueryStringByName('login_token'))
+
                 })
             }
         }
@@ -334,7 +346,7 @@ export default {
             line-height: 26px;
             cursor: pointer;
             a {
-                display: block;
+                display: inline-block;
             }
         }
         .topbar-title {

@@ -1,3 +1,7 @@
+export const SET_USERNAME = 'SET_USERNAME'
+export const SET_USERID = 'SET_USERID'
+export const SET_LOGIN_TOKEN = 'SET_LOGIN_TOKEN'
+
 export const SET_POWER_LIST = 'SET_POWER_LIST'
 export const RECEIVE_PRODUCTS = 'RECEIVE_PRODUCTS'
 export const PROVINCE_LIST = 'PROVINCE_LIST'
