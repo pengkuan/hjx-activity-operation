@@ -3,27 +3,33 @@
         <div class="title">广告详情
             <el-button type="primary" size="mini" @click="back">关闭</el-button>
         </div>
-        <el-form ref="form" :model="form" label-width="100px" class="commonDetail-form-wrap">
-            <el-form-item label="所属客户端" class="w600 border-no">
-                <el-input v-model="form.clientId" disabled></el-input>
+        <el-form ref="form" :model="form" label-width="100px" class="commonDetail-form-wrap"> 
+            <el-form-item label="所属客户端" class="w600">
+                <el-select v-model="form.clientId" placeholder="" disabled>
+                    <el-option :label="item.clientName" :value="item.clientId" v-for="(item,index) in form.clientList" :key="index"></el-option> 
+                </el-select> 
             </el-form-item>
-            <el-form-item label="广告位置" class="w600">
-                <el-input v-model="form.positionCode" disabled></el-input>
+            <el-form-item label="广告位置" class="w600"> 
+                <el-select v-model="form.positionCode" placeholder="请选择广告位置" disabled>  
+                    <el-option :label="item.positionName" :value="item.positionCode" v-for="(item,index) in form.positionList" :key="index"></el-option>  
+                </el-select>
             </el-form-item>
             <el-form-item label="广告标题" class="w600">
                 <el-input v-model="form.adTitle" disabled></el-input>
             </el-form-item>
             <el-form-item label="广告素材类型" class="w600">
-                <el-radio-group v-model="form.AdresourceType">
-                    <el-radio :label="1" v-show="form.AdresourceType=='1'">文字</el-radio>
-                    <el-radio :label="2" v-show="form.AdresourceType=='2'">图片</el-radio>
+                <el-radio-group v-model="form.adType">
+                    <el-radio :label="1" v-show="form.adType=='1'">文字</el-radio>
+                    <el-radio :label="2" v-show="form.adType=='2'">图片</el-radio>
                 </el-radio-group>
             </el-form-item>
-            <el-form-item label="广告素材" class="w600 pos-rel" v-show="form.AdresourceType == 2">
+            <el-form-item label="广告素材" class="w600 pos-rel" v-show="form.adType == 2">
                 <el-input v-model="form.adImg" disabled></el-input>
-                <div class="thumbnail">图片缩略图 210*140</div>
+                <div class="thumbnail">
+                    <img :src="form.adImg" alt="210*170" width="210" title="缩略图">
+                </div>
             </el-form-item>
-            <el-form-item label="广告素材" class="w600" v-show="form.AdresourceType == 1">
+            <el-form-item label="广告素材" class="w600" v-show="form.adType == 1">
                 <el-input v-model="form.adText" disabled></el-input>
             </el-form-item>
             <el-form-item label="广告描述" class="w600">
@@ -62,8 +68,9 @@
                         </el-col>
                         <el-col :span="18">
                             <p class="pos-rel">
-                                <i v-show="this.form.rangeList.amount.status == 3">大于等于</i>
-                                <i v-show="this.form.rangeList.amount.status == 4">小于等于</i>
+                                <i>大于等于</i>
+                                <!-- <i v-show="this.form.rangeList.amount.status == 3">大于等于</i> -->
+                                <!-- <i v-show="this.form.rangeList.amount.status == 4">小于等于</i> -->
                                 &nbsp;&nbsp;{{money}}元
                             </p>
                         </el-col>
@@ -103,7 +110,7 @@
                 <el-input v-model="form.modifier" disabled></el-input>
             </el-form-item>
             <el-form-item label="更新时间" class="w600">
-                <el-input v-model="form.modifyTime" disabled></el-input>
+                <el-input v-model="modifyTime_date" disabled></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="onSubmit">修改</el-button>
@@ -113,57 +120,121 @@
     </div>
 </template>
 <script>
+import api from '@/api/ad'
+import {formatDate} from '@/assets/js/date'
 export default {
     data() {
         return {
             form: {   
                 clientId: this.$route.query.clientId, //客户端
-                clientIdList: [], //客户端列表，用于循环
-                positionCode: 'sadfsdgsdg', //广告位置
+                clientList: [], //客户端列表，用于循环
+                positionCode: '', //广告位置
                 positionList: [], //广告位列表
-                adTitle: '标题', //广告标题
-                adImg: 'www.hsb.com/img', //图片链接描述，如果是图片
-                AdresourceType: 2, //文字还是图片 1是文字 2是图片 由广告位决定
-                adDesc: '广告描述', //广告描述
-                fileList: [], //文件相关
+                adTitle: '', //广告标题
+                adImg: '', //图片链接描述，如果是图片
+                adType: 2, //文字还是图片 1是文字 2是图片 由广告位决定
+                adDesc: '', //广告描述 
                 isJump: 2, //1是不需要跳转 2是需要跳转
                 jumpUrl: '', //需要跳转的跳转链接
-                adText: '文字素材', //文字描述，如果是文字
-                range: 2, //可见范围 1是全部 2是部分
+                adText: '', //文字描述，如果是文字
+                range: 1, //可见范围 1是全部 2是部分
                 rangeList: { //条件范围，range为2时必传
                     channel: {
-                        status: '2', //1是包含，2是不包含
-                        values: [{channelName:'华为科技公司'},{channelName:'华为科技公司'}], //渠道id,多个用逗号隔开
+                        status: '8', //1是包含，2是不包含
+                        values: [], //渠道id,多个用逗号隔开
                     },
                     store: {
-                        status: '1', //1是包含，2是不包含
+                        status: '8', //1是包含，2是不包含
                         values: [],//门店id,多个用逗号隔开
                     },
                     amount: {
                         status: '3', //3是大于等于 4是小于等于
-                        values: '888' //金额
+                        values: '' //金额
                     }
                 },   
                 isUse: 1, //1是生效 0是不生效
-                useType: 2, //1是立即生效 2是自定义时间  
-                startTime: 1514875485021, //开始时间
-                endTime: 1514875485021, //结束时间
-                sort: 5, //广告排序
-                modifier: '张三', //操作人
-                modifyTime: '2017-10-10 20.20.20', //操作时间
+                useType: 1, //1是立即生效 2是自定义时间  
+                startTime: '', //开始时间
+                endTime: '', //结束时间
+                sort: '', //广告排序
+                modifier: '', //操作人
+                modifyTime: '', //操作时间
             }, 
         }
     },
     methods: {
         onSubmit() {//跳转到修改页
             let returnPath = this.$route.query.pagePath,
-                clientId = this.$route.query.clientId
-            this.$router.push({path:'/commonEdit', query:{clientId:clientId, pagePath:returnPath}})
+                clientId = this.$route.query.clientId,
+                adId = this.$route.query.adId
+            this.$router.push({path:'/commonEdit', query:{clientId:clientId, pagePath:returnPath, adId:adId}})
         },
         back() { 
             let returnPath = this.$route.query.pagePath
             this.$router.push({path:returnPath}) 
-        }
+        },
+        ad_getAdInfo() { //获取广告详情
+            let params = {
+                adId: this.$route.query.adId 
+            }
+            api.ad_getAdInfo(params).then((res)=> {
+                if (res._ret != '0') {
+                    this.$message.error(res._errStr)
+                    return
+                }  
+                console.log(res) 
+                this.form.positionCode = res.adInfo.position.positionCode
+                this.form.positionId = res.adInfo.positionId
+                this.form.adTitle = res.adInfo.adTitle 
+                this.form.adImg = res.adInfo.adImg     
+                this.form.adDesc = res.adInfo.adDesc 
+                this.form.adType = res.adInfo.adType 
+                this.form.isJump = res.adInfo.isJump 
+                this.form.jumpUrl = res.adInfo.jumpUrl 
+                this.form.adText = res.adInfo.adText 
+                this.form.isUse = res.adInfo.isUse 
+                this.form.useType = res.adInfo.useType 
+                this.form.range = res.adInfo.range   
+                this.form.startTime = res.adInfo.startTime == 0 ? '' : res.adInfo.startTime*1000
+                this.form.endTime = res.adInfo.endTime == 0 ? '' : res.adInfo.endTime*1000
+                this.form.sort = res.adInfo.sort  
+                this.form.modifier = res.adInfo.modifier   
+                this.form.modifyTime = res.adInfo.modifyTime  
+                // 单独处理部分用户部分
+                if (this.form.range == 2&&res.adInfo.rangeList.channel.values.length) { 
+                    this.form.rangeList.channel.status = res.adInfo.rangeList.channel.status
+                    this.form.rangeList.channel.values = res.adInfo.rangeList.channel.values
+                }
+                if (this.form.range == 2&&res.adInfo.rangeList.store.values.length) {  
+                    this.form.rangeList.store.status = res.adInfo.rangeList.store.status
+                    this.form.rangeList.store.values = res.adInfo.rangeList.store.values
+                }
+                if (this.form.range == 2&&res.adInfo.rangeList.amount.values != '') { 
+                    this.form.rangeList.amount.values = res.adInfo.rangeList.amount.values
+                }  
+            })
+        },
+        getClientList() { //获取客户端列表数据
+            api.ad_getClient({}).then((res)=>{
+                if (res._ret != '0') {
+                    this.$message.error(res._errStr)
+                    return
+                }
+                // console.log(res)
+                this.form.clientList = res.clientList
+            })
+        },
+        getAdPosList() { //获取广告位列表
+            let params = {clientId: this.form.clientId, inUse:'1'}
+            api.ad_getAdPosition(params).then((res)=>{
+                if (res._ret != '0') {
+                    this.$message.error(res._errStr)
+                    return
+                }  
+                console.log(res) 
+                this.form.positionList = res.positionList 
+            })
+        },
     },
     computed: {
         channel_values() {
@@ -176,14 +247,22 @@ export default {
                     str += item.channelName + ','
                 } 
             })
-            return str
+            return str 
         },
         money() {
             return this.form.rangeList.amount.values
+        },
+        modifyTime_date() {
+            let date = new Date(this.form.modifyTime*1000)
+            return formatDate(date, 'yyyy-MM-dd hh:mm:ss')
         }
     },
     watch: {},
-    mounted() {}
+    mounted() {
+        this.getClientList() //客户端列表
+        this.getAdPosList() //广告位列表
+        this.ad_getAdInfo() //获取广告详情
+    }
 }
 
 </script>
@@ -291,6 +370,7 @@ export default {
         background: #ccc;
         text-align: center;
         line-height: 140px;
+        overflow: hidden;
     }
     .selct-channel {
         position: absolute;

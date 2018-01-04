@@ -1,6 +1,6 @@
 <template>
-    <div class="addNewAd-wrap">
-        <div class="title">修改广告
+    <div class="editNewAd-wrap" v-loading="loading">
+        <div class="title">修改广告 
             <el-button type="primary" size="mini" @click="back">关闭</el-button>
         </div>
         <el-form ref="form" :model="form" label-width="100px"> 
@@ -10,33 +10,40 @@
                 </el-select> 
             </el-form-item>
             <el-form-item label="广告位置" class="w600">
-                <el-select v-model="form.positionCode" placeholder="请选择广告位置">  
-                    <el-option :label="item.positionName" :value="item.positionCode" v-for="(item,index) in form.positionList" :key="index"></el-option>  
+                <el-select v-model="form.positionId" placeholder="请选择广告位置" disabled>  
+                    <el-option :label="item.positionName" :value="item.positionId" v-for="(item,index) in form.positionList" :key="index"></el-option>  
                 </el-select> 
             </el-form-item>
             <el-form-item label="广告标题" class="w600">
                 <el-input v-model="form.adTitle" placeholder="请输入广告标题" :maxlength="20"></el-input>
                 <div class="tips">最多20个字符</div>
             </el-form-item>
-            <el-form-item label="广告素材类型" class="w600">
-                <el-radio-group v-model="form.AdresourceType">
-                    <el-radio :label="1">文字</el-radio>
-                    <el-radio :label="2">图片</el-radio>
+            <el-form-item label="广告素材类型" class="w600 img-text">
+                <el-radio-group v-model="form.adType">
+                    <el-radio :label="1" v-show="form.adType==1">文字</el-radio>
+                    <el-radio :label="2" v-show="form.adType==2">图片</el-radio>
                 </el-radio-group>
             </el-form-item>
-            <el-form-item label="广告素材" class="w600 pos-rel" v-show="form.AdresourceType == 2">
+            <el-form-item label="广告素材" class="w600 pos-rel" v-show="form.adType == 2">
                 <p>
-                    <el-input v-model="form.adImg" class="inline-block"></el-input>
-                    <el-upload class="upload-demo inline my-close" action="https://jsonplaceholder.typicode.com/posts/" :on-preview="handlePreview" :on-remove="handleRemove" multiple :limit="3" :on-exceed="handleExceed" :file-list="form.fileList">
+                    <el-input v-model="form.adImg" class="inline-block" disabled></el-input>
+                    <el-upload class="upload-demo inline my-close"  
+                        action="http://10.0.10.67:8080/index/index"  
+                        :on-success="uploadSuccess" 
+                        :on-remove="uploadRemove"
+                        :before-upload="beforeUpload" 
+                        :limit="1" 
+                        :data = "uploadData" 
+                        :file-list="form.fileList"> 
                         <el-button size="small" type="primary" class="my-close">选择图片</el-button>
                     </el-upload>
                 </p>
                 <div class="thumbnail">
-                    图片缩略图 210*140
+                    <img :src="form.showSrc" alt="210*170" width="210" title="缩略图" v-show="form.showImg">
                 </div>
-                <div class="tips">支持长仅1200*高仅500的图片 png、jpeg格式，4M以内</div>
+                <div class="tips" style="padding-bottom:10px;">支持长仅{{form.imgWidth}}*高仅{{form.imgHigh}}的图片 png、jpeg格式，4M以内</div>
             </el-form-item>
-            <el-form-item label="广告素材" class="w600" v-show="form.AdresourceType == 1">
+            <el-form-item label="广告素材" class="w600" v-show="form.adType == 1">
                 <el-input type="textarea" :rows="4" v-model="form.adText" :maxlength="100" placeholder="请输入广告文字，前端将展示此文字"></el-input>
                 <div class="tips pos-rel">最多可输入100字符</div>
             </el-form-item>
@@ -49,7 +56,7 @@
                     <el-radio :label="1">无跳转</el-radio>
                     <el-radio :label="2">超链接</el-radio>
                 </el-radio-group>
-                <el-input v-model="form.jumpUrl" v-show="form.isJump == 2" placeholder="请输入超链接地址"></el-input>
+                <el-input v-model="form.jumpUrl" v-show="form.isJump == 2" placeholder="如：http://www.huishoubao.com"></el-input>
             </el-form-item>
             <el-form-item label="可见范围" class="w600">
                 <el-radio-group v-model="form.range">
@@ -63,9 +70,9 @@
                         </el-col>
                         <el-col :span="20">
                             <p class="pos-rel">
-                                <el-select v-model="form.rangeList.channel.status" placeholder="" class="selct-channel">
-                                    <el-option label="包含"   value="1"></el-option> 
-                                    <el-option label="不包含" value="2"></el-option> 
+                                <el-select v-model="form.rangeList.channel.status" placeholder="请选条件" class="selct-channel">
+                                    <el-option label="包含"   :value="1"></el-option> 
+                                    <el-option label="不包含" :value="2"></el-option> 
                                 </el-select>
                                 <p class="channel-list-test" v-show="this.channelResultList.length"><span>{{this.hasSelectChannel}}</span>
                                 <i v-show="this.channelResultList.length>1">等</i>
@@ -81,9 +88,9 @@
                         </el-col>
                         <el-col :span="20">
                             <p class="pos-rel">
-                                <el-select v-model="form.rangeList.store.status" placeholder="" class="selct-channel">
-                                    <el-option label="包含" value="1"></el-option> 
-                                    <el-option label="不包含" value="2"></el-option> 
+                                <el-select v-model="form.rangeList.store.status" placeholder="请选条件" class="selct-channel">
+                                    <el-option label="包含"   :value="1"></el-option> 
+                                    <el-option label="不包含" :value="2"></el-option> 
                                 </el-select>
                                 <span class="channel-list-test add-stroe" @click="part_add_detail('store')">+添加门店</span>
                                 <i class="iconfont icon-roundclosefill channell-close" @click="del_condition('store')"></i>
@@ -96,8 +103,8 @@
                         </el-col>
                         <el-col :span="20">
                             <p class="pos-rel">
-                                <el-select v-model="form.rangeList.amount.status" placeholder="" class="selct-channel">
-                                    <el-option label="大于等于" value="3"></el-option> 
+                                <el-select v-model="form.rangeList.amount.status" placeholder="请选条件" class="selct-channel">
+                                    <el-option label="大于等于" :value="3"></el-option> 
                                     <!-- <el-option label="小于等于" value="4"></el-option>  -->
                                 </el-select>
                                 <el-input placeholder="请输入内容" class="pay-money" v-model.number="form.rangeList.amount.values" type="number">
@@ -148,7 +155,7 @@
                     </el-date-picker> 
                 </div>
             </el-form-item>
-            <el-form-item label="广告排序" class="w300 pos-rel">
+            <el-form-item label="广告排序" class="w300 pos-rel" v-show="form.isUse==1">
                 <el-input v-model="form.sort" disabled></el-input>
                 <el-button type="primary" size="mini" class="my-select-sort" @click="ad_sort">选择</el-button>
             </el-form-item>  
@@ -156,7 +163,7 @@
                 <el-input v-model="form.modifier" disabled></el-input>
             </el-form-item>
             <el-form-item label="更新时间" class="w600">
-                <el-input v-model="form.modifyTime" disabled></el-input>
+                <el-input v-model="modifyTime_date" disabled></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="onSubmit">确认修改</el-button>
@@ -210,9 +217,9 @@
                     <el-col :span="20">
                         <ul class="sort-ul">   
                             <li class="sort-li pos-rel" v-for="(item, index) in sortData">
-                                {{item.name}}
-                                <span class="iconfont icon-triangleupfill up" :class="{'up-over':index==0}" v-show="item.name == '本条广告'" @click="adSortUp(item,index)"></span> 
-                                <span class="iconfont icon-triangledownfill down" :class="{'up-over':index==sortData.length-1}" v-show="item.name == '本条广告'" @click="adSortDown(item,index)"></span> 
+                                {{item.adTitle}}
+                                <span class="iconfont icon-triangleupfill up" :class="{'up-over':index==0}" v-show="item.adTitle == '本条广告'" @click="adSortUp(item,index)"></span> 
+                                <span class="iconfont icon-triangledownfill down" :class="{'up-over':index==sortData.length-1}" v-show="item.adTitle == '本条广告'" @click="adSortDown(item,index)"></span> 
                             </li>  
                         </ul>
                     </el-col>
@@ -226,17 +233,23 @@
 <script>
 import api from '@/api/ad'
 import util from '@/util'
+import {formatDate} from '@/assets/js/date'
 export default {
     data() {
         return {
             form: {
                 clientId: this.$route.query.clientId, //客户端
                 clientList: [], //客户端列表，用于循环
-                positionCode: '1212', //广告位置
+                positionCode: '', //广告位置code吗 
+                positionId: '', //广告位置id码
                 positionList: [], //广告位列表
                 adTitle: '', //广告标题
                 adImg: '', //图片链接描述，如果是图片
-                AdresourceType: 1, //文字还是图片 1是文字 2是图片 由广告位决定
+                showSrc: '', //图片显示连接
+                showImg: false, //图片最开始隐藏，因为有裂纹图
+                imgWidth: '0', //图片宽
+                imgHigh: '0', //图片高
+                adType: 1, //文字还是图片 1是文字 2是图片 由广告位决定
                 adDesc: '', //广告描述
                 fileList: [], //文件相关
                 isJump: 2, //1是不需要跳转 2是需要跳转
@@ -263,7 +276,7 @@ export default {
                 endTime: '', //结束时间
                 sort: 1, //广告排序
                 modifier: '', //操作人
-                modifyTime: '', //操作人
+                modifyTime: '', //操作时间
             },
             // 部分可见数据
             addConditionValue: '', //选择什么条件添加
@@ -275,7 +288,7 @@ export default {
             dialog1: false, //选择渠道和门店
             dialog2: false, //广告排序
             // 排序数据(之前的广告列表)
-            sortData: [{name: '轮播图0'},{name: '轮播图1'},{name: '轮播图2'},{name: '轮播图3'} ],
+            sortData: [],
             temporary_sortData: [], //广告临时数据
             needChangeAdFlag: true, //广告取消标志位
             // 部分用户dialog1弹框搜索数据和已选数据
@@ -290,6 +303,18 @@ export default {
             temporary_channelResultList: [], //渠道临时数据
             temporary_storeResultList: [], //门店临时数据
             needChange: true, //添加渠道或者门店取消标志位，如果取消，那么不保存，确认才保存 
+            // 文件上传参数
+            uploadData: { 
+                type: 'json',
+                _version:"0.01",
+                _msgType:"request",
+                _timestamps:Math.floor(new Date().getTime()/1000) + '',
+                _interface: 'ad_uploadImg',
+                _remark: "",
+                userid: "测试694", 
+                token: "3077a9e5c2c6ea2c21c57c5bd95ccb8e", 
+            },
+            loading: false, 
         }
     },
     methods: {
@@ -306,7 +331,7 @@ export default {
                 this.$message.error('广告标题只能输入中文，数字和字母') 
                 return false
             } 
-            if (this.form.AdresourceType == 1) {
+            if (this.form.adType == 1) {
                 if (!this.form.adText) {
                     this.$message.error('广告素材不能为空') 
                     return false 
@@ -316,15 +341,15 @@ export default {
                     return false
                 }
             }
-            if (this.form.AdresourceType == 2) {
+            if (this.form.adType == 2) {
                 if (!this.form.adImg) {
                     this.$message.error('广告素材不能为空') 
                     return false 
                 }
-                if (/[\u4e00-\u9fa5]+/.test(this.form.adImg)) {
-                    this.$message.error('广告素材不能包含中文') 
-                    return false 
-                } 
+                // if (/[\u4e00-\u9fa5]+/.test(this.form.adImg)) {
+                //     this.$message.error('广告素材不能包含中文') 
+                //     return false 
+                // } 
             }  
             if (!this.form.adDesc) {
                 this.$message.error('广告描述不能为空') 
@@ -377,14 +402,19 @@ export default {
                     return false
                 }
             } 
+            // if (this.form.isUse == 1 && this.form.adNum == this.form.effectiveAdNum) {
+            //     this.$message.error('改广告位删除广告已达上限')  //广告生效且改广告位的最大值和生效值一致，那么不能添加 
+            //     return false
+            // }
             return true //都验证ok，返回true
         },
-        onSubmit() { //确认添加广告
+        onSubmit() { //确认修改广告
             if (!this.validata()) return  
 
             let params = {   //直接传form是否会有风险？？？？？
                 clientId: this.form.clientId,
-                positionCode: this.form.positionCode,
+                adId: this.$route.query.adId,
+                positionId: this.form.positionId,
                 adTitle: this.form.adTitle,
                 adDesc: this.form.adDesc,
                 adText: this.form.adText,
@@ -397,6 +427,8 @@ export default {
                 endTime: this.form.endTime,
                 sort: this.form.sort,
                 range: this.form.range, 
+                modifier: this.form.modifier, 
+                modifyTime: this.form.modifyTime, 
                 rangeList: {
                     channel: {
                         status: this.form.rangeList.channel.status,  
@@ -420,45 +452,72 @@ export default {
             if(this.form.isUse == 1 && this.form.useType == 1) params.startTime = '' //生效且，立即生效，则取消时间
             if(this.form.isUse == 1 && this.form.useType == 1) params.endTime = ''   //生效且，立即生效，则取消时间 
             if(this.form.isUse == 1 && this.form.useType == 2) { //启动，且阶段生效
-               params.startTime = Math.floor(this.form.startTime.getTime()/1000)
-               params.endTime = Math.floor(this.form.endTime.getTime()/1000) 
+               params.startTime = Math.floor(this.form.startTime/1000)
+               params.endTime = Math.floor(this.form.endTime/1000) 
             } 
+            if (this.form.range == 1) params.rangeList = ''
             console.log(params)
-            return
-
-            api.ad_addAdInfo(params).then((res)=>{ //修改广告接口后台暂未完成
+            // return 
+            this.loading = true
+            api.ad_editAdInfo(params).then((res)=>{ //修改广告接口
                 if (res._ret != '0') {
-                        this.$message.error(res._errStr)
-                        return
-                    }
+                    this.$message.error(res._errStr)
+                    this.loading = false
+                    return
+                }
+                this.loading = false
                 let returnPath = this.$route.query.pagePath
-                this.$router.push({path:returnPath}) 
-
+                this.$router.push({path:returnPath})  
             })
         },
         ad_getAdInfo() { //获取广告详情
             let params = {
-                adId: '47'
+                adId: this.$route.query.adId 
             }
             api.ad_getAdInfo(params).then((res)=> {
                 if (res._ret != '0') {
                     this.$message.error(res._errStr)
                     return
                 }    
+                this.sortData = res.adInfo.position.adList 
+                console.log(res)
+                // console.log(this.sortData)
                 this.form.positionCode = res.adInfo.position.positionCode
+                this.form.positionId = res.adInfo.positionId
                 this.form.adTitle = res.adInfo.adTitle 
                 this.form.adImg = res.adInfo.adImg 
+                this.form.imgWidth = res.adInfo.position.imgWidth 
+                this.form.imgHigh = res.adInfo.position.imgHigh 
+                this.form.adImg = res.adInfo.adImg 
+                this.form.showSrc = res.adInfo.adImg 
+                this.form.showImg = true
                 this.form.adDesc = res.adInfo.adDesc 
+                this.form.adType = res.adInfo.adType 
                 this.form.isJump = res.adInfo.isJump 
                 this.form.jumpUrl = res.adInfo.jumpUrl 
                 this.form.adText = res.adInfo.adText 
+                this.form.isUse = res.adInfo.isUse 
+                this.form.useType = res.adInfo.useType 
                 this.form.range = res.adInfo.range 
                 this.form.rangeList = Object.assign({},this.form.rangeList,res.adInfo.rangeList) 
-                this.form.startTime = res.adInfo.startTime 
-                this.form.endTime = res.adInfo.endTime 
+                this.form.startTime = res.adInfo.startTime == 0 ? '' : res.adInfo.startTime*1000
+                this.form.endTime = res.adInfo.endTime == 0 ? '' : res.adInfo.endTime*1000
                 this.form.sort = res.adInfo.sort  
-                this.form.modifier = res.adInfo.modifier  
-                this.form.modifyTime = res.adInfo.modifyTime  
+                this.form.modifier = res.adInfo.modifier   
+                this.form.modifyTime = res.adInfo.modifyTime 
+                // 单独处理部分用户部分
+                if (this.form.range == 2&&res.adInfo.rangeList.channel.values.length) {
+                    this.partChannelShow = true
+                    this.channelResultList = res.adInfo.rangeList.channel.values
+                }
+                if (this.form.range == 2&&res.adInfo.rangeList.store.values.length) {
+                    this.partStoreShow = true
+                    this.storeResultList = res.adInfo.rangeList.store.values
+                }
+                if (this.form.range == 2&&res.adInfo.rangeList.amount.values != '') {
+                    this.moneyLimitShow = true
+                    this.form.rangeList.amount.values = res.adInfo.rangeList.amount.values
+                }  
             })
         },
         getChannel() { //获取渠道列表数据
@@ -491,32 +550,50 @@ export default {
             })
         },
         getAdPosList() { //获取广告位列表
-            let params = {clientId: this.form.clientId}
+            let params = {clientId: this.form.clientId, inUse:'1'}
             api.ad_getAdPosition(params).then((res)=>{
                 if (res._ret != '0') {
                     this.$message.error(res._errStr)
                     return
                 }  
+                console.log(res)
                 this.form.positionList = res.positionList
                 console.log(this.form.positionList)
             })
         },
         // 文件处理函数
-        select1() {
-            alert(1)
-        }, 
-        handleRemove(file, fileList) {
-            console.log(file, fileList);
+        beforeUpload(file) { //头像上传前的钩子
+            const type = file.type === 'image/jpeg' || file.type === 'image/png' 
+            const isLt4M = file.size / 1024 / 1024 / 1024 / 1024 < 2 
+            console.log(file)
+            if (!type) {
+              this.$message.error('上传头像图片只能是jpeg或png格式!')
+            }
+            if (!isLt4M) {
+              this.$message.error('上传图片大小不能超过4MB!')
+            }
+            return 
         },
-        handlePreview(file) {
-            console.log(file);
+        uploadSuccess(response, file, fileList) {  //上传成功
+            let res = response._data
+            if (res._ret != '0') {
+                this.$message.error(res._errStr)
+                return
+            }
+            this.form.showImg = true 
+            this.form.adImg = res.data.url
+            this.form.showSrc = res.data.url
+
+            console.log(this.form.fileList)
         },
-        handleExceed(files, fileList) {
-            // this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+        uploadRemove(file) { //删除上传的图片
+            this.form.adImg = ''
+            this.form.showSrc = ''
+            this.form.showImg = false
         },
         checkIsAdd(arr) {
             for (let i = 0; i < arr.length; i++) {
-                if (arr[i].name == '本条广告') {
+                if (arr[i].adTitle == '本条广告') {
                     return false
                 }
             }
@@ -525,7 +602,7 @@ export default {
         ad_sort() { //广告排序
             this.dialog2 = true
             if (this.checkIsAdd(this.sortData)) {  
-                this.sortData.push({name:'本条广告'})
+                this.sortData.splice(this.form.sort-1,0,{adTitle:'本条广告'})
             }
             this.temporary_sortData = [...this.sortData]  
         },
@@ -556,7 +633,7 @@ export default {
                 this.dialog2 = false 
             } else {
                 this.sortData.forEach((item,index)=>{
-                    if(item.name == '本条广告') {
+                    if(item.adTitle == '本条广告') {
                         // console.log(index,121212)
                         this.form.sort = index + 1
                         this.dialog2 = false  
@@ -627,6 +704,12 @@ export default {
             this.$router.push({path:returnPath}) 
         }
     },
+    // filters: {
+    //     formatDate(time) {
+    //         let date = new Date(time)
+    //         return formatDate(date, 'yyyy-MM-dd hh:mm:ss')
+    //     }
+    // },
     computed: {
         fontCount() { //文字倒计数
             return this.form.adDesc.length
@@ -642,6 +725,10 @@ export default {
                 } 
             })
             return str 
+        },
+        modifyTime_date() {
+            let date = new Date(this.form.modifyTime*1000)
+            return formatDate(date, 'yyyy-MM-dd hh:mm:ss')
         }
     },
     watch: {
@@ -686,6 +773,13 @@ export default {
                 } 
             })
             this.form.rangeList.store.values = str 
+        },
+        ['form.range'](val) {
+            if (val == 2) {
+                this.form.rangeList.channel.status = 1
+                this.form.rangeList.store.status = 1
+                this.form.rangeList.amount.status = 3
+            }
         }
     },
     mounted() {  
@@ -695,29 +789,40 @@ export default {
         this.getStore() //门店列表
         this.ad_getAdInfo() //获取广告详情
         this.form.sort = this.sortData.length + 1 
+        // console.log(util.formatDate.format('1514375848000', 'yyyy-MM-dd hh:mm:ss'))
     }
 }
 
 </script>
-<style>
-.addNewAd-wrap .el-dialog__body {
+<style> 
+.editNewAd-wrap .el-dialog__body {      
     border-top: 1px solid #ccc;
+}
+.editNewAd-wrap .el-upload-list {
+    margin-top: 17px;
+} 
+.editNewAd-wrap .el-upload-list__item:hover {   
+    background: none;
+}
+.editNewAd-wrap .img-text .el-radio+.el-radio {  
+    margin-left: 0;
 }
 
 </style>
 <style scoped lang="scss">
-.addNewAd-wrap {
+.editNewAd-wrap {
     .sort-box {
         text-align: center;
+        max-height: 500px;
+        overflow: auto;
         .sort-p {
             line-height: 40px;
         }
         .sort-ul {
             padding: 0;
             max-height: 500px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
+            margin-bottom: 20px; 
+            box-sizing: border-box; 
         }
         .sort-li {
             line-height: 50px;
@@ -868,6 +973,7 @@ export default {
         background: #ccc;
         text-align: center;
         line-height: 140px;
+        overflow: hidden;
     }
     .selct-channel {
         position: absolute;
