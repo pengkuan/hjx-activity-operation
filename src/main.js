@@ -14,7 +14,7 @@ Vue.config.productionTip = false
 Vue.prototype._Util = Util
 Vue.prototype._Config = Config
 Vue.use(ElementUI)
-/* eslint-disable no-new */
+
 new Vue({
     el: '#app',
     router,

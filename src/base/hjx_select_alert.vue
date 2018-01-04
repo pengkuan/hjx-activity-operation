@@ -2,13 +2,13 @@
   <transition name="fade" v-if="ifshow">
       <div class="el-message-box__wrapper" style="z-index:2006">
         <div class="el-message-box">
-          <div class="alert-title hjx-text-center hjx-blue">选择一级和二级</div>
+          <div class="alert-title hjx-text-center hjx-blue">选择{{mappingResult[9]}}和{{mappingResult[10]}}</div>
           <div class="clear choose-container">
             <div class="fl box-left">
               <p class="second-title">选择：</p>
               <div class="choose-field">
                 <div v-if="first">
-                  <el-input size="small" @input="searchL1(searchL1Name)" placeholder="搜索一级" prefix-icon="el-icon-search" v-model="searchL1Name" clearable></el-input>
+                  <el-input size="small" @input="searchL1(searchL1Name)" :placeholder=" '搜索'+mappingResult[9]" prefix-icon="el-icon-search" v-model="searchL1Name" clearable></el-input>
                   <span class="noTap breadcrumb">一级列表</span>
                   <p class="left-item-second">
                     <el-checkbox v-show="showSearchL1" @change="changeL1(chooseAllL1)" :indeterminate="isIndeterminateFirst" v-model="chooseAllL1">全选</el-checkbox>
@@ -23,7 +23,7 @@
                   </div>
                 </div>
                 <div v-else>
-                  <el-input size="small" @input="searchL2(searchL2Name)" placeholder="搜索二级" prefix-icon="el-icon-search" v-model="searchL2Name" clearable></el-input>
+                  <el-input size="small" @input="searchL2(searchL2Name)" :placeholder=" '搜索'+mappingResult[10]" prefix-icon="el-icon-search" v-model="searchL2Name" clearable></el-input>
                   <div class="breadcrumb"><span class="canTap hjx-hover" @click="first = true">一级列表</span><i class="iconfont icon-right"></i><span class="noTap">二级列表</span></div>
                   <p class="left-item-second">
                     <el-checkbox v-show="showSearchL2" @change="changeL2(chooseAllL2)" :indeterminate="isIndeterminateFirst" v-model="chooseAllL2">全选</el-checkbox>
@@ -68,12 +68,12 @@ export default {
     return {
       mapping:{ //接口字段映射表
         /**数组参数说明
-        *@ 一级列表字段id、一级列表字段name、二级查询id字段、二级列表字段id、二级列表字段name、
-        *@ action接口、get接口、根据id获取二级api、获取二级列表接口字段
+        *@ 0.一级列表字段id、1.一级列表字段name、2.二级查询id字段、3.二级列表字段id、4.二级列表字段name、
+        *@ 5.action接口、6.get接口、7.根据id获取二级api、8.获取二级列表接口字段、9.一级名称、10.二级名称
         */
-        addr:['id','name','provinceId','id','name','getAllProvinces','allProvinces','get_city_list','cityList'], //地址 
-        category:['categoryId','categoryName','categoryId','productId','productName','getAllCategory','allCategory','get_category_products','productList'], //品牌
-        channel:['id','name','channelId','id','name','getAllChannel','allChannel','get_channel_store_list','storeList'], //商户
+        addr:['id','name','provinceId','id','name','getAllProvinces','allProvinces','get_city_list','cityList','省','市'], //地址 
+        category:['categoryId','categoryName','categoryId','productId','productName','getAllCategory','allCategory','get_category_products','productList','品牌','机型'], //品牌
+        channel:['id','name','channelId','id','name','getAllChannel','allChannel','get_channel_store_list','storeList','商户','门店'], //商户
       },
       first: true,
       searchL1Name: '',

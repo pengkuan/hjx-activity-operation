@@ -36,15 +36,16 @@
                     <el-option label="全部" value="0"></el-option>
                     <el-option label="未领取" value="1"></el-option>
                     <el-option label="已领取" value="2"></el-option>
-                    <el-option label="已失效" value="2"></el-option>
+                    <el-option label="已失效" value="3"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="奖金状态:" prop="amountStatus">
                 <el-select class="search-width" v-model="search.amountStatus" placeholder="请选择奖金状态">
                     <el-option label="全部" value="0"></el-option>
-                    <el-option label="未激活" value="1"></el-option>
-                    <el-option label="已激活" value="2"></el-option>
-                    <el-option label="已失效" value="2"></el-option>
+                    <el-option label="未领取" value="1"></el-option>
+                    <el-option label="未激活" value="2"></el-option>
+                    <el-option label="已激活" value="3"></el-option>
+                    <el-option label="已失效" value="4"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="S1手机号/姓名:" prop="s1Info">
