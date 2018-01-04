@@ -7,8 +7,8 @@
         <br>
         <el-alert title="基本信息" type="success" :closable="false"></el-alert>
         <hjx-left-title label="名称"></hjx-left-title>
-        <hjx-underline-input label="活动名称" width="200" v-model="activityName" placeholder="请输入活动名称"></hjx-underline-input>
-        <hjx-underline-input label="活动描述" width="200" v-model="activityDesc" placeholder="请输入活动描述"></hjx-underline-input>
+        <p><hjx-underline-input label="活动名称" width="200" v-model="activityName"  @change="val_activityName" placeholder="请输入活动名称"></hjx-underline-input><span class="errorInfo">{{errorInfo['activityName']}}</span></p>
+        <p><hjx-underline-input label="活动描述" width="200" v-model="activityDesc" @change="val_activityDesc"  placeholder="请输入活动描述"></hjx-underline-input><span class="errorInfo">{{errorInfo['activityDesc']}}</span></p>
         <hjx-left-title label="类型"></hjx-left-title>
         <div class="mrg-b10">
             <span class="hjx-left-label">运营类型：</span>
@@ -28,46 +28,59 @@
             <p>
                 <span class="hjx-left-label">生效时间：</span><span class="reward-remind hjx-info">（该时间段内，将按规则进行活动）</span>
             </p>
-            <p class="mrg-l120" v-for="item in timeLimitTypeList" >
-                <el-radio v-model="timeLimitType" :label="item.id" :key="item.id">{{item.name}}</el-radio>
-                <span class="mrg-l40" v-if="item.id == '2' && timeLimitType == '2'">
-                    <el-date-picker v-model="dateLimitRange" value-format="yyyy-MM-dd" size="small" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
-                    <el-time-picker is-range size="small" value-format="HH:mm:ss" v-model="timeLimitRange" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" placeholder="选择时间范围">
-                    </el-time-picker>
-                </span>
+            <p class="mrg-l120" v-for="item in timeLimitTypeList">
+                <el-radio v-model="timeLimitType" :label="item.id" :key="item.id" :disabled="item.id == '2'&& ifInitLimitTime">
+                    <span v-if="item.id == '2' && timeLimitType == '2'">
+                        <el-date-picker v-model="activityStartDate" disabled type="date" @change="val_activityDate" size="small" placeholder="开始日期" value-format="yyyy-MM-dd" :picker-options="startDateOption"></el-date-picker>
+                        ~
+                        <el-date-picker v-model="activityEndDate" type="date" size="small" @change="val_activityDate" value-format="yyyy-MM-dd" placeholder="结束日期" :picker-options="endDateOption"></el-date-picker><span class="errorInfo">{{errorInfo['activityDate']}}</span>
+                        <br><br>
+                        <span class="mrg-l24">
+                            <el-time-select placeholder="每日起始时间" size="small" @change="val_activityTime" disabled :editable='false' v-model="activityStartTime" :picker-options="{start: '00:00',step: '00:15',end: '24:00',maxTime:activityEndTime}"></el-time-select>
+                            ~
+                            <el-time-select placeholder="每日结束时间" size="small" @change="val_activityTime" disabled :editable='false' v-model="activityEndTime" :picker-options="{start: '00:00',step: '00:15',end: '24:00', minTime: minEndTime}"></el-time-select>
+                        </span><span class="errorInfo">{{errorInfo['activityTime']}}</span>
+                    </span>
+                    <span v-else>{{item.name}} 
+                        <span v-if="item.id == '1'" class="reward-remind hjx-info"> （时间不限，长期有效）</span>
+                    </span>
+                </el-radio>
             </p>
         </div>
         <hjx-left-title label="算法"></hjx-left-title>
         <div class="mrg-b10 ">
-            <hjx-underline-input type='number' label="算法系数" width="50" v-model="publicAlgorithmCoefficient" :textCenter="true"></hjx-underline-input><span class="underline-text">%</span>
-            <span class=" underline-text reward-remind">（参与算法计算的相乘系数，为活动成本）</span>
+            <hjx-underline-input type='number' label="算法系数" width="50" @change="val_publicAlgorithmCoefficient" v-model="publicAlgorithmCoefficient" :textCenter="true"></hjx-underline-input><span class="underline-text">%</span>
+            <span class="underline-text-info reward-remind hjx-info">（参与算法计算的相乘系数，为活动成本）</span>
+            <span class="errorInfo">{{errorInfo['publicAlgorithmCoefficient']}}</span>
         </div>
         <div class="mrg-b10">
             <div class="mrg-b10">
                 <span class="hjx-left-label">数额设置：</span><span class="reward-remind hjx-info">（设置付款金额在某个区间内，相应的红包金额最高、最低值）</span>
             </div>
             <div class="mrg-l120" v-for="(item , index) in CountRangeList" :key="index">
-                <hjx-underline-input type='number' width="50" v-model="item.payLeast" :disabled="index>0?true:false" :textCenter="true"></hjx-underline-input>
+                <hjx-underline-input type='number' width="50" v-model="item.payLeast" :disabled="index>0?true:false" @change="val_CountRangeList(index)" :textCenter="true"></hjx-underline-input>
                 <span class="underline-text"> ≤ 付款金额 < </span>
                 <hjx-underline-input type='number' width="50" v-model="item.payMost" :index="index" :textCenter="true" @change="payRangeChange"></hjx-underline-input>
 
                 <span class="underline-text"><i class="iconfont icon-play_forward_fill"></i></span>
 
-                <hjx-underline-input type='number' width="50" v-model="item.bonusLeast" :textCenter="true"></hjx-underline-input>
+                <hjx-underline-input type='number' width="50" v-model="item.bonusLeast" @change="val_CountRangeList(index)" :textCenter="true"></hjx-underline-input>
                 <span class="underline-text"> ≤ 店奖金额 < </span>
-                <hjx-underline-input type='number' width="50" v-model="item.bonusMost" :textCenter="true"></hjx-underline-input>
+                <hjx-underline-input type='number' width="50" v-model="item.bonusMost" @change="val_CountRangeList(index)" :textCenter="true"></hjx-underline-input>
                 <span v-if="CountRangeList.length==1" class="underline-text"><i class="iconfont icon-roundaddfill hjx-hover" @click="addCountRange(index)"></i></span>
                 <span v-else-if="(CountRangeList.length>1) && (index == CountRangeList.length - 1)" class="underline-text">
                     <i class="iconfont icon-roundaddfill hjx-hover" @click="addCountRange(index)"></i>
                     <i class="iconfont icon-round_close_fill_light hjx-hover" @click="delCountRange"></i>
                 </span>
+                <span class="errorInfo">{{errorInfo['CountRangeList_'+index]}}</span>
             </div>
         </div>
 
         <hjx-left-title label="风控"></hjx-left-title>
         <div class="mrg-b10 ">
-            <hjx-underline-input label="发放总额上限" type='number' disabled width="50" v-model="upperLimitAmount" :textCenter="true"></hjx-underline-input><span class="underline-text">元 / 整个时间段</span>
-            <span class="reward-remind underline-text">（周期内发放金额达到上限后，每笔红包将按单笔最低值发放）</span>
+            <hjx-underline-input label="发放总额上限" type='number' disabled width="70" @change="val_upperLimitAmount" v-model="upperLimitAmount" :textCenter="true"></hjx-underline-input><span class="underline-text">元 / 整个时间段</span>
+            <span class="reward-remind underline-text-info hjx-info">（周期内发放金额达到上限后，每笔红包将按单笔最低值发放）</span>
+            <span class="errorInfo">{{errorInfo['upperLimitAmount']}}</span>
         </div>
 
         <el-alert title="发放规则" type="success" :closable="false"></el-alert>
@@ -75,9 +88,11 @@
         <div class="mrg-b10">
             <p>
                 <span class="hjx-left-label">订单回收方式：</span>
-                <el-checkbox v-for="item in recycleTypeList" v-model="item.ifChoosed" :key="item.id">{{item.name}}</el-checkbox>
+                <el-checkbox v-for="item in recycleTypeList" v-model="item.ifChoosed" @change="val_recycleTypeList" :key="item.id">{{item.name}}</el-checkbox>
+                <span class="errorInfo">{{errorInfo['recycleTypeList']}}</span>
             </p>
             <p class="reward-remind mrg-l40 hjx-info">（勾选的回收方式，可参与到活动中）</p>
+            
         </div>
         <hjx-left-title label="机型"></hjx-left-title>
         <div>
@@ -85,10 +100,11 @@
             <span class="hjx-hover ft13 hjx-blue mrg-l20" @click="showChoose('category')">
                 <el-button v-if="modelList.L1.length>0||modelList.L2.length>0" type="text" >已设置 <i class="iconfont icon-duigou"></i></el-button>
                 <el-button v-else type="text">未设置<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                <span class="errorInfo">{{errorInfo['modelList']}}</span>
             </span>
             <p class="reward-remind mrg-l40 hjx-info">（满足选中机型的订单，可参与到活动中）</p>
         </div>
-        <hjx-left-title label="对象"></hjx-left-title>
+        <hjx-left-title label="对象"><span class="errorInfo">{{errorInfo['participants']}}</span></hjx-left-title>
         <div>
             <span class="hjx-left-label">商户/门店：</span>
             <span class="hjx-hover ft13 hjx-blue mrg-l14" @click="showChoose('channel')">
@@ -108,7 +124,7 @@
         <hjx-select-alert  :action="'channel'" :ifshow="ifshowChannel" @close="closeAlert" :data="channelList" @setData="setChannelData"></hjx-select-alert>
         <div class="operate">
             <el-button @click="onSubmit" type="primary" size="mini">确认</el-button>
-            <el-button size="mini">取消</el-button>
+            <router-link to="/reward/list"><el-button size="mini">取消</el-button></router-link>
         </div>
         <!-- 背景框 -->
         <div v-show="ifshowModel||ifshowAddr||ifshowChannel" class="v-modal" style="z-index:2005"></div>
@@ -120,31 +136,53 @@ import { mapGetters } from 'vuex'
 import hjxPart from '@/base/hjx_part'
 import hjxLeftTitle from '@/base/hjx_left_title'
 import hjxUnderlineInput from '@/base/hjx_underline_input'
-import hjxSelectAlert from '@/base/hjx_select_alert'
+// import hjxSelectAlert from '@/base/hjx_select_alert'
+
+const hjxSelectAlert = resolve => require(['@/base/hjx_select_alert'], resolve) 
+
 export default {
     components: { hjxPart, hjxLeftTitle, hjxUnderlineInput,hjxSelectAlert },
     data() {
         return {
+            errorInfo:{},
             amountLimitType:'1',//总金额限制类型 
             activityName: '',
             activityDesc: '',
             rewardType: '1',//随机抽奖
             operateType:'1',
             ticketTypeList:[
-            	{name:'店奖券',id:'1'}
+            	{name:'店奖类',id:'1'}
             ],
             showPlan:'1',
             showPlanList:[
             	{name:'方案1',id:'1',}
             ],
             /************ 生效时间限制 ************/
+            ifInitLimitTime:false, //类型一不能切换到类型二
+            activityStartDate: '',
+            activityEndDate: '',
+            activityStartTime: '',
+            activityEndTime: '',
+            startDateOption: {
+                disabledDate: (time) => {
+                    if (this.activityEndDate != "") {
+                        return this._Util.formatDate.format(time, 'yyyy-MM-dd') > this.activityEndDate
+                    } else {
+                        return false
+                    }
+
+                }
+            },
+            endDateOption: {
+                disabledDate: (time) => {
+                    return this._Util.formatDate.format(time, 'yyyy-MM-dd') < this.activityStartDate || time.getTime() < Date.now() - 8.64e7
+                }
+            },
             timeLimitType: '1',
             timeLimitTypeList: [
                 { name: '不限', id: '1' },
                 { name: '限制', id: '2' },
             ],
-            dateLimitRange: '',
-            timeLimitRange: '',
             upperLimitAmount:'',
             /************ 数额设置 ************/
             CountRangeList:[
@@ -157,9 +195,9 @@ export default {
             ],
             publicAlgorithmCoefficient:'',//算法系数
             recycleTypeList:[
-            	{name:'检测回收',id:'0',ifChoosed:false},
-            	{name:'环保回收',id:'1',ifChoosed:true},
-            	{name:'公益回收',id:'2',ifChoosed:true}
+                {name:'公益回收',id:'0',ifChoosed:false},
+                {name:'环保回收',id:'1',ifChoosed:false},
+                {name:'检测回收',id:'2',ifChoosed:false}
             ],
             /********设置省 市*******/
             ifshowAddr: false,
@@ -187,16 +225,36 @@ export default {
         ...mapGetters({
             'userId':'userInfo/userId',
             'userName':'userInfo/userName',
-        })
+        }),
+        minEndTime() {
+            if (this.activityEndDate && this.activityEndDate == this._Util.formatDate.format(new Date(), 'yyyy-MM-dd')) {
+                let nowTime = this._Util.formatDate.format(new Date(), 'hh:mm')
+                if (this.activityStartTime > nowTime) {
+                    return this.activityStartTime
+                } else {
+                    return nowTime
+                }
+            }
+
+            return this.activityStartTime
+        },
     },
     methods: {
     	/******获取并设置初始数据********/
     	setDeault(){
+            const loading = this.$loading({
+                    lock: true,
+                    text: '获取数据中...',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                })
     		api.search_activity_detail({activityId:this.$route.query.id}).then(res=>{
                 if(res._ret != 0){
+                    loading.close()
                     this.$alert(res._errStr)
                     return
                 }
+                loading.close()
                 this.activityName = res.activityName
                 this.activityDesc = res.activityDesc
                 this.amountLimitType = res.amountLimitType
@@ -229,9 +287,13 @@ export default {
 		        }
 
                 //设置生效时间
-                if(res.timeLimitType == '2'){
-                	this.dateLimitRange = [res.activityStartDate , res.activityEndDate]
-                	this.timeLimitRange = [res.activityStartTime , res.activityEndTime]
+                if (res.timeLimitType == '2') {
+                    this.activityStartDate = res.activityStartDate
+                    this.activityEndDate = res.activityEndDate
+                    this.activityStartTime = res.activityStartTime.slice(0, 5)
+                    this.activityEndTime = res.activityEndTime.slice(0, 5)
+                }else{
+                    this.ifInitLimitTime = true
                 }
                 //设置验证工号开通时间
                 if(res.checkUserCreateTime == '1'){
@@ -278,18 +340,6 @@ export default {
                 "storeIdList":this.storeIdList,
             }
 
-            //活动时间选择限制时 必传字段
-            if(this.timeLimitType == '2'){
-                //生效时间校验
-                if(!this.dateLimitRange || !this.timeLimitRange){
-                    this.$message('请选择生效时间')
-                    return
-                }
-                submitData.activityStartDate =  this.dateLimitRange[0]
-                submitData.activityEndDate =  this.dateLimitRange[1]
-                submitData.activityStartTime =  this.timeLimitRange[0]
-                submitData.activityEndTime =  this.timeLimitRange[1]
-            }
             // 校验工号开通时间时 必传字段
             if(this.isCheckUserCreateTime == '1'){
                 submitData.checkUserCreateStartTime =  this.checkUserCreateTime[0]
@@ -301,9 +351,7 @@ export default {
                 if(item.ifChoosed) bitOperation[index] = 1
             })
             submitData.recycleType = this._Util.bitOperation(bitOperation)
-            //数额设置
-            submitData.publicGrantSection = this.filterPublicGrantSection(this.CountRangeList)
-            if(!submitData.publicGrantSection) return
+            
             //省市设置
             if(this.addrList.L1.length == 0){
                 submitData.provinceIdList = ''
@@ -364,25 +412,26 @@ export default {
                 submitData.storeIdList = idArr.join('#')
             }
 
-            /********** 校验 *********/
-            
-            if(!this._Util.validate.nameLength(submitData.activityName,'请输入活动名称（4~50字符）')) return
-            if(!this._Util.validate.desc(submitData.activityDesc,'请输入活动描述（4~50字符）')) return
-            if(!this._Util.validate.precenteFixed2(submitData.publicAlgorithmCoefficient,'请输入0~100算法系数（最多2位小数）')) return
-            if(!this._Util.validate.fixed2(submitData.upperLimitAmount,'请输入发放总额上限（最多2位小数）')) return
+            /********** 提交时校验 *********/
+            const validateMethod = ['val_activityName','val_activityDesc','val_activityDate','val_activityTime','val_publicAlgorithmCoefficient','val_CountRangeList','val_upperLimitAmount','val_recycleTypeList','val_modelList','val_participants']
+            for(const val of validateMethod){
+                if(!this[val]() ) return
+            }
+
+            //校验通过 设置值
+            submitData.publicGrantSection = this.CountRangeList.map(item=>{
+                return `${item.payLeast}|${item.payMost}#${item.bonusLeast}|${item.bonusMost}`
+            }).join('&')
             submitData.upperLimitAmount = String(submitData.upperLimitAmount*100)
-            if(submitData.recycleType == '0'){
-                this.$message({ message: '请至少选择一个订单回收方式', type: 'error' })
-                return
+            //活动时间选择限制时 必传字段
+            if (this.timeLimitType == '2') {
+                submitData.activityStartDate = this.activityStartDate
+                submitData.activityEndDate = this.activityEndDate
+                submitData.activityStartTime = this.activityStartTime + ':00'
+                submitData.activityEndTime = this.activityEndTime + ':00'
             }
-            if( !(submitData.brandIdList||submitData.productIdList)){
-                this.$message({ message: '请设置参与机型', type: 'error' })
-                return
-            }
-            if( !(submitData.businessesIdList||submitData.storeIdList||submitData.provinceIdList||submitData.cityIdList)){
-                this.$message({ message: '请至少设置一个参与对象', type: 'error' })
-                return
-            }
+            
+
             /********** 提交 ***********/
             api.update_activity_info(submitData).then(res=>{
                 if(res._ret != 0){
@@ -402,62 +451,32 @@ export default {
         /******设置地址********/
         setAddrData(val) {
             this.addrList = JSON.parse(JSON.stringify(val))
+            this.val_participants() //验证
         },
-        
         /******设置机型********/
         setModelData(val) {
             this.modelList = JSON.parse(JSON.stringify(val))
+            this.val_modelList() //验证
         },
-        
         /******设置商户门店********/
         setChannelData(val) {
             this.channelList = JSON.parse(JSON.stringify(val))
+            this.val_participants() //验证
         },
-        
         showChoose(which){
             if(which == 'category') this.ifshowModel = true
             if(which == 'addr') this.ifshowAddr = true
             if(which == 'channel') this.ifshowChannel = true
         },
-        //过滤数额设置及校验
-        filterPublicGrantSection(arr){
-            let newArr = [],validate = true
-            arr.forEach(item=>{
-                if( (!this._Util.validate.fixed2Nomsg(item.payMost) )||
-                    (!this._Util.validate.fixed2Nomsg(item.payLeast))||
-                    (!this._Util.validate.fixed2Nomsg(item.bonusMost))||
-                    (!this._Util.validate.fixed2Nomsg(item.bonusLeast))||
-                    Number(item.payMost) <= Number(item.payLeast)|| 
-                    Number(item.bonusMost)<=Number(item.bonusLeast)|| 
-                    Number(item.bonusMost)>Number(item.payMost)
-                ) {
-                    const h = this.$createElement
-                    this.$msgbox({
-                        title: '数额设置错误',
-                        message: h('p', null, [
-                            h('p', { style: 'color: #FA5555' }, '1.最多支持两位小数 '),
-                            h('p', { style: 'color: #FA5555' }, '2.付款金额上限值不应小于下限值 '),
-                            h('p', { style: 'color: #FA5555' }, '3.奖金金额上限值不应小于下限值 '),
-                            h('p', { style: 'color: #FA5555' }, '4.奖金上线不应大于付款金额上限 ')
-                        ])
-                    })
-                    validate = false
-                }
-                newArr.push(`${item.payLeast}|${item.payMost}#${item.bonusLeast}|${item.bonusMost}`)
-            })
-            if(validate) return newArr.join('&')
-                else return false
-        },
+        
         // 添加一条数额设置
         addCountRange(index){
-        
             this.$set(this.CountRangeList , this.CountRangeList.length ,{
                 payLeast:this.CountRangeList[index].payMost,
                 payMost:'',
                 bonusLeast:'',
                 bonusMost:''
             })
-
         },
         //修改数额设置
         payRangeChange(val,index){
@@ -481,7 +500,167 @@ export default {
             }else if(this.CountRangeList[index+1]){
                 this.CountRangeList[index+1].payLeast = val
             }
+            this.val_CountRangeList(index)
+            
         },
+        /**************** 验证 *******************/
+        //验证活动名称
+        val_activityName(){
+            if(!this._Util.validate.nameLength(this.activityName)){
+                this.$set(this.errorInfo , 'activityName', '请输入活动名称（4~50字符）')
+                return false 
+            }else{
+                this.$set(this.errorInfo , 'activityName', '')
+                return true
+            }
+        },
+        //验证活动描述
+        val_activityDesc(){
+            if(!this._Util.validate.desc(this.activityDesc)){
+                this.$set(this.errorInfo , 'activityDesc', '请输入活动描述（4~50字符）')
+                return false 
+            }else{
+                this.$set(this.errorInfo , 'activityDesc', '')
+                return true 
+            }
+        },
+        //验证算法系数
+        val_publicAlgorithmCoefficient(){
+            if(!this._Util.validate.precenteFixed2(this.publicAlgorithmCoefficient)){
+                this.$set(this.errorInfo , 'publicAlgorithmCoefficient', '请输入0~100算法系数（支持2位小数）')
+                return false 
+            }else{
+                this.$set(this.errorInfo , 'publicAlgorithmCoefficient', '')
+                return true 
+            }
+        },
+        //验证总额上限
+        val_upperLimitAmount(){
+            if(!this._Util.validate.fixed0(this.upperLimitAmount)){
+                this.$set(this.errorInfo , 'upperLimitAmount', '请输入发放总额上限（不支持小数）')
+                return false 
+            }else{
+                this.$set(this.errorInfo , 'upperLimitAmount', '')
+                return true 
+            }
+        },
+        //验证数额设置
+        val_CountRangeList(index){
+            if(index == undefined){//表示确认提交时的验证
+                for(const [key,val] of this.CountRangeList.entries() ){
+                    let theItem = val
+                    var ifpass = true
+                    if(
+                        (!this._Util.validate.fixed2(theItem.payLeast)) ||
+                        (!this._Util.validate.fixed2(theItem.payMost)) ||
+                        (!this._Util.validate.fixed2(theItem.bonusLeast)) ||
+                        (!this._Util.validate.fixed2(theItem.bonusMost) )
+                    ){
+                        this.$set(this.errorInfo , 'CountRangeList_'+key , '支持两位小数')
+                        ifpass = false  
+                    }else if(!theItem.payLeast||!theItem.payMost||!theItem.bonusLeast||!theItem.bonusMost){
+                        this.$set(this.errorInfo , 'CountRangeList_'+key , '请完善当条信息')
+                        ifpass = false  
+                    }else if(Number(theItem.payMost) <= Number(theItem.payLeast)) {
+                        this.$set(this.errorInfo , 'CountRangeList_'+key , '付款金额上限值不应小于下限值')
+                        ifpass = false
+                    }else if(Number(theItem.bonusMost) <= Number(theItem.bonusLeast) ){
+                        this.$set(this.errorInfo , 'CountRangeList_'+key , '奖金金额上限值不应小于下限值')
+                        ifpass = false
+                    }else if(Number(theItem.bonusMost) > Number(theItem.payMost) ){
+                        this.$set(this.errorInfo , 'CountRangeList_'+key , '奖金上线不应大于付款金额上限')
+                        ifpass = false 
+                    }else{
+                        this.$set(this.errorInfo , 'CountRangeList_'+key , '')
+                    }
+                }
+                return ifpass
+            }else{ //表示触发单条change事件时的验证
+                let theItem = this.CountRangeList[index]
+                if(!theItem.payLeast||!theItem.payMost||!theItem.bonusLeast||!theItem.bonusMost){
+                    this.$set(this.errorInfo , 'CountRangeList_'+index , '请完善当条信息')
+                    return false  
+                }else if(Number(theItem.payMost) <= Number(theItem.payLeast)) {
+                    this.$set(this.errorInfo , 'CountRangeList_'+index , '付款金额上限值不应小于下限值')
+                    return false  
+                }else if(Number(theItem.bonusMost) <= Number(theItem.bonusLeast) ){
+                    this.$set(this.errorInfo , 'CountRangeList_'+index , '奖金金额上限值不应小于下限值')
+                    return false  
+                }else if(Number(theItem.bonusMost) > Number(theItem.payMost) ){
+                    this.$set(this.errorInfo , 'CountRangeList_'+index , '奖金上线不应大于付款金额上限')
+                    return false  
+                }else{
+                    this.$set(this.errorInfo , 'CountRangeList_'+index , '')
+                    return true
+                }
+            }
+        },
+        //验证回收方式
+        val_recycleTypeList(){
+            let bitOperation = [0,0,0]
+            this.recycleTypeList.forEach((item,index)=>{
+                if(item.ifChoosed) bitOperation[index] = 1
+            })
+            let recycleType = this._Util.bitOperation(bitOperation)
+            if(recycleType == '0'){
+                this.$set(this.errorInfo , 'recycleTypeList', '请至少选择一个订单回收方式')   
+                return false             
+            }else{
+                this.$set(this.errorInfo , 'recycleTypeList', '')
+                return true 
+            }
+        },
+         //验证参与机型
+        val_modelList(){
+            if( !(this.modelList.L1.length>0||this.modelList.L2.length>0) ){
+                this.$set(this.errorInfo , 'modelList', '请设置参与机型')
+                return false 
+            }else{
+                this.$set(this.errorInfo , 'modelList', '')
+                return true 
+            }
+        },
+        //验证参与对象 
+        val_participants(){
+            if( !(this.channelList.L1.length>0||this.channelList.L2.length>0||this.addrList.L1.length>0||this.addrList.L2.length>0) ){
+                this.$set(this.errorInfo , 'participants', '请至少设置一个参与对象')
+                return false 
+            }else{
+                this.$set(this.errorInfo , 'participants', '')
+                return true 
+            }
+        },
+        //验证限制日期 
+        val_activityDate(){
+            // 当选择生效时间为限制时 启用验证
+            if(this.timeLimitType == '1') return true
+
+            if( !this.activityStartDate || !this.activityEndDate){
+                this.$set(this.errorInfo , 'activityDate', '请选择日期范围')
+                return false 
+            }else if( this.activityStartDate > this.activityEndDate ){
+                this.$set(this.errorInfo , 'activityDate', '结束日期需大于等于开始日期')
+                return false 
+            }else{
+                this.$set(this.errorInfo , 'activityDate', '')
+                return true 
+            }
+        },
+        //验证限制时间
+        val_activityTime(){
+            // 当选择生效时间为限制时 启用验证
+            if(this.timeLimitType == '1') return true
+                
+            if( this.activityStartTime >= this.activityEndTime ){
+                this.$set(this.errorInfo , 'activityTime', '结束时间需大于开始时间')
+                return false 
+            }else{
+                this.$set(this.errorInfo , 'activityTime', '')
+                return true 
+            }
+        },
+
+
 		// 删除一条数额设置
         delCountRange(){
         	this.CountRangeList.pop()
@@ -497,6 +676,9 @@ export default {
 	.spc-select{position: relative;margin-bottom: -3px}
 </style>
 <style type="text/css" scoped="scoped">
+    .errorInfo{
+        color:#FA5555;font-size: 12px;margin-left: 18px;
+    }
     p{margin-bottom: 10px}
     .icon-duigou{color:#67c23a;margin-left: 5px;}
 	.reward-remind{font-size: 12px;}
@@ -509,4 +691,9 @@ export default {
         padding-bottom: 8px;
     	display: inline-block;
 	}
+    .underline-text-info{
+        display: inline-block;
+        vertical-align: bottom;
+        padding-bottom: 8px;
+    }
 </style>

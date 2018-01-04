@@ -157,9 +157,9 @@ export default {
             ],
             publicAlgorithmCoefficient:'',//算法系数
             recycleTypeList:[
-            	{name:'检测回收',id:'0',ifChoosed:false},
-            	{name:'环保回收',id:'1',ifChoosed:true},
-            	{name:'公益回收',id:'2',ifChoosed:true}
+                {name:'公益回收',id:'0',ifChoosed:false},
+                {name:'环保回收',id:'1',ifChoosed:false},
+                {name:'检测回收',id:'2',ifChoosed:false}
             ],
             /********设置省 市*******/
             ifshowAddr: false,
@@ -192,11 +192,19 @@ export default {
     methods: {
     	/******获取并设置初始数据********/
     	setDeault(){
+            const loading = this.$loading({
+                    lock: true,
+                    text: '获取数据中...',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                })
     		api.search_activity_detail({activityId:this.$route.query.id}).then(res=>{
                 if(res._ret != 0){
+                    loading.close()
                     this.$alert(res._errStr)
                     return
                 }
+                loading.close()
                 this.activityName = res.activityName
                 this.activityDesc = res.activityDesc
                 this.amountLimitType = res.amountLimitType

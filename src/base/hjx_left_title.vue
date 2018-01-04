@@ -2,6 +2,7 @@
     <div class="label clear">
         <span class="left fl"></span>
         <span class="right fl hjx-font14"> &nbsp;{{label}}</span>
+        <slot></slot>
     </div>
 </template>
 <script type="text/javascript">
