@@ -5,9 +5,9 @@
             <el-breadcrumb-item>红包管理</el-breadcrumb-item>
         </el-breadcrumb>
         <br>
-        <el-tabs type="border-card">
+        <el-tabs type="border-card"  v-model="activeName" >
             <!-- ################### 随机 ###################### -->
-            <el-tab-pane label="随机">
+            <el-tab-pane label="随机" name="ramdom">
                 <!-- 搜索start -->
                 <el-form :inline="true" :model="random_reward.search" ref="random_reward.search"  size="small" class="demo-form-inline">
                     <el-form-item label="活动名称:" prop="activityName">
@@ -34,7 +34,7 @@
                     <el-table-column width="100px" prop="activityLevel" label="优先级"></el-table-column>
                     <el-table-column width="180px" label="活动名称">
                         <template slot-scope="scope">
-                            <span v-if="scope.row.activityName.length<8">{{scope.row.activityName.length}}</span>
+                            <span v-if="scope.row.activityName.length<8">{{scope.row.activityName}}</span>
                             <span v-else>
                                 {{scope.row.activityName.substring(0,8)}}...
                             </span>
@@ -44,7 +44,7 @@
                         <template slot-scope="scope">
                             <span v-if="!scope.row.activityStartTime">不限</span>
                             <span v-else>
-                                {{scope.row.activityEndDate}}~{{scope.row.activityEndDate}}
+                                {{scope.row.activityStartDate}}~{{scope.row.activityEndDate}}
                                 {{scope.row.activityStartTime}}~{{scope.row.activityEndTime}}
                             </span>
                         </template>
@@ -53,7 +53,7 @@
                     <el-table-column width="160px" label="总额上限状态">
                         <template slot-scope="scope">
                             <span v-if="scope.row.limitStatus == '0' ">未触发</span>
-                            <span v-else-if="scope.row.limitStatus == '1' ">触发超额</span>
+                            <span v-else-if="scope.row.limitStatus == '1' ">已触发</span>
                         </template>
                     </el-table-column>
                     <el-table-column width="100px" label="活动状态">
@@ -71,15 +71,8 @@
                                 <el-button class='indexFunBtn' type="primary" :disabled="power.active_reward_edit" @click="random_edit(scope.row.activityId)" size="small">编辑</el-button>
                                 <el-button class='indexFunBtn' type="primary" :disabled="power.active_reward_setStatus" @click="setStatus('1',scope.row.activityId , '1',scope.row.limitStatus)" size="small">启用</el-button>
                             </span>
-                            
-                            <span v-if="scope.$index == 0 && random_reward.list.length ==1 "></span>
-                            <span v-else-if="scope.$index == 0 && random_reward.list.length !=1 ">
-                                <el-button class = 'indexFunBtn' :disabled="power.active_reward_setpriority" @click="setActivityLevel('1',scope.row.activityId , '1')"  size="small">下移</el-button>
-                            </span>
-                            <span v-else-if="scope.$index != 0 && scope.$index == random_reward.list.length-1">
-                                <el-button class = 'indexFunBtn' :disabled="power.active_reward_setpriority" @click="setActivityLevel('1',scope.row.activityId , '0')"  size="small">上移</el-button>
-                            </span>
-                            <span v-else>
+
+                            <span>
                                 <el-button class = 'indexFunBtn' :disabled="power.active_reward_setpriority" @click="setActivityLevel('1',scope.row.activityId , '0')"  size="small">上移</el-button>
                                 <el-button class = 'indexFunBtn' :disabled="power.active_reward_setpriority" @click="setActivityLevel('1',scope.row.activityId , '1')"  size="small">下移</el-button>
                             </span>
@@ -92,7 +85,7 @@
                 </div>
             </el-tab-pane>
             <!-- ################### 定额定向 ###################### -->
-            <el-tab-pane label="定额定向">
+            <el-tab-pane label="定额定向" name="fixed">
                 <!-- 搜索start -->
                 <el-form :inline="true" :model="fixed_reward.search" ref="fixed_reward.search" size="small" class="demo-form-inline">
                     <el-form-item label="活动名称:" prop="activityName">
@@ -119,32 +112,32 @@
                 <el-table border :data="fixed_reward.list" style="width: 100%,min-height:300px">
                     <el-table-column width="100px" prop="activityId" label="活动ID"></el-table-column>
                     <el-table-column width="100px" prop="activityLevel" label="优先级"></el-table-column>
-                    <el-table-column label="活动名称">
+                    <el-table-column width="180px" label="活动名称">
                         <template slot-scope="scope">
-                            <span v-if="scope.row.activityName.length<8">{{scope.row.activityName.length}}</span>
+                            <span v-if="scope.row.activityName.length<8">{{scope.row.activityName}}</span>
                             <span v-else>
                                 {{scope.row.activityName.substring(0,8)}}...
                             </span>
                         </template>
                     </el-table-column>
-                    <el-table-column width="180px" label="生效时间">
+                    <el-table-column  label="生效时间">
                         <template slot-scope="scope">
                             <span v-if="!scope.row.activityStartTime">不限</span>
                             <span v-else>
-                                {{scope.row.activityEndDate}}~{{scope.row.activityEndDate}}
+                                {{scope.row.activityStartDate}}~{{scope.row.activityEndDate}}
                                 {{scope.row.activityStartTime}}~{{scope.row.activityEndTime}}
                             </span>
                         </template>
                     </el-table-column>
                     <el-table-column width="100px" label="单奖金额">
                         <template slot-scope="scope">
-                            <span> {{scope.row.directAmount / 100}} </span>
+                            <span> {{(scope.row.directAmount / 100).toFixed(2)}} </span>
                         </template>
                     </el-table-column>
                     <el-table-column width="160px" label="总额上限状态">
                         <template slot-scope="scope">
-                            <span v-if="scope.row.limitStatus == '0' ">触发</span>
-                            <span v-else-if="scope.row.limitStatus == '1' ">触发超额</span>
+                            <span v-if="scope.row.limitStatus == '0' ">未触发</span>
+                            <span v-else-if="scope.row.limitStatus == '1' ">已触发</span>
                         </template>
                     </el-table-column>
                     <el-table-column width="100px" label="活动状态">
@@ -159,19 +152,12 @@
                             <el-button class='indexFunBtn' type="primary" :disabled="power.active_reward_look" @click="fixed_check(scope.row.activityId,scope.row.valid)" size="small">查看</el-button>
                             <el-button v-if="scope.row.valid == '1' " :disabled="power.active_reward_setStatus" class='indexFunBtn' type="danger" @click="setStatus('2',scope.row.activityId , '0')" size="small">禁用</el-button>
                             <span v-else >
-                                <el-button class='indexFunBtn' type="primary" :disabled="power.active_reward_edit" @click="random_edit(scope.row.activityId)" size="small">编辑</el-button>
+                                <el-button class='indexFunBtn' type="primary" :disabled="power.active_reward_edit" @click="fixed_edit(scope.row.activityId)" size="small">编辑</el-button>
                                 <el-button class='indexFunBtn' type="primary" :disabled="power.active_reward_setStatus" @click="setStatus('2',scope.row.activityId , '1',scope.row.limitStatus)" size="small">启用</el-button>
                             </span>
-                            <span v-if="scope.$index == 0 && fixed_reward.list.length ==1 "></span>
-                            <span v-else-if="scope.$index == 0 && fixed_reward.list.length !=1 ">
-                                <el-button class = 'indexFunBtn' :disabled="power.active_reward_setpriority"  @click="setActivityLevel('2',scope.row.activityId , '1')"  size="small">下移</el-button>
-                            </span>
-                            <span v-else-if="scope.$index != 0 && scope.$index == fixed_reward.list.length-1">
-                                <el-button class = 'indexFunBtn' :disabled="power.active_reward_setpriority"  @click="setActivityLevel('2',scope.row.activityId , '0')"  size="small">上移</el-button>
-                            </span>
-                            <span v-else>
-                                <el-button class = 'indexFunBtn' :disabled="power.active_reward_setpriority"  @click="setActivityLevel('2',scope.row.activityId , '0')"  size="small">上移</el-button>
-                                <el-button class = 'indexFunBtn' :disabled="power.active_reward_setpriority"  @click="setActivityLevel('2',scope.row.activityId , '1')"  size="small">下移</el-button>
+                            <span>
+                                <el-button class = 'indexFunBtn' :disabled="power.active_reward_setpriority" @click="setActivityLevel('1',scope.row.activityId , '0')"  size="small">上移</el-button>
+                                <el-button class = 'indexFunBtn' :disabled="power.active_reward_setpriority" @click="setActivityLevel('1',scope.row.activityId , '1')"  size="small">下移</el-button>
                             </span>
                         </template>
                     </el-table-column>
@@ -190,6 +176,7 @@ import { mapGetters } from 'vuex'
 export default {
     data() {
         return {
+            activeName:'ramdom',
             random_reward: { //随机
                 list: [],
                 search: {
@@ -228,6 +215,7 @@ export default {
     },
     
     mounted() {
+        if(this.$route.query.show) this.activeName = this.$route.query.show
         this.random_init()
         this.fixed_init()
     },

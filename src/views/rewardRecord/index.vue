@@ -1,12 +1,12 @@
 <template>
-    <div id = "rewardRecord">
+    <div >
         <el-breadcrumb separator-class="el-icon-arrow-right">
             <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
             <el-breadcrumb-item>发放记录</el-breadcrumb-item>
         </el-breadcrumb>
         <br>
         <!-- 搜索start -->
-        <el-form :inline="true" :model="search" ref="search" label-width="120px" size="small" class="demo-form-inline">
+        <el-form id = "search" :inline="true" :model="search" ref="search" label-width="120px" size="small" class="demo-form-inline">
             <el-form-item label="流水号:" prop="txnId">
                 <el-input v-model="search.txnId" @keyup.13.native="init($event)" @change="search.txnId = _Util.Trim(search.txnId)" placeholder="请输入流水号"></el-input>
             </el-form-item>
@@ -173,9 +173,9 @@ export default {
 }
 
 </script>
-<style lang="scss">
-#rewardRecord {
-    .el-date-editor.el-input,.el-date-editor.el-input__inner{width: 200px!important} /*控制所有搜索长度为 200px*/
-}
-    
+<style type="text/css">
+    #search .el-input__inner ,
+    #search .el-date-editor.el-input
+    {width: 200px!important}
 </style>
+

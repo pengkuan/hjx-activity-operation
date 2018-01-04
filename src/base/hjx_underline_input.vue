@@ -41,7 +41,8 @@ export default {
     },
     methods:{
         handleChange(event) {
-            this.$emit('change', event.target.value,this.index)
+            if(this.index != undefined) this.$emit('change', event.target.value,this.index)
+                else this.$emit('change', event.target.value)
         },
     }
 }

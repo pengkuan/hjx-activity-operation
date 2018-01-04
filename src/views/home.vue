@@ -139,7 +139,7 @@ export default {
                     sub_menu: [
                         { name: '红包管理' }, 
                         { name: '发放记录' },
-                        { name:'设置有效期'},
+                        { name:'领取有效期'},
                     ] 
                 },
                 { 
@@ -162,7 +162,6 @@ export default {
             setTimeout(() =>{
                 let powerList = [ 'active_reward_look', 'active_reward_setStatus', 'active_reward_setpriority','active_reward_add','active_reward_edit']
                 this.setPowerList(powerList)
-                this.setLoginToken('55555555')
             }  ,1000)
 
 
@@ -210,11 +209,11 @@ export default {
                 })
                 api.get_login_user_info(params).then((res) => { 
                     if (res._ret != '0') {
+                        loading.close()
                         this.$message({
                             message: res._errStr,
                             type: 'warning'
                         })
-                        loading.close()
                         return
                     }
                     loading.close()

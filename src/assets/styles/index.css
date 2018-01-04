@@ -36,7 +36,7 @@ li{list-style:none;}
 .hjx-success{color:#67C23A}
 .hjx-warning{color:#EB9E05}
 .hjx-label{color: #48576a}
-.hjx-disabled{background-color: #f5f7fa;border-color: #e4e7ed;color: #c0c4cc!important;cursor: not-allowed;border-radius: 4px; border: 1px solid #dcdfe6;}
+.hjx-disabled{background-color: #f5f7fa;border-color: #e4e7ed;color: #c0c4cc!important;border-radius: 4px; border: 1px solid #dcdfe6;}
 .hjx-bg-Info{background-color: #f3f4f5}
 /*margin配置*/
 .mrg-b10{margin-bottom: 10px}
@@ -44,6 +44,7 @@ li{list-style:none;}
 .mrg-b20{margin-bottom: 20px}
 .mrg-l14{margin-left: 14px;}
 .mrg-l20{margin-left: 20px;}
+.mrg-l24{margin-left: 24px;}
 .mrg-l40{margin-left: 40px;}
 .mrg-l120{margin-left: 120px;}
 /*input配置*/
@@ -60,8 +61,9 @@ input[type="number"]{-moz-appearance:textfield;}
 .spc-select{position: relative;margin-bottom: -3px}
 .show-detail-box .el-message-box__content{max-height: 400px;overflow: auto;} 
 .search-width{width: 200px}  
-
-
+.errorInfo{color:#FA5555;font-size: 12px;margin-left: 18px;}
+/*修改element ui 样式*/
+body .el-input.is-disabled .el-input__icon ,body .el-input.is-disabled .el-input__inner{cursor: pointer;}
 /*ad*/
 .el-pagination{text-align: right;margin: 15px 0} 
 .el-form .el-form-item { margin-bottom: 15px;} 

@@ -4,14 +4,14 @@ import * as types from '../mutation-types.js'
  
 // initial state
 const state = {
-    userId: '666',
+    userId: '514',
     userName: 'pengkuan',
     loginToken: '',
     power: { //按钮权限管理
         active_reward_look: true, //查看活动
         active_reward_add: true, //新增活动
         active_reward_edit: true, //编辑活动
-        active_reward_setStatus: true, //设置活动状态
+        active_reward_setstatus: true, //设置活动状态
         active_reward_setpriority: true //设置优先级
     }
 }

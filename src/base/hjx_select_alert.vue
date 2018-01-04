@@ -82,7 +82,10 @@ export default {
       isIndeterminateSecond: false,
       showSearchL1:true,//搜索时使用
       showSearchL2:true,//搜索时使用
-      choosedList: [], //右边已选
+      choosedList: {
+        L1:[],
+        L2:[],
+      }, //右边已选
       chooseAllL1: false,
       chooseAllL2: false,
       depositAllL2: {}, //一级id为key值
@@ -93,6 +96,14 @@ export default {
     action: String,
     ifshow: Boolean,
     data: Object
+  },
+  watch: {
+    'data.L1': function(val, oldVal) {
+        this.choosedList = JSON.parse(JSON.stringify(this.data))
+    },
+    'data.L2': function(val, oldVal) {
+        this.choosedList = JSON.parse(JSON.stringify(this.data))
+    }
   },
   computed: {
     mappingResult:function(){
@@ -299,9 +310,6 @@ export default {
 
   },
   mounted() {
-    setTimeout(()=>{
-      this.choosedList = JSON.parse(JSON.stringify(this.data))
-    },2000) //延时设置
     this.$store.dispatch('heavyDate/'+this.mappingResult[5])
   }
 }
@@ -363,6 +371,7 @@ export default {
 
 .second-title {
   font-size: 16px;
+  margin: 12px 0;
 }
 
 .btn {

@@ -282,13 +282,13 @@ export default {
             let value = Trim(val),
                 len = value.gblen()
             if (len < 4 || len > 50) {
-                Message({ message: msg, type: 'error' })
+                if(msg) Message({ message: msg, type: 'error' })
                 return false
             } else if (checkSpecialWord(value)) {
-                Message({ message: '名称不能包含特殊字符', type: 'error' })
+                if(msg) Message({ message: '名称不能包含特殊字符', type: 'error' })
                 return false
             } else if (checkNumber(value)) {
-                Message({ message: '名称不能包含数字', type: 'error' })
+                if(msg) Message({ message: '名称不能包含数字', type: 'error' })
                 return false
             }
             return true
@@ -301,7 +301,7 @@ export default {
             let value = Trim(val),
                 len = value.gblen()
             if (len < 4 || len > 50) {
-                Message({ message: msg, type: 'error' })
+                if(msg) Message({ message: msg, type: 'error' })
                 return false
             }
             return true
@@ -314,9 +314,21 @@ export default {
             let value = Trim(val),
                 len = value.gblen()
             if (len < 4 || len > 50) {
-                Message({ message: msg, type: 'error' })
+                if(msg) Message({ message: msg, type: 'error' })
                 return false
             } 
+            return true
+        },
+        /**
+        *@ val:String
+        *@ 整数校验
+        */
+        fixed0(val,msg){
+            let value = Trim(val) 
+            if( (! /^\d+$/.test(value)) ){
+                if(msg) Message({ message: msg, type: 'error' })
+                return false
+            }
             return true
         },
         /**
@@ -325,11 +337,14 @@ export default {
         *@ 只返回结果
         */
         fixed2(val,msg){
-            let value = Trim(val)
-            if( (! /^\d+(\.\d{1,2})?$/.test(value)) ){
-                Message({ message: msg, type: 'error' })
-                return false
+            if(val != ''){
+                let value = Trim(val)
+                if( (! /^\d+(\.\d{1,2})?$/.test(value)) ){
+                    if(msg) Message({ message: msg, type: 'error' })
+                    return false
+                }
             }
+            
             return true
         },
         /**
@@ -351,7 +366,7 @@ export default {
         precenteFixed2(val,msg){
             let value = Trim(val)
             if( ! /^(((\d|[1-9]\d)(\.\d{1,2})?)|100|100.0|100.00)$/.test(value)){
-                Message({ message: msg, type: 'error' })
+                if(msg) Message({ message: msg, type: 'error' })
                 return false
             }
             return true

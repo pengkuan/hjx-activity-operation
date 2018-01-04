@@ -41,7 +41,7 @@ let router = new Router({
                 {path: '/reward/fixedEdit', component: Reward.fixedEdit, name: 'fixedEdit', menuShow: false},
                 {path: '/reward/fixedDetail', component: Reward.fixedDetail, name: 'fixedDetail', menuShow: false},
                 {path: '/rewardRecord/index', component: Reward.record, name: '发放记录', menuShow: true},
-                {path: '/setValidTime/index', component: Reward.setValidTime, name: '设置有效期', menuShow: true}
+                {path: '/setValidTime/index', component: Reward.setValidTime, name: '领取有效期', menuShow: true}
             ]
         },
         {
