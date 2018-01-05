@@ -145,8 +145,7 @@ export default {
 
             })
         },
-        search() { //搜索查询
-            if (!this.formData.clientId && !this.formData.positionName && this.formData.positionStatus == '0') return
+        search() { //搜索查询 
             this.pagination.currentPage = 1
             this.pagination.pageIndex = 0
             this.showList()

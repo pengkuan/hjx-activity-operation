@@ -10,9 +10,10 @@
                 </el-select> 
             </el-form-item>
             <el-form-item label="广告位置" class="w600">
-                <el-select v-model="form.positionCode" placeholder="请选择广告位置">  
+                <el-select v-model="form.positionCode" placeholder="请选择广告位置" v-if="this.$route.query.from!='adPosition'">  
                     <el-option :label="item.positionName" :value="item.positionCode" v-for="(item,index) in form.positionList" :key="index"></el-option>  
                 </el-select>
+                <el-input v-model="form.positionCode_pos" v-if="this.$route.query.from=='adPosition'" disabled></el-input>
                 <div class="tips">提示：此广告位线上已发布{{form.effectiveAdNum}}个广告，最多可发布{{form.adNum}}个广告</div>
             </el-form-item>
             <el-form-item label="广告标题" class="w600">
@@ -62,7 +63,7 @@
             <el-form-item label="可见范围" class="w600">
                 <el-radio-group v-model="form.range">
                     <el-radio :label="1">全部用户</el-radio>
-                    <el-radio :label="2">部分用户</el-radio>
+                    <el-radio :label="2" v-if="this.$route.query.from != 'adPosition'">部分用户</el-radio>
                 </el-radio-group>
                 <div class="usrs-set" v-show="form.range == 2">
                     <el-row class="mb8" v-show="partChannelShow">
@@ -134,13 +135,13 @@
                     </el-row>
                 </div>
             </el-form-item>
-            <el-form-item label="广告状态">
+            <el-form-item label="广告状态" v-if="this.$route.query.from != 'adPosition'">
                 <el-radio-group v-model="form.isUse">
                     <el-radio :label="1">生效</el-radio>
                     <el-radio :label="0">不生效</el-radio>
                 </el-radio-group>
             </el-form-item>
-            <el-form-item label="投放时间" v-show="form.isUse==1">
+            <el-form-item label="投放时间" v-show="form.isUse==1" v-if="this.$route.query.from != 'adPosition'">
                 <el-radio-group v-model="form.useType">
                     <el-radio :label="1">投放后立即开始</el-radio>
                     <el-radio :label="2">自定义时间</el-radio>
@@ -160,7 +161,7 @@
             </el-form-item>
             <el-form-item label="广告排序" class="w300 pos-rel">
                 <el-input v-model="form.sort" disabled></el-input>
-                <el-button type="primary" size="mini" class="my-select-sort" @click="ad_sort">选择</el-button>
+                <el-button type="primary" size="mini" class="my-select-sort" @click="ad_sort" :disabled="this.$route.query.from == 'adPosition'">选择</el-button>
             </el-form-item>  
             <el-form-item>
                 <el-button type="primary" @click="onSubmit">确认添加</el-button>
@@ -237,6 +238,7 @@ export default {
                 clientId: '', //客户端
                 clientList: [], //客户端列表，用于循环
                 positionCode: '', //广告位置
+                positionCode_pos: '', //广告位置 - 从广告位过来的
                 adNum: '0', //某条广告的最大投放数量
                 effectiveAdNum: '0', //某条广告的目前生效数量
                 positionList: [], //广告位列表
@@ -308,12 +310,13 @@ export default {
                 _remark: "",
                 userid: "测试694", 
                 token: "3077a9e5c2c6ea2c21c57c5bd95ccb8e", 
-            }
+            },
+            adPositionParams: {}, 
         }
     },
     methods: {
         validata() { //提交前表单验证 
-            if (!this.form.positionCode) {
+            if (!this.form.positionCode && this.$route.query.from != 'adPosition') {
                 this.$message.error('广告位置不能为空') 
                 return false 
             } 
@@ -445,15 +448,29 @@ export default {
             if(this.form.isUse == 1 && this.form.useType == 2) { //启动，且阶段生效
                params.startTime = Math.floor(this.form.startTime.getTime()/1000)
                params.endTime = Math.floor(this.form.endTime.getTime()/1000) 
-            }  
-            // this.form.rangeList.channel.values = '124',
-            // this.form.rangeList.store.values = '125', 
+            } 
+            if(this.form.range == 1) params.rangeList = '' 
+
             // console.log(params)
-            // return 
-
-
+            // return  
             if (this.$route.query.from == 'adPosition') { //来自广告位新建永久广告的新建广告
-
+                params.positionCode = this.form.positionCode_pos
+                // console.log(params)
+                // console.log(this.adPositionParams)
+                this.adPositionParams.adImg = params.adImg
+                this.adPositionParams.adText = params.adText
+                this.adPositionParams.adTitle = params.adTitle
+                this.adPositionParams.adDesc = params.adDesc
+                this.adPositionParams.isJump = params.isJump
+                this.adPositionParams.jumpUrl = params.jumpUrl  
+                api.ad_addAdPositionPermanent(this.adPositionParams).then((res)=> {
+                    if (res._ret != '0') {
+                        this.$message.error(res._errStr)
+                        return
+                    }
+                    let returnPath = this.$route.query.pagePath
+                    this.$router.push({path:returnPath}) 
+                }) 
             } else {
                 api.ad_addAdInfo(params).then((res)=>{ //直接添加广告的广告
                     if (res._ret != '0') {
@@ -503,8 +520,8 @@ export default {
                     this.$message.error(res._errStr)
                     return
                 }    
-                this.form.positionList = res.positionList
-                // console.log(this.form.positionList)
+                this.form.positionList = res.positionList 
+                console.log(this.form.positionList) 
             })
         },
         ad_getPositionaInfo(code) { //获取广告位详情 
@@ -660,7 +677,8 @@ export default {
             this.dialog1 = false 
         }, 
         back() { //返回和取消
-            this.$router.back()
+            let pagePath = this.$route.query.pagePath
+            this.$router.push({path: pagePath})
         }
     },
     computed: {
@@ -731,6 +749,17 @@ export default {
             this.form.sort = this.sortData.length + 1
         }
 
+    },
+    created() {
+        if (this.$route.query.from == 'adPosition') { 
+            this.adPositionParams = util.Get_lsdata('adParams')
+            this.form.positionCode_pos = this.adPositionParams.positionCode 
+            this.form.adNum = this.adPositionParams.adNum
+            this.form.effectiveAdNum = 0
+            this.form.adType = this.adPositionParams.adType
+            this.form.sort = 1
+            // console.log(this.adPositionParams)
+        }
     },
     mounted() {    
         this.getClientList() //客户端列表 

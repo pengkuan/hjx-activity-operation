@@ -210,7 +210,7 @@ export default {
             params.startTime = this.form.startTime != null ? Math.floor(this.form.startTime.getTime()/1000): '' 
             params.endTime = this.form.endTime != null ? Math.floor(this.form.endTime.getTime()/1000): ''  
             util.Set_lsdata('adParams',params) //本地缓存数据
-            this.$router.push({path: '/commonAdd', query:{from:'adPosition'}})
+            this.$router.push({path: '/commonAdd', query:{from:'adPosition', pagePath:'/adPosition/adPosSet', clientId:params.clientId}})
         },
         clientList() { //获取客户端列表数据
             api.ad_getClient({}).then((res)=>{
