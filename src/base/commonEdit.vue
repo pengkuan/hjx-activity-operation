@@ -1,5 +1,6 @@
 <template>
     <div class="editNewAd-wrap" v-loading="loading">
+        <div class="myimg" style="position:absolute;z-index:-999;opacity:0;" ref="myDivDom"><img :src="myscr" ref="myImgDom"></div>
         <div class="title">修改广告 
             <el-button type="primary" size="mini" @click="back">关闭</el-button>
         </div>
@@ -28,11 +29,14 @@
                 <p>
                     <el-input v-model="form.adImg" class="inline-block" disabled></el-input>
                     <el-upload class="upload-demo inline my-close"  
-                        action="http://10.0.10.67:8080/index/index"  
+                        :action="this.uploadUrl"
+                        ref="myUpload"   
+                        :on-exceed="exceed" 
                         :on-success="uploadSuccess" 
+                        :on-error="uploadError" 
                         :on-remove="uploadRemove"
                         :before-upload="beforeUpload" 
-                        :limit="1" 
+                        :limit="1"  
                         :data = "uploadData" 
                         :file-list="form.fileList"> 
                         <el-button size="small" type="primary" class="my-close">选择图片</el-button>
@@ -233,6 +237,7 @@
 <script>
 import api from '@/api/ad'
 import util from '@/util'
+import config from '@/config'
 import {formatDate} from '@/assets/js/date'
 export default {
     data() {
@@ -314,6 +319,8 @@ export default {
                 userid: "测试694", 
                 token: "3077a9e5c2c6ea2c21c57c5bd95ccb8e", 
             },
+            uploadUrl: config.uploadUrl,
+            myscr: '',
             loading: false, 
         }
     },
@@ -562,29 +569,53 @@ export default {
             })
         },
         // 文件处理函数
-        beforeUpload(file) { //头像上传前的钩子
-            const type = file.type === 'image/jpeg' || file.type === 'image/png' 
-            const isLt4M = file.size / 1024 / 1024 / 1024 / 1024 < 2 
-            console.log(file)
+        beforeUpload(file,response) { //头像上传前的钩子
+            const type = file.type === 'image/jpeg' || file.type === 'image/png'
+            const isLt4M = file.size / 1024 / 1024 / 1024 / 1024 < 2   
+            const url = window.URL.createObjectURL(file)
+            this.myscr = url  
+            this.$refs.myImgDom.onload = ()=> {
+                // console.log(this.form.imgWidth, this.form.imgHigh)
+                // console.log(this.$refs.myDivDom.offsetWidth, this.$refs.myDivDom.offsetHeight)
+                // console.log(file)   
+                if (this.$refs.myDivDom.offsetWidth != this.form.imgWidth) {
+                    this.$message.error('上传图片宽度不正确!')  
+                    this.$refs.myUpload.abort() 
+                    this.$refs.myUpload.clearFiles()
+                }
+                if (this.$refs.myDivDom.offsetHeight != this.form.imgHigh) {
+                    this.$message.error('上传图片高度不正确!')
+                    this.$refs.myUpload.abort() 
+                    this.$refs.myUpload.clearFiles()
+                }  
+            }       
             if (!type) {
-              this.$message.error('上传头像图片只能是jpeg或png格式!')
+              this.$message.error('上传图片只能是jpeg或png格式!')
+              this.src = ''
+              return false
             }
             if (!isLt4M) {
               this.$message.error('上传图片大小不能超过4MB!')
-            }
-            return 
+              this.src = ''
+              return false
+            }   
+        }, 
+        exceed(files, fileList) {
+            this.$message.error('只能上传1个,若需要更换需先删除')
         },
-        uploadSuccess(response, file, fileList) {  //上传成功
+        uploadError(files, fileList) {
+            this.$message.error('失败1212')
+        },
+        uploadSuccess(response, file, fileList) {  //上传成功   
             let res = response._data
             if (res._ret != '0') {
                 this.$message.error(res._errStr)
-                return
+                this.$refs.myUpload.clearFiles()
+                return false
             }
             this.form.showImg = true 
             this.form.adImg = res.data.url
-            this.form.showSrc = res.data.url
-
-            console.log(this.form.fileList)
+            this.form.showSrc = res.data.url 
         },
         uploadRemove(file) { //删除上传的图片
             this.form.adImg = ''

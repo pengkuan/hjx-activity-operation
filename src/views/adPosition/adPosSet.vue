@@ -33,12 +33,22 @@
                  <el-table-column prop="clientName" label="所属客户端"></el-table-column> 
                  <el-table-column prop="positionName" label="广告位置"></el-table-column> 
                  <el-table-column prop="adTypeDesc" label="广告素材"></el-table-column>
-                 <el-table-column prop="effectiveAdNum" label="已发布广告" width="100"></el-table-column>
-                 <el-table-column prop="adNum" label="最多展示素材数量"></el-table-column>
-                 <el-table-column prop="isUse" label="广告位状态"></el-table-column>
+                 <el-table-column prop="effectiveAdNum" label="已发布广告" width="90"></el-table-column>
+                 <el-table-column prop="adNum" label="最多展示素材数量" width="140"></el-table-column>
+                 <el-table-column prop="isUse" label="广告位状态" width="90"></el-table-column>
                  <el-table-column prop="useStatus" label="投放时间"></el-table-column>
-                 <el-table-column prop="startTime" label="开始时间"></el-table-column>
-                 <el-table-column prop="endTime" label="结束时间"></el-table-column>
+                 <el-table-column prop="startTime" label="开始时间">
+                     <template slot-scope="scope">
+                         <span v-show="scope.row.startTime == ''">----</span>
+                         <span v-show="scope.row.startTime != ''">{{scope.row.startTime}}</span>
+                     </template>
+                 </el-table-column>
+                 <el-table-column prop="endTime" label="结束时间">
+                     <template slot-scope="scope">
+                         <span v-show="scope.row.endTime == ''">----</span>
+                         <span v-show="scope.row.endTime != ''">{{scope.row.endTime}}</span>
+                     </template>
+                 </el-table-column>
                  <el-table-column prop="" label="操作" width="220">
                      <template slot-scope="scope">
                          <el-button type="primary" size="mini" @click="lookDetail(scope)" class="mb5">详情</el-button>  
@@ -74,7 +84,7 @@ export default {
             pagination: { //页码数据
                 currentPage: 1, //  当前页,最小为1,
                 pageIndex: '0', //传给后台的值，区分与currentPage
-                pageSize: 5, // 1页的数量
+                pageSize: 10, // 1页的数量
                 total: 0, // 总条数 
 
             },
