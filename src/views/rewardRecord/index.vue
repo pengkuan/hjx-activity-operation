@@ -51,8 +51,8 @@
             <el-form-item label="S1手机号/姓名:" prop="s1Info">
                 <el-input v-model="search.s1Info" @keyup.13.native="init($event)" @change="search.s1Info = _Util.Trim(search.s1Info)" placeholder="请输入S1手机号/姓名"></el-input>
             </el-form-item>
-            <el-form-item label="O4 ID/名称:" prop="o4Info">
-                <el-input v-model="search.o4Info" @keyup.13.native="init($event)" @change="search.o4Info = _Util.Trim(search.o4Info)" placeholder="请输入O4 ID/名称"></el-input>
+            <el-form-item label="O3 ID/名称:" prop="o4Info">
+                <el-input v-model="search.o4Info" @keyup.13.native="init($event)" @change="search.o4Info = _Util.Trim(search.o4Info)" placeholder="请输入O3 ID/名称"></el-input>
             </el-form-item>
             <el-form-item label="O1 ID/名称:" prop="o1Info">
                 <el-input v-model="search.o1Info" @keyup.13.native="init($event)" @change="search.o1Info = _Util.Trim(search.o1Info)" placeholder="请输入O1 ID/名称"></el-input>
@@ -100,7 +100,7 @@
                     {{scope.row.s1Info.phone}}/{{scope.row.s1Info.name}}
                 </template>
             </el-table-column>
-            <el-table-column label="O4 ID/名称">
+            <el-table-column label="O3 ID/名称">
                 <template slot-scope="scope">
                     {{scope.row.o4Info.id}}/{{scope.row.o4Info.name}}
                 </template>
