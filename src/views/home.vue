@@ -215,12 +215,9 @@ export default {
     },
     mounted() {},
     created() {
-        if(process.env.NODE_ENV === 'test'){
-            this.get_user_authority_test()
-        }if (process.env.NODE_ENV === 'production') {
+        if (this._Config.IS_NO_DEV) {
             this.get_user_authority()
         } else {
-            console.log(process.env.NODE_ENV)
             this.get_user_authority_test()
         }
     }
