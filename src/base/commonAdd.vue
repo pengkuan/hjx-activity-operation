@@ -1,5 +1,6 @@
 <template>
     <div class="addNewAd-wrap">
+        <div class="myimg" style="position:absolute;z-index:-999;opacity:0;" ref="myDivDom"><img :src="myscr" ref="myImgDom"></div>
         <div class="title">添加新广告
             <el-button type="primary" size="mini" @click="back">关闭</el-button>
         </div>
@@ -30,9 +31,12 @@
                 <p>
                     <el-input v-model="form.adImg" class="inline-block" disabled></el-input>
                     <el-upload class="upload-demo inline my-close"  
-                        :action="this.uploadUrl"   
+                        :action="this.uploadUrl" 
+                        ref="myUpload"   
+                        :on-exceed="exceed"  
                         :on-success="uploadSuccess" 
                         :on-remove="uploadRemove"
+                        :on-error="uploadError"
                         :before-upload="beforeUpload" 
                         :limit="1" 
                         :data = "uploadData" 
@@ -313,6 +317,7 @@ export default {
                 token: "3077a9e5c2c6ea2c21c57c5bd95ccb8e", 
             },
             uploadUrl: config.uploadUrl,
+            myscr: '',
             adPositionParams: {}, 
         }
     },
@@ -545,22 +550,47 @@ export default {
         },
         // 文件处理函数
         beforeUpload(file) { //头像上传前的钩子
-            const type = file.type === 'image/jpeg' || file.type === 'image/png' 
-            const isLt4M = file.size / 1024 / 1024 / 1024 / 1024 < 2 
-            console.log(file)
+            const type = file.type === 'image/jpeg' || file.type === 'image/png'
+            const isLt4M = file.size / 1024 / 1024 / 1024 / 1024 < 2   
+            const url = window.URL.createObjectURL(file)
+            this.myscr = url  
+            this.$refs.myImgDom.onload = ()=> {
+                // console.log(this.form.imgWidth, this.form.imgHigh)
+                // console.log(this.$refs.myDivDom.offsetWidth, this.$refs.myDivDom.offsetHeight)
+                // console.log(file)   
+                if (this.$refs.myDivDom.offsetWidth != this.form.imgWidth) {
+                    this.$message.error('上传图片宽度不正确!')  
+                    this.$refs.myUpload.abort() 
+                    this.$refs.myUpload.clearFiles()
+                }
+                if (this.$refs.myDivDom.offsetHeight != this.form.imgHigh) {
+                    this.$message.error('上传图片高度不正确!')
+                    this.$refs.myUpload.abort() 
+                    this.$refs.myUpload.clearFiles()
+                }  
+            }       
             if (!type) {
-              this.$message.error('上传头像图片只能是jpeg或png格式!')
+              this.$message.error('上传图片只能是jpeg或png格式!')
+              this.src = ''
               return false
             }
             if (!isLt4M) {
               this.$message.error('上传图片大小不能超过4MB!')
+              this.src = ''
               return false
             } 
+        },
+        exceed(files, fileList) {
+            this.$message.error('只能上传1个,若需要更换需先删除')
+        },
+        uploadError(files, fileList) {
+            this.$message.error('上传失败')
         },
         uploadSuccess(response, file, fileList) {  //上传成功
             let res = response._data
             if (res._ret != '0') {
                 this.$message.error(res._errStr)
+                this.$refs.myUpload.clearFiles()
                 return false
             }
             this.form.showImg = true 

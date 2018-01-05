@@ -569,7 +569,7 @@ export default {
             })
         },
         // 文件处理函数
-        beforeUpload(file,response) { //头像上传前的钩子
+        beforeUpload(file) { //头像上传前的钩子
             const type = file.type === 'image/jpeg' || file.type === 'image/png'
             const isLt4M = file.size / 1024 / 1024 / 1024 / 1024 < 2   
             const url = window.URL.createObjectURL(file)
@@ -604,7 +604,7 @@ export default {
             this.$message.error('只能上传1个,若需要更换需先删除')
         },
         uploadError(files, fileList) {
-            this.$message.error('失败1212')
+            this.$message.error('上传失败')
         },
         uploadSuccess(response, file, fileList) {  //上传成功   
             let res = response._data
