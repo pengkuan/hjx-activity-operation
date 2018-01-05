@@ -1,12 +1,12 @@
 <template>
-    <div >
+    <div id = "rewardRecord">
         <el-breadcrumb separator-class="el-icon-arrow-right">
             <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
             <el-breadcrumb-item>发放记录</el-breadcrumb-item>
         </el-breadcrumb>
         <br>
         <!-- 搜索start -->
-        <el-form id = "search" :inline="true" :model="search" ref="search" label-width="120px" size="small" class="demo-form-inline">
+        <el-form id = "search" :inline="true" :model="search" ref="search" label-width="120px" size="mini" class="demo-form-inline">
             <el-form-item label="流水号:" prop="txnId">
                 <el-input v-model="search.txnId" @keyup.13.native="init($event)" @change="search.txnId = _Util.Trim(search.txnId)" placeholder="请输入流水号"></el-input>
             </el-form-item>
@@ -71,23 +71,23 @@
             <el-table-column prop="txnId" label="流水号"></el-table-column>
             <el-table-column prop="createTime" label="发放时间"></el-table-column>
             <el-table-column prop="receiveTime" label="领取时间"></el-table-column>
-            <el-table-column prop="activityId" label="活动ID"></el-table-column>
+            <el-table-column prop="activityId" width="70" label="活动ID"></el-table-column>
             <el-table-column prop="orderNum" label="订单编号"></el-table-column>
-            <el-table-column label="奖励类型">
+            <el-table-column width="70" label="奖励类型">
                 <template slot-scope="scope">
                     <span v-if="scope.row.activityType == '1' ">随机</span>
                     <span v-else-if="scope.row.activityType == '2' ">定向</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="amount" label="奖金"></el-table-column>
-            <el-table-column label="红包状态">
+            <el-table-column prop="amount" width="70" label="奖金"></el-table-column>
+            <el-table-column width="70" label="红包状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.packetStatus == '1' ">未领取</span>
                     <span v-else-if="scope.row.packetStatus == '2' ">已领取</span>
                     <span v-if="scope.row.packetStatus == '3' ">已失效</span>
                 </template>
             </el-table-column>
-            <el-table-column label="奖金状态">
+            <el-table-column width="70" label="奖金状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.amountStatus == '1' ">未领取</span>
                     <span v-else-if="scope.row.amountStatus == '2' ">未激活</span>
@@ -110,7 +110,7 @@
                     {{scope.row.o1Info.id}}/{{scope.row.o1Info.name}}
                 </template>
             </el-table-column>
-            <el-table-column prop="o1City" label="O1城市"></el-table-column>
+            <el-table-column prop="o1City" width="100" label="O1城市"></el-table-column>
         </el-table>
         <div class="hjx-pagination">
             <el-pagination @current-change="handleCurrentChange" :current-page="currentPage" layout="total, prev, pager, next, jumper" :total="total">
@@ -178,5 +178,6 @@ export default {
     #search .el-input__inner ,
     #search .el-date-editor.el-input
     {width: 200px!important}
+    #rewardRecord .el-table{font-size: 12px}
 </style>
 

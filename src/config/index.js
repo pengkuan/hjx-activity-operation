@@ -1,9 +1,10 @@
 // 公共配置
 
 export default { 
-	system_id: '101', 
-	system_home_id: '100', 
-	power_center_login_page: 'http://api-amc.huishoubao.com.cn',
-	return_url: 'https://mba.huanjixia.com/login', //登录后，后台跳转到home页面
-	jsonpUrl: process.env.NODE_ENV == 'development' ? 'http://10.0.10.67:8080/index/index' : 'XXXXXXX',//本地开发环境(志鹏)、243测试环境
+	ENV_MARK: process.env.NODE_ENV == 'production' ? '' : '您正在访问测试环境！', //环境标识
+	SYSTEM_ID: '101', 
+	SYSTEM_HOME_ID: '100', 
+	POWER_CENTER_LOGIN: 'http://api-amc.huishoubao.com.cn',
+	RETURN_URL: 'https://mba.huanjixia.com/login', //登录后，后台跳转到home页面
+	JSONP_URL: process.env.NODE_ENV == 'development' ? 'http://10.0.10.67:8080/index/index' : 'XXXXXXX',//本地开发环境(志鹏)、243测试环境
 }

@@ -30,7 +30,7 @@ axios.interceptors.response.use((res) => {
     }
     if(res.data._data._errCode == '900006'){
         Message({ message: res.data._data._errStr, type: 'warning' })
-        window.location.href = `${config.power_center_login_page}/login?system_id=${config.system_home_id}&jump_url=${config.return_url}`
+        window.location.href = `${config.POWER_CENTER_LOGIN}/login?SYSTEM_ID=${config.SYSTEM_HOME_ID}&jump_url=${config.RETURN_URL}`
     }
     return res.data._data
 }, (error) => {
@@ -56,10 +56,7 @@ export function fetch(Interface,api,params) {
         _param: {}
     }
     resParams._param = params
-    // for (var i in params) {
-    //     console.log(i)
-    //     resParams._params[i+'lllll'] = params[i]
-    // }
+    
     return new Promise((resolve, reject) => {
         axios.post(Interface, resParams)
             .then(response => {
@@ -85,7 +82,7 @@ function get_cookie(name) {
 
 /* jsonp接口开始 */ 
 export function jsonp(_interface, params) { 
-    let url = `${config.jsonpUrl}?type=jsonp`,
+    let url = `${config.JSONP_URL}?type=jsonp`,
         token = get_cookie('useruuid'),
         userid = get_cookie('userid') ,
         timestamps = Math.floor(new Date().getTime()/1000) + ''
@@ -110,13 +107,8 @@ export function jsonp(_interface, params) {
     // 拼接参数,注意jsonp不能直接字符串化json,后台解析不了   递归方法
     for (let i in resParams) { 
         for(let j in resParams[i] ) {
-            // console.log(j,resParams[i][j]) 
             if (typeof resParams[i][j] == 'object') {
-                // console.log('我是对象')
-                // console.log(resParams[i][j])
                 for (let k in resParams[i][j]) {
-                    // console.log('进来了')
-                    // console.log(resParams[i][j][k])
                     if (typeof resParams[i][j][k] == 'object') { 
                         for (let m in resParams[i][j][k]) {
                             url += `&${i}[${j}][${k}][${m}]=${resParams[i][j][k][m]}`
@@ -130,15 +122,14 @@ export function jsonp(_interface, params) {
             } 
         }
     }  
-    // url = `${url}&head[version]=0.01&head[msgtype]=request&head[interface]=newSystem&head[remark]=&params[system]=test&params[number]=12345678`   
     return new Promise((resolve, reject) => {
         originJsonp(url, {param: 'callback'}, (err, data) => {
             if (!err) {
                 // 登录超时处理
                 if (process.env.NODE_ENV == 'production') {
                     if (data._data._ret == '1' && data._data._errCode == '1001') { //无登录约定错误码1001
-                        let host = encodeURIComponent(config.return_url)
-                        window.location.href = config.power_center_login_page + '/login?system_id=' + config.system_home_id + '&jump_url=' + host
+                        let host = encodeURIComponent(config.RETURN_URL)
+                        window.location.href = config.POWER_CENTER_LOGIN + '/login?system_id=' + config.SYSTEM_HOME_ID + '&jump_url=' + host
                     }
                 } 
                 resolve(data._data)
