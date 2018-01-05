@@ -30,7 +30,7 @@
                 <p>
                     <el-input v-model="form.adImg" class="inline-block" disabled></el-input>
                     <el-upload class="upload-demo inline my-close"  
-                        action="http://10.0.10.67:8080/index/index"  
+                        :action="this.UPLOAD_URL"   
                         :on-success="uploadSuccess" 
                         :on-remove="uploadRemove"
                         :before-upload="beforeUpload" 
@@ -231,6 +231,7 @@
 <script>
 import api from '@/api/ad'
 import util from '@/util'
+import config from '@/config'
 export default {
     data() {
         return {
@@ -311,6 +312,7 @@ export default {
                 userid: "测试694", 
                 token: "3077a9e5c2c6ea2c21c57c5bd95ccb8e", 
             },
+            UPLOAD_URL: config.UPLOAD_URL,
             adPositionParams: {}, 
         }
     },
@@ -548,17 +550,18 @@ export default {
             console.log(file)
             if (!type) {
               this.$message.error('上传头像图片只能是jpeg或png格式!')
+              return false
             }
             if (!isLt4M) {
               this.$message.error('上传图片大小不能超过4MB!')
-            }
-            return 
+              return false
+            } 
         },
         uploadSuccess(response, file, fileList) {  //上传成功
             let res = response._data
             if (res._ret != '0') {
                 this.$message.error(res._errStr)
-                return
+                return false
             }
             this.form.showImg = true 
             this.form.adImg = res.data.url
@@ -746,7 +749,7 @@ export default {
             this.ad_getPositionaInfo(code) 
         },
         sortData() {
-            this.form.sort = this.sortData.length + 1
+            // this.form.sort = this.sortData.length + 1
         }
 
     },
@@ -761,7 +764,8 @@ export default {
             // console.log(this.adPositionParams)
         }
     },
-    mounted() {    
+    mounted() {  
+        this.form.sort = this.sortData.length + 1  
         this.getClientList() //客户端列表 
         this.getAdPosList() //广告位列表
         this.getChannel() //渠道列表
