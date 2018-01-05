@@ -30,10 +30,10 @@
             <el-form-item label="广告素材" class="w600 pos-rel upload-img-url" v-show="form.adType == 2">
                 <p>
                     <el-input v-model="form.adImg" class="inline-block" disabled></el-input>
-                    <el-upload class="upload-demo inline my-close"  
-                        :action="this.uploadUrl" 
+                    <el-upload class="upload-demo inline my-close"   
+                        :action="this.UPLOAD_URL" 
                         ref="myUpload"   
-                        :on-exceed="exceed"  
+                        :on-exceed="exceed"    
                         :on-success="uploadSuccess" 
                         :on-remove="uploadRemove"
                         :on-error="uploadError"
@@ -315,9 +315,9 @@ export default {
                 _remark: "",
                 userid: "测试694", 
                 token: "3077a9e5c2c6ea2c21c57c5bd95ccb8e", 
-            },
-            uploadUrl: config.uploadUrl,
-            myscr: '',
+            }, 
+            myscr: '', 
+            UPLOAD_URL: config.UPLOAD_URL, 
             adPositionParams: {}, 
         }
     },

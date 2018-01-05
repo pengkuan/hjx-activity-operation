@@ -6,7 +6,7 @@
                 <div class="topbar-logo topbar-btn">
                     <a href="/"><img src="../assets/images/logo.png" style="margin: 10px 0 0 10px;height:30px;border:0"></a>
                 </div>
-                <span style="color:red;">您正在访问测试环境！</span>
+                <span style="color:red;">{{_Config.ENV_MARK}}</span>
             </el-col>
             <!--中间-->
             <el-col :span="24" class="main">
@@ -164,42 +164,20 @@ export default {
                 this.setPowerList(powerList)
             }  ,1000)
 
-
-            // let userid = this._Util.getCookie('userid'),
-            //     token = this._Util.getCookie('useruuid'),
-            //     params = {
-            //         loginUserId: userid,
-            //         loginToken: token,
-            //         loginSystemId: this._Config.system_id
-            //     }
-            // const loading = this.$loading({
-            //     lock: true,
-            //     text: '玩命加载中......',
-            //     spinner: 'el-icon-loading',
-            //     background: 'rgba(0, 0, 0, 0.7)'
-            // })
-            // api.get_login_user_info(params).then((res) => { 
-            //     let powerList = res.access_flags
-            //     this.setPowerList(powerList)
-            //     loading.close() 
-            // })
-
-
-
         },
         // 线上环境，请求菜单
         get_user_authority() {
-            let host = encodeURIComponent(this._Config.return_url),
+            let host = encodeURIComponent(this._Config.RETURN_URL),
                 userid = this._Util.getCookie('userid'),
                 token = this._Util.getCookie('useruuid'),
                 params = {
                     loginUserId: userid,
                     loginToken: token,
-                    loginSystemId: this._Config.system_id
+                    loginSystemId: this._Config.SYSTEM_ID
                 }
 
             if (!userid) {
-                window.location.href = `${this._Config.power_center_login_page}/login?system_id=${this._Config.system_home_id}&jump_url=${host}`
+                window.location.href = `${this._Config.POWER_CENTER_LOGIN}/login?system_id=${this._Config.SYSTEM_HOME_ID}&jump_url=${host}`
             } else {
                 const loading = this.$loading({
                     lock: true,
@@ -236,8 +214,8 @@ export default {
 
     },
     mounted() {},
-    created() {
-        if (process.env.NODE_ENV === 'production') {
+    created() { 
+        if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test') {
             this.get_user_authority()
         } else {
             this.get_user_authority_test()

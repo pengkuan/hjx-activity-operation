@@ -29,7 +29,7 @@
                 <p>
                     <el-input v-model="form.adImg" class="inline-block" disabled></el-input>
                     <el-upload class="upload-demo inline my-close"  
-                        :action="this.uploadUrl"
+                        :action="this.UPLOAD_URL"
                         ref="myUpload"   
                         :on-exceed="exceed" 
                         :on-success="uploadSuccess" 
@@ -319,7 +319,7 @@ export default {
                 userid: "测试694", 
                 token: "3077a9e5c2c6ea2c21c57c5bd95ccb8e", 
             },
-            uploadUrl: config.uploadUrl,
+            UPLOAD_URL: config.UPLOAD_URL,
             myscr: '',
             loading: false, 
         }
