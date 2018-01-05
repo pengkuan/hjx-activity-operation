@@ -213,9 +213,9 @@ export default {
         }
 
     },
-    mounted() {},
-    created() { 
-        if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test') {
+    mounted() {}, 
+    created() {
+        if (this._Config.IS_NO_DEV) { 
             this.get_user_authority()
         } else {
             this.get_user_authority_test()

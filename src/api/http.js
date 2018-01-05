@@ -30,7 +30,7 @@ axios.interceptors.response.use((res) => {
     }
     if(res.data._data._errCode == '900006'){
         Message({ message: res.data._data._errStr, type: 'warning' })
-        window.location.href = `${config.POWER_CENTER_LOGIN}/login?SYSTEM_ID=${config.SYSTEM_HOME_ID}&jump_url=${config.RETURN_URL}`
+        window.location.href = `${config.POWER_CENTER_LOGIN}/login?system_id=${config.SYSTEM_HOME_ID}&jump_url=${config.RETURN_URL}`
     }
     return res.data._data
 }, (error) => {
@@ -56,7 +56,7 @@ export function fetch(Interface,api,params) {
         _param: {}
     }
     resParams._param = params
-    
+
     return new Promise((resolve, reject) => {
         axios.post(Interface, resParams)
             .then(response => {
@@ -100,8 +100,7 @@ export function jsonp(_interface, params) {
             "token": token,   
         }
     }
-    if (process.env.NODE_ENV != 'production') resParams._param.userid = '测试694'
-    if (process.env.NODE_ENV != 'production') resParams._param.token = '3077a9e5c2c6ea2c21c57c5bd95ccb8e'
+    if (config.IS_DEV) resParams._param.userid = '测试694' , resParams._param.token = '3077a9e5c2c6ea2c21c57c5bd95ccb8e'
     // 合并参数 
     resParams._param = Object.assign({}, resParams._param, params) 
     // 拼接参数,注意jsonp不能直接字符串化json,后台解析不了   递归方法
@@ -126,7 +125,7 @@ export function jsonp(_interface, params) {
         originJsonp(url, {param: 'callback'}, (err, data) => {
             if (!err) {
                 // 登录超时处理
-                if (process.env.NODE_ENV == 'production') {
+                if (config.IS_NO_DEV) {
                     if (data._data._ret == '1' && data._data._errCode == '1001') { //无登录约定错误码1001
                         let host = encodeURIComponent(config.RETURN_URL)
                         window.location.href = config.POWER_CENTER_LOGIN + '/login?system_id=' + config.SYSTEM_HOME_ID + '&jump_url=' + host
