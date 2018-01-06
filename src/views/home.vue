@@ -79,7 +79,7 @@ export default {
             setPowerList:'userInfo/SET_POWER_LIST',
             setUserName:'userInfo/SET_USERNAME',
             setUserId:'userInfo/SET_USERID',
-            setLoginToken:'userInfo/SET_LOGIN_TOKEN',
+            setLoginToken:'userInfo/SET_LOGIN_TOKEN', 
         }), 
         setCollapsed() {
             this.collapsed = !this.collapsed
@@ -160,7 +160,7 @@ export default {
             this.getDeepModule(this.menuList) 
 
             setTimeout(() =>{
-                let powerList = [ 'active_reward_look', 'active_reward_setStatus', 'active_reward_setpriority','active_reward_add','active_reward_edit']
+                let powerList = [ 'active_reward_look', 'active_reward_setStatus', 'active_reward_setpriority','active_reward_add','active_adpos_look']
                 this.setPowerList(powerList)
             }  ,1000)
 
@@ -168,8 +168,8 @@ export default {
         // 线上环境，请求菜单
         get_user_authority() {
             let host = encodeURIComponent(this._Config.RETURN_URL),
-                userid = this._Util.getCookie('userid'),
-                token = this._Util.getCookie('useruuid'),
+                userid = this._Util.getQueryStringByName('user_id'),
+                token = this._Util.getQueryStringByName('login_token'),
                 params = {
                     loginUserId: userid,
                     loginToken: token,
@@ -204,8 +204,8 @@ export default {
                     let powerList = res.access_flags
                     this.setPowerList(powerList)  
                     /****** 设置用户信息 *****/
-                    this.setUserName(res.user_info.username)
-                    this.setUserId(res.user_info.user_id)
+                    this.setUserName(res.user_info.username) 
+                    this.setUserId(this._Util.getQueryStringByName('user_id'))
                     this.setLoginToken(this._Util.getQueryStringByName('login_token'))
 
                 })

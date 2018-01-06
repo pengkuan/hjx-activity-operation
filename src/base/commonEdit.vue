@@ -96,6 +96,11 @@
                                     <el-option label="包含"   :value="1"></el-option> 
                                     <el-option label="不包含" :value="2"></el-option> 
                                 </el-select>
+                                <p class="channel-list-test" v-show="this.storeResultList.length">
+                                <span>{{this.hasSelectStore}}</span>
+                                <i v-show="this.storeResultList.length>1">等</i>
+                                {{this.storeResultList.length}}个渠道
+                                </p>
                                 <span class="channel-list-test add-stroe" @click="part_add_detail('store')">+添加门店</span>
                                 <i class="iconfont icon-roundclosefill channell-close" @click="del_condition('store')"></i>
                             </p>
@@ -272,7 +277,7 @@ export default {
                     },
                     amount: {
                         status: '3', //3是大于等于 4是小于等于
-                        values: '' //金额
+                        values: 0 //金额
                     }
                 }, 
                 isUse: 1, //1是生效 0是不生效
@@ -300,9 +305,9 @@ export default {
             searchKey: '', //搜索关键字
             defaulSearchList: [], //默认搜索数据，用来赋值用
             defaultResultList: [],  //默认结果数据，用来赋值用
-            channelSearchLish: [{channelName:'华为科技公司',channelId:'11'},{channelName:'华为2科技公司',channelId:'22'},{channelName:'华为3科技公司',channelId:'33'},], //渠道搜索数据
+            channelSearchLish: [], //渠道搜索数据
             channelResultList: [], //渠道结果数据，如果是修改广告，就不为空，新增应该为空
-            storeSearchLish: [{storeName:'小米科技公司',storeId:'1'},{storeName:'小米2科技公司',storeId:'2'},{storeName:'小米3科技公司',storeId:'3'},], //门店搜索数据
+            storeSearchLish: [], //门店搜索数据
             storeResultList: [], //门店结果数据，如果是修改广告，就不为空，新增应该为空
             // 临时数据，若不保存，需要回到数据操作前的数据
             temporary_channelResultList: [], //渠道临时数据
@@ -316,8 +321,8 @@ export default {
                 _timestamps:Math.floor(new Date().getTime()/1000) + '',
                 _interface: 'ad_uploadImg',
                 _remark: "",
-                userid: "测试694", 
-                token: "3077a9e5c2c6ea2c21c57c5bd95ccb8e", 
+                userid: this.$store.getters['userInfo/loginToken'], 
+                token: this.$store.getters['userInfo/userId'], 
             },
             UPLOAD_URL: config.UPLOAD_URL,
             myscr: '',
@@ -506,23 +511,26 @@ export default {
                 this.form.isUse = res.adInfo.isUse 
                 this.form.useType = res.adInfo.useType 
                 this.form.range = res.adInfo.range 
-                this.form.rangeList = Object.assign({},this.form.rangeList,res.adInfo.rangeList) 
+                // this.form.rangeList = Object.assign({},this.form.rangeList,res.adInfo.rangeList) 
                 this.form.startTime = res.adInfo.startTime == 0 ? '' : res.adInfo.startTime*1000
                 this.form.endTime = res.adInfo.endTime == 0 ? '' : res.adInfo.endTime*1000
                 this.form.sort = res.adInfo.sort  
                 this.form.modifier = res.adInfo.modifier   
                 this.form.modifyTime = res.adInfo.modifyTime 
                 // 单独处理部分用户部分
-                if (this.form.range == 2&&res.adInfo.rangeList.channel.values.length) {
+                if (this.form.range == 2&&res.adInfo.rangeList.channel != '') {
                     this.partChannelShow = true
+                    this.form.rangeList.channel.status = res.adInfo.rangeList.channel.status
                     this.channelResultList = res.adInfo.rangeList.channel.values
                 }
-                if (this.form.range == 2&&res.adInfo.rangeList.store.values.length) {
+                if (this.form.range == 2&&res.adInfo.rangeList.store != '') {
                     this.partStoreShow = true
+                    this.form.rangeList.store.status = res.adInfo.rangeList.store.status
                     this.storeResultList = res.adInfo.rangeList.store.values
                 }
-                if (this.form.range == 2&&res.adInfo.rangeList.amount.values != '') {
+                if (this.form.range == 2&&res.adInfo.rangeList.amount != '') {
                     this.moneyLimitShow = true
+                    this.form.rangeList.amount.status = res.adInfo.rangeList.amount.status
                     this.form.rangeList.amount.values = res.adInfo.rangeList.amount.values
                 }  
             })
@@ -757,6 +765,18 @@ export default {
             })
             return str 
         },
+        hasSelectStore() { //已选门店列表的文字描述 
+            let str = '',
+                len = this.storeResultList.length
+            this.storeResultList.forEach(function(item, index){
+                if (len == index+1) {
+                    str += item.storeName
+                } else {
+                    str += item.storeName + ','
+                } 
+            })
+            return str 
+        },
         modifyTime_date() {
             let date = new Date(this.form.modifyTime*1000)
             return formatDate(date, 'yyyy-MM-dd hh:mm:ss')
@@ -805,7 +825,7 @@ export default {
             })
             this.form.rangeList.store.values = str 
         },
-        ['form.range'](val) {
+        ['form.range'](val) { //设置默认值，避免不自动选择
             if (val == 2) {
                 this.form.rangeList.channel.status = 1
                 this.form.rangeList.store.status = 1
@@ -819,8 +839,7 @@ export default {
         this.getChannel() //渠道列表
         this.getStore() //门店列表
         this.ad_getAdInfo() //获取广告详情
-        this.form.sort = this.sortData.length + 1 
-        // console.log(util.formatDate.format('1514375848000', 'yyyy-MM-dd hh:mm:ss'))
+        this.form.sort = this.sortData.length + 1  
     }
 }
 
@@ -1022,7 +1041,7 @@ export default {
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
-            max-width: 170px;
+            max-width: 160px;
             vertical-align: top;
             margin-right: 5px;
         }
@@ -1053,7 +1072,7 @@ export default {
     }
     .add-stroe {
         // left: 110px;
-        left: 363px;
+        left: 460px;
         color: blue;
         cursor: pointer;
     }

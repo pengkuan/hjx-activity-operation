@@ -30,7 +30,7 @@
             </el-form>
         </div>
         <div class="tool">
-            <el-button type="primary" size="mini" @click="addNewAd">+ 添加广告</el-button>
+            <el-button type="primary" size="mini" @click="addNewAd" :disabled="power.active_ad_add">+ 添加广告</el-button>
         </div>
         <div class="tab-box">
             <el-tabs @tab-click="handleTabClick" v-model="activeName">
@@ -56,8 +56,8 @@
                         <el-table-column prop="adSort" label="广告排序" width="80"></el-table-column>
                         <el-table-column prop="" label="操作" width="150">
                             <template slot-scope="scope">
-                                <el-button type="primary" size="mini" @click="lookDetail(scope)">详情</el-button>
-                                <el-button type="warning" size="mini" @click="edit(scope)">修改</el-button>
+                                <el-button type="primary" size="mini" @click="lookDetail(scope)" :disabled="power.active_ad_look">详情</el-button>
+                                <el-button type="warning" size="mini" @click="edit(scope)" :disabled="power.active_ad_edit">修改</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -92,9 +92,9 @@
                         </el-table-column> 
                         <el-table-column prop="" label="操作" width="220">
                             <template slot-scope="scope">
-                                <el-button type="primary" size="mini" @click="lookDetail(scope)">详情</el-button>
-                                <el-button type="warning" size="mini" @click="edit(scope)">修改</el-button>
-                                <el-button type="danger" size="mini" @click="del(scope)">删除</el-button>
+                                <el-button type="primary" size="mini" @click="lookDetail(scope)" :disabled="power.active_ad_look">详情</el-button>
+                                <el-button type="warning" size="mini" @click="edit(scope)" :disabled="power.active_ad_edit">修改</el-button>
+                                <el-button type="danger" size="mini" @click="del(scope)" :disabled="power.active_ad_del">删除</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -115,6 +115,7 @@
 <script>
 import api from '@/api/ad'
 import util from '@/util'
+import { mapGetters } from 'vuex'
 export default {
     data() {
         return {
@@ -266,6 +267,11 @@ export default {
             })
         },
     }, 
+    computed:{
+        ...mapGetters({ 
+            'power':'userInfo/power'
+        })
+    },
     mounted() { 
         this.showList_ing()
         this.showList_not_ing()

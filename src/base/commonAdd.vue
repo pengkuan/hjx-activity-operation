@@ -100,6 +100,11 @@
                                     <el-option label="包含" value="1"></el-option> 
                                     <el-option label="不包含" value="2"></el-option> 
                                 </el-select>
+                                <p class="channel-list-test" v-show="this.storeResultList.length">
+                                <span>{{this.hasSelectStore}}</span>
+                                <i v-show="this.storeResultList.length>1">等</i>
+                                {{this.storeResultList.length}}个渠道
+                                </p>
                                 <span class="channel-list-test add-stroe" @click="part_add_detail('store')">+添加门店</span>
                                 <i class="iconfont icon-roundclosefill channell-close" @click="del_condition('store')"></i>
                             </p>
@@ -313,8 +318,8 @@ export default {
                 _timestamps:Math.floor(new Date().getTime()/1000) + '',
                 _interface: 'ad_uploadImg',
                 _remark: "",
-                userid: "测试694", 
-                token: "3077a9e5c2c6ea2c21c57c5bd95ccb8e", 
+                userid: this.$store.getters['userInfo/loginToken'], 
+                token: this.$store.getters['userInfo/userId'],  
             }, 
             myscr: '', 
             UPLOAD_URL: config.UPLOAD_URL, 
@@ -729,6 +734,18 @@ export default {
                 } 
             })
             return str 
+        },
+        hasSelectStore() { //已选门店列表的文字描述 
+            let str = '',
+                len = this.storeResultList.length
+            this.storeResultList.forEach(function(item, index){
+                if (len == index+1) {
+                    str += item.storeName
+                } else {
+                    str += item.storeName + ','
+                } 
+            })
+            return str 
         }
     },
     watch: {
@@ -1005,7 +1022,7 @@ export default {
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
-            max-width: 170px;
+            max-width: 160px;
             vertical-align: top;
             margin-right: 5px;
         }
@@ -1034,9 +1051,8 @@ export default {
         white-space: nowrap;
         text-overflow: ellipsis;
     }
-    .add-stroe {
-        // left: 110px;
-        left: 363px;
+    .add-stroe { 
+        left: 460px;
         color: blue;
         cursor: pointer;
     }

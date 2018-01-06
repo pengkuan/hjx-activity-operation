@@ -48,21 +48,35 @@
                     <el-radio :label="2" v-show="form.range=='2'">部分用户</el-radio>
                 </el-radio-group>
                 <div class="usrs-set" v-show="form.range == 2">
-                    <el-row class="mb8">
+                    <el-row class="mb8" v-show="form.rangeList.channel.status != ''">
                         <el-col :span="6" class="text-right">
                             <p>渠道：</p>
                         </el-col>
                         <el-col :span="18">
                             <p class="part-channel-text">
-                                <i v-show="this.form.rangeList.channel.status == 1">包含</i> 
-                                <i v-show="this.form.rangeList.channel.status == 2">不包含</i>
+                                <i v-show="form.rangeList.channel.status == 1">包含</i> 
+                                <i v-show="form.rangeList.channel.status == 2">不包含</i>
                                 &nbsp;&nbsp;<span>{{channel_values}}</span>
-                                <i v-show="this.form.rangeList.channel.values.length>1">等</i>
-                                <i>{{this.form.rangeList.channel.values.length}}</i>个渠道
+                                <i v-show="form.rangeList.channel.values.length>1">等</i>
+                                <i>{{form.rangeList.channel.values.length}}</i>个渠道
                             </p>
                         </el-col>
                     </el-row>
-                    <el-row class="mb8">
+                    <el-row class="mb8" v-show="form.rangeList.store.status != ''">
+                        <el-col :span="6" class="text-right">
+                            <p>门店：</p>
+                        </el-col>
+                        <el-col :span="18">
+                            <p class="part-channel-text">
+                                <i v-show="form.rangeList.store.status == 1">包含</i> 
+                                <i v-show="form.rangeList.store.status == 2">不包含</i>
+                                &nbsp;&nbsp;<span>{{store_values}}</span>
+                                <i v-show="form.rangeList.store.values.length>1">等</i>
+                                <i>{{form.rangeList.store.values.length}}</i>个渠道
+                            </p>
+                        </el-col>
+                    </el-row>
+                    <el-row class="mb8" v-show="form.rangeList.amount.status != ''">
                         <el-col :span="6" class="text-right">
                             <p>付款金额：</p>
                         </el-col>
@@ -71,7 +85,7 @@
                                 <i>大于等于</i>
                                 <!-- <i v-show="this.form.rangeList.amount.status == 3">大于等于</i> -->
                                 <!-- <i v-show="this.form.rangeList.amount.status == 4">小于等于</i> -->
-                                &nbsp;&nbsp;{{money}}元
+                                &nbsp;&nbsp;{{form.rangeList.amount.values}}元
                             </p>
                         </el-col>
                     </el-row>
@@ -137,19 +151,19 @@ export default {
                 isJump: 2, //1是不需要跳转 2是需要跳转
                 jumpUrl: '', //需要跳转的跳转链接
                 adText: '', //文字描述，如果是文字
-                range: 1, //可见范围 1是全部 2是部分
+                range: 2, //可见范围 1是全部 2是部分
                 rangeList: { //条件范围，range为2时必传
                     channel: {
-                        status: '8', //1是包含，2是不包含
+                        status: '1', //1是包含，2是不包含
                         values: [], //渠道id,多个用逗号隔开
                     },
                     store: {
-                        status: '8', //1是包含，2是不包含
+                        status: '1', //1是包含，2是不包含
                         values: [],//门店id,多个用逗号隔开
                     },
                     amount: {
                         status: '3', //3是大于等于 4是小于等于
-                        values: '' //金额
+                        values: '0' //金额
                     }
                 },   
                 isUse: 1, //1是生效 0是不生效
@@ -201,17 +215,26 @@ export default {
                 this.form.modifier = res.adInfo.modifier   
                 this.form.modifyTime = res.adInfo.modifyTime  
                 // 单独处理部分用户部分
-                if (this.form.range == 2&&res.adInfo.rangeList.channel.values.length) { 
+                if (this.form.range == 2&&res.adInfo.rangeList.channel != '') { 
                     this.form.rangeList.channel.status = res.adInfo.rangeList.channel.status
                     this.form.rangeList.channel.values = res.adInfo.rangeList.channel.values
+                } else {
+                    this.form.rangeList.channel.status = ''
+                    this.form.rangeList.channel.values = []
                 }
-                if (this.form.range == 2&&res.adInfo.rangeList.store.values.length) {  
+                if (this.form.range == 2&&res.adInfo.rangeList.store != '') {  
                     this.form.rangeList.store.status = res.adInfo.rangeList.store.status
                     this.form.rangeList.store.values = res.adInfo.rangeList.store.values
+                } else {
+                    this.form.rangeList.store.status = ''
+                    this.form.rangeList.store.values = []
                 }
-                if (this.form.range == 2&&res.adInfo.rangeList.amount.values != '') { 
+                if (this.form.range == 2&&res.adInfo.rangeList.amount != '') { 
                     this.form.rangeList.amount.values = res.adInfo.rangeList.amount.values
-                }  
+                }  else {
+                    this.form.rangeList.amount.status = ''
+                    this.form.rangeList.amount.values = ''
+                }
             })
         },
         getClientList() { //获取客户端列表数据
@@ -238,6 +261,7 @@ export default {
     },
     computed: {
         channel_values() {
+            if (!this.form.rangeList.channel.values.length) return
             let str = '',
                 len = this.form.rangeList.channel.values.length
             this.form.rangeList.channel.values.forEach(function(item, index){ 
@@ -247,10 +271,20 @@ export default {
                     str += item.channelName + ','
                 } 
             })
+            return str  
+        }, 
+        store_values() {
+            if (!this.form.rangeList.store.values.length) return
+            let str = '',
+                len = this.form.rangeList.store.values.length
+            this.form.rangeList.store.values.forEach(function(item, index){ 
+                if (len == index+1) {
+                    str += item.storeName
+                } else {
+                    str += item.storeName + ','
+                } 
+            })
             return str 
-        },
-        money() {
-            return this.form.rangeList.amount.values
         },
         modifyTime_date() {
             let date = new Date(this.form.modifyTime*1000)
@@ -261,7 +295,7 @@ export default {
     mounted() {
         this.getClientList() //客户端列表
         this.getAdPosList() //广告位列表
-        this.ad_getAdInfo() //获取广告详情
+        this.ad_getAdInfo() //获取广告详情 
     }
 }
 

@@ -66,7 +66,7 @@
                 </div>
             </el-form-item>   
             <el-form-item>
-                <el-button type="primary" @click="onSubmit" v-show="form.positionType==1">确认修改</el-button>
+                <el-button type="primary" @click="onSubmit" v-show="form.positionType==1">确认添加</el-button>
                 <el-button type="primary" @click="onSubmit_next" v-show="form.positionType==2">下一步，添加默认广告</el-button>
                 <el-button @click="back">取消</el-button>
             </el-form-item>

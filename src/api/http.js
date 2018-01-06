@@ -1,7 +1,7 @@
 import axios from 'axios'
-import store from '../store/index'
-import config from '@/config/index'
-import util from '@/util/index'
+import store from '@/store'
+import config from '@/config'
+import util from '@/util'
 import originJsonp from 'jsonp'
 
 let UserInfo = `user_id=${util.getQueryStringByName('user_id')};login_token=${util.getQueryStringByName('login_token')}; `
@@ -68,25 +68,14 @@ export function fetch(Interface,api,params) {
                 reject(error)
             })
     })
-}
-
-function get_cookie(name) {
-    var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)")
-    if (arr = document.cookie.match(reg)) {
-        return unescape(arr[2]) 
-    }   
-    else {
-        return null
-    } 
-}
+} 
 
 /* jsonp接口开始 */ 
 export function jsonp(_interface, params) { 
     let url = `${config.JSONP_URL}?type=jsonp`,
-        token = get_cookie('useruuid'),
-        userid = get_cookie('userid') ,
-        timestamps = Math.floor(new Date().getTime()/1000) + ''
-
+        token = store.getters['userInfo/loginToken'], 
+        userid = store.getters['userInfo/userId'] ,
+        timestamps = Math.floor(new Date().getTime()/1000) + '' 
     let resParams = {     
         "_head": {        
             "_version": "0.01",
@@ -103,7 +92,7 @@ export function jsonp(_interface, params) {
     if (config.IS_DEV) resParams._param.userid = '测试694' , resParams._param.token = '3077a9e5c2c6ea2c21c57c5bd95ccb8e'
     // 合并参数 
     resParams._param = Object.assign({}, resParams._param, params) 
-    // 拼接参数,注意jsonp不能直接字符串化json,后台解析不了   递归方法
+    // 拼接参数,注意jsonp不能直接字符串化json,后台解析不了   尝试递归方法??
     for (let i in resParams) { 
         for(let j in resParams[i] ) {
             if (typeof resParams[i][j] == 'object') {
@@ -127,8 +116,8 @@ export function jsonp(_interface, params) {
                 // 登录超时处理
                 if (config.IS_NO_DEV) {
                     if (data._data._ret == '1' && data._data._errCode == '1001') { //无登录约定错误码1001
-                        let host = encodeURIComponent(config.RETURN_URL)
-                        window.location.href = config.POWER_CENTER_LOGIN + '/login?system_id=' + config.SYSTEM_HOME_ID + '&jump_url=' + host
+                        let host = encodeURIComponent(config.RETURN_URL) 
+                        window.location.href = `${config.POWER_CENTER_LOGIN}/login?system_id=${config.SYSTEM_HOME_ID}&jump_url=${host}`
                     }
                 } 
                 resolve(data._data)

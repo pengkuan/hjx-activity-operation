@@ -25,7 +25,7 @@
             </el-form>
         </div>
         <div class="tool">
-            <el-button type="primary" size="mini" @click="addNewAd">+ 添加广告位</el-button>
+            <el-button type="primary" size="mini" @click="addNewAd" :disabled="power.active_adpos_add">+ 添加广告位</el-button>
         </div>
         <div class="tab-box">
              <el-table :data="tableData" stripe style="width:100%" >
@@ -51,9 +51,9 @@
                  </el-table-column>
                  <el-table-column prop="" label="操作" width="220">
                      <template slot-scope="scope">
-                         <el-button type="primary" size="mini" @click="lookDetail(scope)" class="mb5">详情</el-button>  
-                         <el-button type="warning" size="mini" @click="edit(scope)" class="mb5">修改</el-button> 
-                         <el-button type="danger" size="mini" @click="del(scope)" class="mb5">删除</el-button>
+                         <el-button type="primary" size="mini" @click="lookDetail(scope)" class="mb5" :disabled="power.active_adpos_look">详情</el-button>  
+                         <el-button type="warning" size="mini" @click="edit(scope)" class="mb5" :disabled="power.active_adpos_edit">修改</el-button> 
+                         <el-button type="danger" size="mini" @click="del(scope)" class="mb5" :disabled="power.active_adpos_del">删除</el-button>
                      </template>
                  </el-table-column>
              </el-table>
@@ -72,6 +72,7 @@
 </template>
 <script> 
 import api from '@/api/ad'
+import { mapGetters } from 'vuex'
 export default {
     data() {
         return {
@@ -160,6 +161,11 @@ export default {
             this.pagination.pageIndex = 0
             this.showList()
         }
+    },
+    computed:{
+        ...mapGetters({ 
+            'power':'userInfo/power'
+        })
     },
     mounted() {
         // console.log(this.$route.path)
