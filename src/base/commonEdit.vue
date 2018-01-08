@@ -321,8 +321,8 @@ export default {
                 _timestamps:Math.floor(new Date().getTime()/1000) + '',
                 _interface: 'ad_uploadImg',
                 _remark: "",
-                userid: this.$store.getters['userInfo/loginToken'], 
-                token: this.$store.getters['userInfo/userId'], 
+                userid: this.$store.getters['userInfo/userId'], 
+                token: this.$store.getters['userInfo/loginToken'], 
             },
             UPLOAD_URL: config.UPLOAD_URL,
             myscr: '',
@@ -486,12 +486,14 @@ export default {
             let params = {
                 adId: this.$route.query.adId 
             }
+            this.loading = true
             api.ad_getAdInfo(params).then((res)=> {
                 if (res._ret != '0') {
                     this.$message.error(res._errStr)
                     return
                 }    
                 this.sortData = res.adInfo.position.adList 
+                this.loading = false
                 console.log(res)
                 // console.log(this.sortData)
                 this.form.positionCode = res.adInfo.position.positionCode

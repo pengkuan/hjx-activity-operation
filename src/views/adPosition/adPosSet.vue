@@ -34,7 +34,7 @@
                  <el-table-column prop="positionName" label="广告位置"></el-table-column> 
                  <el-table-column prop="adTypeDesc" label="广告素材"></el-table-column>
                  <el-table-column prop="effectiveAdNum" label="已发布广告" width="90"></el-table-column>
-                 <el-table-column prop="adNum" label="最多展示素材数量" width="140"></el-table-column>
+                 <el-table-column prop="adNum" label="最多展示素材数量"></el-table-column>
                  <el-table-column prop="isUse" label="广告位状态" width="90"></el-table-column>
                  <el-table-column prop="useStatus" label="投放时间"></el-table-column>
                  <el-table-column prop="startTime" label="开始时间">
@@ -176,10 +176,14 @@ export default {
 }
 
 </script>
+<style>
+    .adPosset-wrap .el-button+.el-button {
+        margin-left: 0;
+    }
+</style>
 <style scoped lang="scss">
     .adPosset-wrap .tool {
         border-bottom: 1px solid #EBEEF5;
         padding-bottom: 10px; 
-    } 
-
+    }  
 </style>

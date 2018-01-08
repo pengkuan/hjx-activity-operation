@@ -263,7 +263,7 @@ export default {
         color: #000;
     }
     .stage-time {
-        margin-right: 20px; 
+        // margin-right: 20px; 
     }
     .active {
         background: #ccc;

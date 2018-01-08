@@ -1,5 +1,5 @@
 <template>
-    <div class="hjxCustomer-wrap">
+    <div class="hjxD-wrap">
         <div class="title">换机侠D端-移动端</div>
         <div class="search-box">
             <el-form :inline="true" :model="search" class="demo-form-inline">
@@ -282,8 +282,9 @@ export default {
 }
 
 </script>
-<style scoped lang="scss">
-
-
+<style>
+.hjxD-wrap .el-button+.el-button {
+    margin-left: 0;
+} 
 </style>
 

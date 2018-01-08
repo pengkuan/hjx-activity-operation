@@ -1,5 +1,5 @@
 <template>
-    <div class="commonDetail-wrap">
+    <div class="commonDetail-wrap" v-loading="loading">
         <div class="title">广告详情
             <el-button type="primary" size="mini" @click="back">关闭</el-button>
         </div>
@@ -146,7 +146,7 @@ export default {
                 positionList: [], //广告位列表
                 adTitle: '', //广告标题
                 adImg: '', //图片链接描述，如果是图片
-                adType: 2, //文字还是图片 1是文字 2是图片 由广告位决定
+                adType: 1, //文字还是图片 1是文字 2是图片 由广告位决定
                 adDesc: '', //广告描述 
                 isJump: 2, //1是不需要跳转 2是需要跳转
                 jumpUrl: '', //需要跳转的跳转链接
@@ -174,6 +174,7 @@ export default {
                 modifier: '', //操作人
                 modifyTime: '', //操作时间
             }, 
+            loading: false,
         }
     },
     methods: {
@@ -191,11 +192,13 @@ export default {
             let params = {
                 adId: this.$route.query.adId 
             }
+            this.loading = true
             api.ad_getAdInfo(params).then((res)=> {
                 if (res._ret != '0') {
                     this.$message.error(res._errStr)
                     return
                 }  
+                this.loading = false
                 console.log(res) 
                 this.form.positionCode = res.adInfo.position.positionCode
                 this.form.positionId = res.adInfo.positionId
