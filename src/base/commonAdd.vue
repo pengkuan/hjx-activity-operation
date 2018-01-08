@@ -318,8 +318,8 @@ export default {
                 _timestamps:Math.floor(new Date().getTime()/1000) + '',
                 _interface: 'ad_uploadImg',
                 _remark: "",
-                userid: this.$store.getters['userInfo/loginToken'], 
-                token: this.$store.getters['userInfo/userId'],  
+                userid: this.$store.getters['userInfo/userId'], 
+                token: this.$store.getters['userInfo/loginToken'],  
             }, 
             myscr: '', 
             UPLOAD_URL: config.UPLOAD_URL, 
@@ -559,10 +559,7 @@ export default {
             const isLt4M = file.size / 1024 / 1024 / 1024 / 1024 < 2   
             const url = window.URL.createObjectURL(file)
             this.myscr = url  
-            this.$refs.myImgDom.onload = ()=> {
-                // console.log(this.form.imgWidth, this.form.imgHigh)
-                // console.log(this.$refs.myDivDom.offsetWidth, this.$refs.myDivDom.offsetHeight)
-                // console.log(file)   
+            this.$refs.myImgDom.onload = ()=> { 
                 if (this.$refs.myDivDom.offsetWidth != this.form.imgWidth) {
                     this.$message.error('上传图片宽度不正确!')  
                     this.$refs.myUpload.abort() 
@@ -807,6 +804,8 @@ export default {
             this.form.adNum = this.adPositionParams.adNum
             this.form.effectiveAdNum = 0
             this.form.adType = this.adPositionParams.adType
+            this.form.imgWidth = this.adPositionParams.imgWidth
+            this.form.imgHigh = this.adPositionParams.imgHigh
             this.form.sort = 1
             // console.log(this.adPositionParams)
         }

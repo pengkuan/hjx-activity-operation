@@ -216,7 +216,7 @@ export default {
                 if (res._ret != '0') {
                     this.$message.error(res._errStr)
                     return
-                } 
+                }  
                 console.log(res)
                 this.search.positionList = res.positionList
             })
@@ -282,7 +282,9 @@ export default {
 }
 
 </script>
-<style scoped lang="scss">
 
-
+<style>
+.hjxCustomer-wrap .el-button+.el-button {
+    margin-left: 0;
+} 
 </style>

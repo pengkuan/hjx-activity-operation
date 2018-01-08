@@ -184,7 +184,9 @@ export default {
                     text: '玩命加载中...',
                     spinner: 'el-icon-loading',
                     background: 'rgba(0, 0, 0, 0.7)'
-                })
+                }) 
+                this.setUserId(this._Util.getQueryStringByName('user_id'))
+                this.setLoginToken(this._Util.getQueryStringByName('login_token'))
                 api.get_login_user_info(params).then((res) => { 
                     if (res._ret != '0') {
                         loading.close()
@@ -193,9 +195,8 @@ export default {
                             type: 'warning'
                         })
                         return
-                    }
-                    loading.close()
-                    // this.showDiv = true
+                    } 
+                    loading.close() 
                     // this.showLoginName()
                     // 显示菜单
                     this.menuList = res.menu
@@ -204,10 +205,7 @@ export default {
                     let powerList = res.access_flags
                     this.setPowerList(powerList)  
                     /****** 设置用户信息 *****/
-                    this.setUserName(res.user_info.username) 
-                    this.setUserId(this._Util.getQueryStringByName('user_id'))
-                    this.setLoginToken(this._Util.getQueryStringByName('login_token'))
-
+                    this.setUserName(res.user_info.username)  
                 })
             }
         }

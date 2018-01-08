@@ -1,12 +1,13 @@
 import api from '@/api/index'
 import * as types from '../mutation-types.js'
+import config from '@/config'
 
  
 // initial state
 const state = {
-    userId: '',
-    userName: 'pengkuan',
-    loginToken: '',
+    userId: config.IS_DEV ? '694' : '',
+    userName: 'pengkuan', 
+    loginToken: config.IS_DEV ? 'a578664b01a26d11c11217c6f50159ab' : '',
     power: { 
         //店奖权限管理
         active_reward_look: true, //查看活动
@@ -21,7 +22,7 @@ const state = {
         active_ad_edit: false, //编辑广告
         active_ad_del: false, //删除广告 
 
-        //广告位权限管理 -> 上线后改为true
+        //广告位权限管理 -> 上线后改为tru1e
         active_adpos_look: false, //查看广告位
         active_adpos_add: false, //添加广告位
         active_adpos_edit: false, //编辑广告位
