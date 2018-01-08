@@ -51,9 +51,9 @@
             <el-form-item label="S1手机号/姓名:" prop="s1Info">
                 <el-input v-model="search.s1Info" @keyup.13.native="init($event)" @change="search.s1Info = _Util.Trim(search.s1Info)" placeholder="请输入S1手机号/姓名"></el-input>
             </el-form-item>
-            <el-form-item label="O3 ID/名称:" prop="o4Info">
+            <!-- <el-form-item label="O3 ID/名称:" prop="o4Info">
                 <el-input v-model="search.o4Info" @keyup.13.native="init($event)" @change="search.o4Info = _Util.Trim(search.o4Info)" placeholder="请输入O3 ID/名称"></el-input>
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item label="O1 ID/名称:" prop="o1Info">
                 <el-input v-model="search.o1Info" @keyup.13.native="init($event)" @change="search.o1Info = _Util.Trim(search.o1Info)" placeholder="请输入O1 ID/名称"></el-input>
             </el-form-item>
@@ -79,7 +79,11 @@
                     <span v-else-if="scope.row.activityType == '2' ">定向</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="amount" width="70" label="奖金"></el-table-column>
+            <el-table-column width="70" label="奖金">
+                <template slot-scope="scope">
+                    <span> {{(scope.row.amount / 100).toFixed(2)}} </span>
+                </template>
+            </el-table-column>
             <el-table-column width="70" label="红包状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.packetStatus == '1' ">未领取</span>
@@ -100,11 +104,11 @@
                     {{scope.row.s1Info.phone}}/{{scope.row.s1Info.name}}
                 </template>
             </el-table-column>
-            <el-table-column label="O3 ID/名称">
+            <!-- <el-table-column label="O3 ID/名称">
                 <template slot-scope="scope">
                     {{scope.row.o4Info.id}}/{{scope.row.o4Info.name}}
                 </template>
-            </el-table-column>
+            </el-table-column> -->
             <el-table-column label="O1 ID/名称">
                 <template slot-scope="scope">
                     {{scope.row.o1Info.id}}/{{scope.row.o1Info.name}}
@@ -163,7 +167,7 @@ export default {
         handleCurrentChange(val) {
             this.currentPage = val
             this.search.pageIndex = String(val - 1)
-            this.random_init()
+            this.init()
         },
         reset(formName){
             this.$refs[formName].resetFields()
