@@ -285,6 +285,7 @@ export default {
                 startTime: '', //开始时间
                 endTime: '', //结束时间
                 sort: 1, //广告排序
+                currentTitle: '', //当前广告，用于广告排序删除数据
                 modifier: '', //操作人
                 modifyTime: '', //操作时间
             },
@@ -517,6 +518,7 @@ export default {
                 this.form.startTime = res.adInfo.startTime == 0 ? '' : res.adInfo.startTime*1000
                 this.form.endTime = res.adInfo.endTime == 0 ? '' : res.adInfo.endTime*1000
                 this.form.sort = res.adInfo.sort  
+                this.form.currentTitle = res.adInfo.adTitle  
                 this.form.modifier = res.adInfo.modifier   
                 this.form.modifyTime = res.adInfo.modifyTime 
                 // 单独处理部分用户部分
@@ -643,7 +645,12 @@ export default {
         ad_sort() { //广告排序
             this.dialog2 = true
             if (this.checkIsAdd(this.sortData)) {  
-                this.sortData.splice(this.form.sort-1,0,{adTitle:'本条广告'})
+                this.sortData.forEach((item,index)=> { 
+                    if (item.adTitle == this.form.currentTitle) {
+                        item.adTitle = '本条广告'
+                    }
+                }) 
+                // this.sortData.splice(this.form.sort-1,0,{adTitle:'本条广告'})
             }
             this.temporary_sortData = [...this.sortData]  
         },
