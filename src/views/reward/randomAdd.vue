@@ -66,7 +66,7 @@
                 <span class="underline-text"><i class="iconfont icon-play_forward_fill"></i></span>
 
                 <hjx-underline-input type='number' width="50" v-model="item.bonusLeast" @change="val_CountRangeList(index)" :textCenter="true"></hjx-underline-input>
-                <span class="underline-text"> ≤ 店奖金额 < </span>
+                <span class="underline-text"> ≤ 店奖金额 ≤ </span>
                 <hjx-underline-input type='number' width="50" v-model="item.bonusMost" @change="val_CountRangeList(index)" :textCenter="true"></hjx-underline-input>
                 <span v-if="CountRangeList.length==1" class="underline-text"><i class="iconfont icon-roundaddfill hjx-hover" @click="addCountRange(index)"></i></span>
                 <span v-else-if="(CountRangeList.length>1) && (index == CountRangeList.length - 1)" class="underline-text">
@@ -386,36 +386,7 @@ export default {
             if(which == 'addr') this.ifshowAddr = true
             if(which == 'channel') this.ifshowChannel = true
         },
-        //过滤数额设置及校验
-        filterPublicGrantSection(arr){
-            let newArr = [],validate = true
-            arr.forEach(item=>{
-                if( (!this._Util.validate.fixed2Nomsg(item.payMost) )||
-                    (!this._Util.validate.fixed2Nomsg(item.payLeast))||
-                    (!this._Util.validate.fixed2Nomsg(item.bonusMost))||
-                    (!this._Util.validate.fixed2Nomsg(item.bonusLeast))||
-                    Number(item.payMost) <= Number(item.payLeast)|| 
-                    Number(item.bonusMost)<=Number(item.bonusLeast)|| 
-                    Number(item.bonusMost)>Number(item.payMost)
-                ) {
-                    const h = this.$createElement
-                    this.$msgbox({
-                        title: '数额设置错误',
-                        message: h('p', null, [
-                            h('p', { style: 'color: #FA5555' }, '1.最多支持两位小数 '),
-                            h('p', { style: 'color: #FA5555' }, '2.付款金额上限值不应小于下限值 '),
-                            h('p', { style: 'color: #FA5555' }, '3.奖金金额上限值不应小于下限值 '),
-                            h('p', { style: 'color: #FA5555' }, '4.奖金上线不应大于付款金额上限 ')
-                        ])
-                    })
-                    validate = false
-                }
-                newArr.push(`${item.payLeast}|${item.payMost}#${item.bonusLeast}|${item.bonusMost}`)
-            })
-            if(validate) return newArr.join('&')
-                else return false
-            
-        },
+        
         // 添加一条数额设置
         addCountRange(index){
             this.$set(this.CountRangeList , this.CountRangeList.length ,{
@@ -508,7 +479,7 @@ export default {
                     }else if(Number(theItem.payMost) <= Number(theItem.payLeast)) {
                         this.$set(this.errorInfo , 'CountRangeList_'+key , '付款金额上限值不应小于下限值')
                         ifpass = false
-                    }else if(Number(theItem.bonusMost) <= Number(theItem.bonusLeast) ){
+                    }else if(Number(theItem.bonusMost) < Number(theItem.bonusLeast) ){
                         this.$set(this.errorInfo , 'CountRangeList_'+key , '奖金金额上限值不应小于下限值')
                         ifpass = false
                     }else if(Number(theItem.bonusMost) > Number(theItem.payMost) ){
@@ -527,7 +498,7 @@ export default {
                 }else if(Number(theItem.payMost) <= Number(theItem.payLeast)) {
                     this.$set(this.errorInfo , 'CountRangeList_'+index , '付款金额上限值不应小于下限值')
                     return false  
-                }else if(Number(theItem.bonusMost) <= Number(theItem.bonusLeast) ){
+                }else if(Number(theItem.bonusMost) < Number(theItem.bonusLeast) ){
                     this.$set(this.errorInfo , 'CountRangeList_'+index , '奖金金额上限值不应小于下限值')
                     return false  
                 }else if(Number(theItem.bonusMost) > Number(theItem.payMost) ){

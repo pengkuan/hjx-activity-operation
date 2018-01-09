@@ -65,7 +65,7 @@
                 <span class="underline-text"><i class="iconfont icon-play_forward_fill"></i></span>
 
                 <hjx-underline-input type='number' width="50" v-model="item.bonusLeast" @change="val_CountRangeList(index)" :textCenter="true"></hjx-underline-input>
-                <span class="underline-text"> ≤ 店奖金额 < </span>
+                <span class="underline-text"> ≤ 店奖金额 ≤ </span>
                 <hjx-underline-input type='number' width="50" v-model="item.bonusMost" @change="val_CountRangeList(index)" :textCenter="true"></hjx-underline-input>
                 <span v-if="CountRangeList.length==1" class="underline-text"><i class="iconfont icon-roundaddfill hjx-hover" @click="addCountRange(index)"></i></span>
                 <span v-else-if="(CountRangeList.length>1) && (index == CountRangeList.length - 1)" class="underline-text">
@@ -564,7 +564,7 @@ export default {
                     }else if(Number(theItem.payMost) <= Number(theItem.payLeast)) {
                         this.$set(this.errorInfo , 'CountRangeList_'+key , '付款金额上限值不应小于下限值')
                         ifpass = false
-                    }else if(Number(theItem.bonusMost) <= Number(theItem.bonusLeast) ){
+                    }else if(Number(theItem.bonusMost) < Number(theItem.bonusLeast) ){
                         this.$set(this.errorInfo , 'CountRangeList_'+key , '奖金金额上限值不应小于下限值')
                         ifpass = false
                     }else if(Number(theItem.bonusMost) > Number(theItem.payMost) ){
@@ -583,7 +583,7 @@ export default {
                 }else if(Number(theItem.payMost) <= Number(theItem.payLeast)) {
                     this.$set(this.errorInfo , 'CountRangeList_'+index , '付款金额上限值不应小于下限值')
                     return false  
-                }else if(Number(theItem.bonusMost) <= Number(theItem.bonusLeast) ){
+                }else if(Number(theItem.bonusMost) < Number(theItem.bonusLeast) ){
                     this.$set(this.errorInfo , 'CountRangeList_'+index , '奖金金额上限值不应小于下限值')
                     return false  
                 }else if(Number(theItem.bonusMost) > Number(theItem.payMost) ){
