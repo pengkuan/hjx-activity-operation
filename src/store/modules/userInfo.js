@@ -18,16 +18,16 @@ const state = {
         active_reward_setdeadline: true, //设置红包领取有效期
 
         //广告权限管理 -> 上线后改为true
-        active_ad_look: false, //查看广告
-        active_ad_add: false, //添加广告
-        active_ad_edit: false, //编辑广告
-        active_ad_del: false, //删除广告 
+        active_ad_look: config.IS_DEV ? false : true, //查看广告
+        active_ad_add: config.IS_DEV ? false : true, //添加广告
+        active_ad_edit: config.IS_DEV ? false : true, //编辑广告
+        active_ad_del: config.IS_DEV ? false : true, //删除广告 
 
-        //广告位权限管理 -> 上线后改为tru1e
-        active_adpos_look: false, //查看广告位
-        active_adpos_add: false, //添加广告位
-        active_adpos_edit: false, //编辑广告位
-        active_adpos_del: false, //删除广告位
+        //广告位权限管理 -> 上线后改为true
+        active_adpos_look: config.IS_DEV ? false : true, //查看广告位
+        active_adpos_add: config.IS_DEV ? false : true, //添加广告位
+        active_adpos_edit: config.IS_DEV ? false : true, //编辑广告位
+        active_adpos_del: config.IS_DEV ? false : true, //删除广告位
     }, 
 }
 
