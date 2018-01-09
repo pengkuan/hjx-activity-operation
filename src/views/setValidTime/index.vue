@@ -13,7 +13,7 @@
                 <el-input-number size="small" v-model="hour" :min="0" :max="24"></el-input-number>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" @click="submit">更新</el-button>
+                <el-button type="primary" :disabled="power.active_reward_setdeadline" @click="submit">更新</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -34,7 +34,8 @@ export default {
     computed:{
         ...mapGetters({
             'userId':'userInfo/userId',
-            'userName':'userInfo/userName'
+            'userName':'userInfo/userName',
+            'power':'userInfo/power'
         })
     },
     methods: {

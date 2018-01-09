@@ -127,8 +127,7 @@
             <el-button @click="onSubmit" type="primary" size="mini">确认</el-button>
             <router-link to="/reward/list"><el-button size="mini">取消</el-button></router-link>
         </div>
-        <!-- 背景框 -->
-        <div v-show="ifshowModel||ifshowAddr||ifshowChannel" class="v-modal" style="z-index:2005"></div>
+        
     </div>
 </template>
 <script>

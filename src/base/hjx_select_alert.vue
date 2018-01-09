@@ -1,62 +1,64 @@
 <template>
-  <transition name="fade" v-if="ifshow">
-      <div class="el-message-box__wrapper" style="z-index:2006">
-        <div class="el-message-box">
-          <div class="alert-title hjx-text-center hjx-blue">选择{{mappingResult[9]}}和{{mappingResult[10]}}</div>
-          <div class="clear choose-container">
-            <div class="fl box-left">
-              <p class="second-title">选择：</p>
-              <div class="choose-field">
-                <div v-if="first">
-                  <el-input size="small" @input="searchL1(searchL1Name)" :placeholder=" '搜索'+mappingResult[9]" prefix-icon="el-icon-search" v-model="searchL1Name" clearable></el-input>
-                  <span class="noTap breadcrumb">一级列表</span>
-                  <p class="left-item-second">
-                    <el-checkbox v-show="showSearchL1" @change="changeL1(chooseAllL1)" :indeterminate="isIndeterminateFirst" v-model="chooseAllL1">全选</el-checkbox>
+  <transition name="fade" >
+    <div class="hjx-alert-container" v-if="ifshow">
+      <div class="hjx-message-box" >
+        <div class="alert-title hjx-text-center hjx-blue">选择{{mappingResult[9]}}和{{mappingResult[10]}}</div>
+        <div class="clear choose-container">
+          <div class="fl box-left">
+            <p class="second-title">选择：</p>
+            <div class="choose-field">
+              <div v-if="first">
+                <el-input size="small" @input="searchL1(searchL1Name)" :placeholder=" '搜索'+mappingResult[9]" prefix-icon="el-icon-search" v-model="searchL1Name" clearable></el-input>
+                <span class="noTap breadcrumb">一级列表</span>
+                <p class="left-item-second">
+                  <el-checkbox v-show="showSearchL1" @change="changeL1(chooseAllL1)" :indeterminate="isIndeterminateFirst" v-model="chooseAllL1">全选</el-checkbox>
+                </p>
+                <div class="list-container">
+                  <p class="left-item overflow" v-for="item in preChooseL1" v-show="item.ifshow || showSearchL1">
+                    <el-checkbox class="fl" v-model="item.ifChoosed" :key="item[mappingResult[0]]" @change="handleL1(item.ifChoosed,item[mappingResult[1]],item[mappingResult[0]])">
+                      <i class="iconfont icon-wenjianjia"></i>{{item[mappingResult[1]]}}
+                    </el-checkbox>
+                    <el-button @click="setSecond(item[mappingResult[0]])" type="text" size="mini" class="fr clear-padding" :disabled="item.ifChoosed"><i class="iconfont icon-xiajiicon"></i>下级</el-button>
                   </p>
-                  <div class="list-container">
-                    <p class="left-item overflow" v-for="item in preChooseL1" v-show="item.ifshow || showSearchL1">
-                      <el-checkbox class="fl" v-model="item.ifChoosed" :key="item[mappingResult[0]]" @change="handleL1(item.ifChoosed,item[mappingResult[1]],item[mappingResult[0]])">
-                        <i class="iconfont icon-wenjianjia"></i>{{item[mappingResult[1]]}}
-                      </el-checkbox>
-                      <el-button @click="setSecond(item[mappingResult[0]])" type="text" size="mini" class="fr clear-padding" :disabled="item.ifChoosed"><i class="iconfont icon-xiajiicon"></i>下级</el-button>
-                    </p>
-                  </div>
-                </div>
-                <div v-else>
-                  <el-input size="small" @input="searchL2(searchL2Name)" :placeholder=" '搜索'+mappingResult[10]" prefix-icon="el-icon-search" v-model="searchL2Name" clearable></el-input>
-                  <div class="breadcrumb"><span class="canTap hjx-hover" @click="first = true">一级列表</span><i class="iconfont icon-right"></i><span class="noTap">二级列表</span></div>
-                  <p class="left-item-second">
-                    <el-checkbox v-show="showSearchL2" @change="changeL2(chooseAllL2)" :indeterminate="isIndeterminateFirst" v-model="chooseAllL2">全选</el-checkbox>
-                  </p>
-                  <div class="list-container">
-                    <p class="left-item" v-for="item in preChooseL2" v-show="item.ifshow || showSearchL2">
-                      <el-checkbox v-model="item.ifChoosed" :key="item[mappingResult[3]]" @change="handleL2(item.ifChoosed,item[mappingResult[4]],item[mappingResult[3]],item.parentId)">
-                        <i class="iconfont icon-dian"></i>{{item[mappingResult[4]]}}
-                      </el-checkbox>
-                    </p>
-                  </div>
                 </div>
               </div>
-            </div>
-            <div class="fr box-right">
-              <p class="second-title">已选：</p>
-              <div class="choose-field list-container-choosed">
-                <div v-for="(list,key) in choosedList">
-                  <p class="right-item clear" v-for="(item,index) in list">
-                    <span v-if="key=='L1'" class="fl hjx-blue"><i class="iconfont icon-wenjianjia"></i> {{item[mappingResult[1]]}}</span>
-                    <span v-else class="fl hjx-blue"><i class="iconfont icon-dian"></i> {{item[mappingResult[4]]}}</span>
-                    <i @click="delRightItem(key,index)" class="iconfont icon-round_close_fill_light fr hjx-hover"></i>
+              <div v-else>
+                <el-input size="small" @input="searchL2(searchL2Name)" :placeholder=" '搜索'+mappingResult[10]" prefix-icon="el-icon-search" v-model="searchL2Name" clearable></el-input>
+                <div class="breadcrumb"><span class="canTap hjx-hover" @click="first = true">一级列表</span><i class="iconfont icon-right"></i><span class="noTap">二级列表</span></div>
+                <p class="left-item-second">
+                  <el-checkbox v-show="showSearchL2" @change="changeL2(chooseAllL2)" :indeterminate="isIndeterminateFirst" v-model="chooseAllL2">全选</el-checkbox>
+                </p>
+                <div class="list-container">
+                  <p class="left-item" v-for="item in preChooseL2" v-show="item.ifshow || showSearchL2">
+                    <el-checkbox v-model="item.ifChoosed" :key="item[mappingResult[3]]" @change="handleL2(item.ifChoosed,item[mappingResult[4]],item[mappingResult[3]],item.parentId)">
+                      <i class="iconfont icon-dian"></i>{{item[mappingResult[4]]}}
+                    </el-checkbox>
                   </p>
                 </div>
               </div>
             </div>
-            <div class="clear btn">
-              <el-button @click="submit" type="primary" size="mini">确认</el-button>
-              <el-button @click="close" size="mini">取消</el-button>
+          </div>
+          <div class="fr box-right">
+            <p class="second-title">已选：</p>
+            <div class="choose-field list-container-choosed">
+              <div v-for="(list,key) in choosedList">
+                <p class="right-item clear" v-for="(item,index) in list">
+                  <span v-if="key=='L1'" class="fl hjx-blue"><i class="iconfont icon-wenjianjia"></i> {{item[mappingResult[1]]}}</span>
+                  <span v-else class="fl hjx-blue"><i class="iconfont icon-dian"></i> {{item[mappingResult[4]]}}</span>
+                  <i @click="delRightItem(key,index)" class="iconfont icon-round_close_fill_light fr hjx-hover"></i>
+                </p>
+              </div>
             </div>
+          </div>
+          <div class="clear btn">
+            <el-button @click="submit" type="primary" size="mini">确认</el-button>
+            <el-button @click="close" size="mini">取消</el-button>
           </div>
         </div>
       </div>
+      <!-- 背景框 -->
+      <div  class="hjx-bg"></div>
+    </div>
   </transition>
 </template>
 <script type="text/javascript">
@@ -316,18 +318,35 @@ export default {
 
 </script>
 <style type="text/css" scoped="scoped">
+.hjx-alert-container{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  z-index: 2000;
+}
+.hjx-alert-container .hjx-bg{
+  position: absolute;top:0;left: 0;bottom: 0;right: 0;background-color: rgba(0,0,0,0.5);
+}
 .alert-title {
   background-color: #f3f4f5;
-  /*color: #324057;*/
   font-size: 16px;
   height: 35px;
   line-height: 35px;
   font-weight: 600;
 }
 
-.el-message-box {
-  /*display: inline-block;*/
+.hjx-alert-container .hjx-message-box {
+  background: #fff;
   width: 800px;
+  position: absolute;
+  display: inline-block;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2006;
 }
 
 .box-left {
@@ -343,6 +362,7 @@ export default {
 }
 
 .choose-field {
+  text-align: left;
   background-color: #f3f4f5;
   padding: 12px;
   overflow: hidden;

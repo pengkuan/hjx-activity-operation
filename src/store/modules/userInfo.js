@@ -15,6 +15,7 @@ const state = {
         active_reward_edit: true, //编辑活动
         active_reward_setstatus: true, //设置活动状态
         active_reward_setpriority: true, //设置优先级
+        active_reward_setdeadline: true, //设置红包领取有效期
 
         //广告权限管理 -> 上线后改为true
         active_ad_look: false, //查看广告

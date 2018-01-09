@@ -160,7 +160,7 @@ export default {
             this.getDeepModule(this.menuList) 
 
             setTimeout(() =>{
-                let powerList = [ 'active_reward_look', 'active_reward_setStatus', 'active_reward_setpriority','active_reward_add','active_adpos_look']
+                let powerList = [ 'active_reward_look', 'active_reward_setStatus', 'active_reward_setpriority','active_reward_add','active_reward_edit','active_reward_setdeadline','active_adpos_look']
                 this.setPowerList(powerList)
             }  ,1000)
 
@@ -262,22 +262,6 @@ export default {
 .el-submenu .el-menu-item:hover {
     background-color: #4A5064
 }
-
-
-/*.el-submenu .el-menu-item.is-active,
-.el-menu-item.is-active,
-.el-submenu .el-menu-item.is-active:hover,
-.el-menu-item.is-active:hover {
-    background-color: #00C1DE;
-    color: #fff;
-}
-.el-submenu .el-menu-item.is-active-add,
-.el-menu-item.is-active-add,
-.el-submenu .el-menu-item.is-active-add:hover,
-.el-menu-item.is-active-add:hover {
-    background-color: #00C1DE;
-    color: #fff;
-}*/
 
 .el-menu .iconfont {
     vertical-align: baseline;
