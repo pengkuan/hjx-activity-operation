@@ -134,7 +134,6 @@ import { mapGetters } from 'vuex'
 import hjxPart from '@/base/hjx_part'
 import hjxLeftTitle from '@/base/hjx_left_title'
 import hjxUnderlineInput from '@/base/hjx_underline_input'
-// import hjxSelectAlert from '@/base/hjx_select_alert'
 
 const hjxSelectAlert = resolve => require(['@/base/hjx_select_alert'], resolve) 
 
@@ -239,85 +238,84 @@ export default {
     },
     methods: {
     	/******获取并设置初始数据********/
-    	setDeault(){
+    	async setDeault(){
             const loading = this.$loading({
                     lock: true,
                     text: '获取数据中...',
                     spinner: 'el-icon-loading',
                     background: 'rgba(0, 0, 0, 0.7)'
                 })
-    		api.search_activity_detail({activityId:this.$route.query.id}).then(res=>{
-                if(res._ret != 0){
-                    loading.close()
-                    this.$alert(res._errStr)
-                    return
-                }
+    		let res =await api.search_activity_detail({activityId:this.$route.query.id})
+            if(res._ret != 0){
                 loading.close()
-                this.activityName = res.activityName
-                this.activityDesc = res.activityDesc
-                this.amountLimitType = res.amountLimitType
-                this.publicAlgorithmCoefficient = res.publicAlgorithmCoefficient
-                this.operateType = res.operateType
-                this.showPlan = res.showPlan
-                this.timeLimitType = res.timeLimitType
-                this.upperLimitAmount = String(res.upperLimitAmount / 100)
-                //数额设置
-		        if(res.publicGrantSection){
-		        	let countArr = res.publicGrantSection.split('&')
-		        	countArr.forEach((item,index) =>{
-		        		let payArr = item.split('#')[0]
-		        		let bonusArr = item.split('#')[1]
-		        		if(index == 0){
-		        			this.CountRangeList[0].payLeast = payArr.split('|')[0]/100+''
-		        			this.CountRangeList[0].payMost = payArr.split('|')[1]/100+''
-		        			this.CountRangeList[0].bonusLeast = bonusArr.split('|')[0]/100+''
-		        			this.CountRangeList[0].bonusMost = bonusArr.split('|')[1]/100+''
-		        		}else{
-		        			this.CountRangeList.push({
-		        				payLeast : payArr.split('|')[0]/100+'',
-		        				payMost : payArr.split('|')[1]/100+'',
-		        				bonusLeast : bonusArr.split('|')[0]/100+'',
-		        				bonusMost : bonusArr.split('|')[1]/100+''
-		        			})
-		        		}
-		        	})
-		        	
-		        }
+                this.$alert(res._errStr)
+                return
+            }
+            loading.close()
+            this.activityName = res.activityName
+            this.activityDesc = res.activityDesc
+            this.amountLimitType = res.amountLimitType
+            this.publicAlgorithmCoefficient = res.publicAlgorithmCoefficient
+            this.operateType = res.operateType
+            this.showPlan = res.showPlan
+            this.timeLimitType = res.timeLimitType
+            this.upperLimitAmount = String(res.upperLimitAmount / 100)
+            //数额设置
+	        if(res.publicGrantSection){
+	        	let countArr = res.publicGrantSection.split('&')
+	        	countArr.forEach((item,index) =>{
+	        		let payArr = item.split('#')[0]
+	        		let bonusArr = item.split('#')[1]
+	        		if(index == 0){
+	        			this.CountRangeList[0].payLeast = payArr.split('|')[0]/100+''
+	        			this.CountRangeList[0].payMost = payArr.split('|')[1]/100+''
+	        			this.CountRangeList[0].bonusLeast = bonusArr.split('|')[0]/100+''
+	        			this.CountRangeList[0].bonusMost = bonusArr.split('|')[1]/100+''
+	        		}else{
+	        			this.CountRangeList.push({
+	        				payLeast : payArr.split('|')[0]/100+'',
+	        				payMost : payArr.split('|')[1]/100+'',
+	        				bonusLeast : bonusArr.split('|')[0]/100+'',
+	        				bonusMost : bonusArr.split('|')[1]/100+''
+	        			})
+	        		}
+	        	})
+	        	
+	        }
 
-                //设置生效时间
-                if (res.timeLimitType == '2') {
-                    this.activityStartDate = res.activityStartDate
-                    this.activityEndDate = res.activityEndDate
-                    this.activityStartTime = res.activityStartTime.slice(0, 5)
-                    this.activityEndTime = res.activityEndTime.slice(0, 5)
-                }else{
-                    this.ifInitLimitTime = true
-                }
-                //设置验证工号开通时间
-                if(res.checkUserCreateTime == '1'){
-                	this.checkUserCreateTime = [res.checkUserCreateStartTime , res.checkUserCreateEndTime]
-                }
-                
-                //设置环保回收方式
-                let recycleArr = ( Number(res.recycleType).toString(2) / 1000 ).toFixed(3)
-                recycleArr = recycleArr.substr(recycleArr.length-3,3).split('')
-                recycleArr.forEach((item, index) => {
-	                if(item == 1) this.recycleTypeList[index].ifChoosed = true
-	                else this.recycleTypeList[index].ifChoosed = false
-	            })
-	            //设置已选 省市、品牌机型、商户门店
-	            this.addrList.L1 = res.provinceIdList
-	            this.addrList.L2 = res.cityIdList
-
-	            this.modelList.L1 = res.brandIdList
-	            this.modelList.L2 = res.productIdList
-
-	            this.channelList.L1 = res.businessesIdList
-	            this.channelList.L2 = res.storeIdList
-
+            //设置生效时间
+            if (res.timeLimitType == '2') {
+                this.activityStartDate = res.activityStartDate
+                this.activityEndDate = res.activityEndDate
+                this.activityStartTime = res.activityStartTime.slice(0, 5)
+                this.activityEndTime = res.activityEndTime.slice(0, 5)
+            }else{
+                this.ifInitLimitTime = true
+            }
+            //设置验证工号开通时间
+            if(res.checkUserCreateTime == '1'){
+            	this.checkUserCreateTime = [res.checkUserCreateStartTime , res.checkUserCreateEndTime]
+            }
+            
+            //设置环保回收方式
+            let recycleArr = ( Number(res.recycleType).toString(2) / 1000 ).toFixed(3)
+            recycleArr = recycleArr.substr(recycleArr.length-3,3).split('')
+            recycleArr.forEach((item, index) => {
+                if(item == 1) this.recycleTypeList[index].ifChoosed = true
+                else this.recycleTypeList[index].ifChoosed = false
             })
+            //设置已选 省市、品牌机型、商户门店
+            this.addrList.L1 = res.provinceIdList
+            this.addrList.L2 = res.cityIdList
+
+            this.modelList.L1 = res.brandIdList
+            this.modelList.L2 = res.productIdList
+
+            this.channelList.L1 = res.businessesIdList
+            this.channelList.L2 = res.storeIdList
+
     	},
-        onSubmit() {
+        async onSubmit() {
             let submitData = {
                 "activityId":this.$route.query.id,
                 "createUserId": this.userId,
@@ -431,14 +429,13 @@ export default {
             
 
             /********** 提交 ***********/
-            api.update_activity_info(submitData).then(res=>{
-                if(res._ret != 0){
-                    this.$alert(res._errStr)
-                    return
-                }
-                this.$message(res._errStr)
-                this.$router.push({ path: '/reward/list' })
-            })
+            let res = await api.update_activity_info(submitData)
+            if(res._ret != 0){
+                this.$alert(res._errStr)
+                return
+            }
+            this.$message(res._errStr)
+            this.$router.push({ path: '/reward/list' })
         },
         /******关闭选框********/
         closeAlert(status) {

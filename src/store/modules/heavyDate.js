@@ -17,25 +17,22 @@ const getters = {
 
 // actions
 const actions = {
-    getAllProvinces({ commit }) {
+    async getAllProvinces({ commit }) {
         if(state.provinceList.length == 0){
-            api.get_province_list({}).then( res => {
-                commit(types.PROVINCE_LIST,  res.provinceList )
-            })
+            let res = await api.get_province_list({})
+            commit(types.PROVINCE_LIST,  res.provinceList )
         }
     },
-    getAllCategory({ commit }) {
+    async getAllCategory({ commit }) {
         if(state.categoryList.length == 0){
-            api.get_category_list({}).then( res => {
-                commit(types.CATEGORY_LIST,  res.categoryList )
-            })
+            let res = await api.get_category_list({})
+            commit(types.CATEGORY_LIST,  res.categoryList )
         }
     },
-    getAllChannel({ commit }) {
+    async getAllChannel({ commit }) {
         if(state.channelList.length == 0){
-            api.get_channel_list({}).then( res => {
-                commit(types.CHANNEL_LIST,  res.channelList )
-            })
+            let res = await api.get_channel_list({})
+            commit(types.CHANNEL_LIST,  res.channelList )
         }
     },
 }
