@@ -336,7 +336,7 @@ export default {
 
             //校验通过 设置值
             submitData.publicGrantSection = this.CountRangeList.map(item=>{
-                return `${item.payLeast}|${item.payMost}#${item.bonusLeast}|${item.bonusMost}`
+                return `${item.payLeast*100}|${item.payMost*100}#${item.bonusLeast*100}|${item.bonusMost*100}`
             }).join('&')
             submitData.upperLimitAmount = String(submitData.upperLimitAmount*100)
             //活动时间选择限制时 必传字段

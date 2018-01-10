@@ -268,16 +268,16 @@ export default {
 		        		let payArr = item.split('#')[0]
 		        		let bonusArr = item.split('#')[1]
 		        		if(index == 0){
-		        			this.CountRangeList[0].payLeast = payArr.split('|')[0]
-		        			this.CountRangeList[0].payMost = payArr.split('|')[1]
-		        			this.CountRangeList[0].bonusLeast = bonusArr.split('|')[0]
-		        			this.CountRangeList[0].bonusMost = bonusArr.split('|')[1]
+		        			this.CountRangeList[0].payLeast = payArr.split('|')[0]/100+''
+		        			this.CountRangeList[0].payMost = payArr.split('|')[1]/100+''
+		        			this.CountRangeList[0].bonusLeast = bonusArr.split('|')[0]/100+''
+		        			this.CountRangeList[0].bonusMost = bonusArr.split('|')[1]/100+''
 		        		}else{
 		        			this.CountRangeList.push({
-		        				payLeast : payArr.split('|')[0],
-		        				payMost : payArr.split('|')[1],
-		        				bonusLeast : bonusArr.split('|')[0],
-		        				bonusMost : bonusArr.split('|')[1]
+		        				payLeast : payArr.split('|')[0]/100+'',
+		        				payMost : payArr.split('|')[1]/100+'',
+		        				bonusLeast : bonusArr.split('|')[0]/100+'',
+		        				bonusMost : bonusArr.split('|')[1]/100+''
 		        			})
 		        		}
 		        	})
@@ -418,7 +418,7 @@ export default {
 
             //校验通过 设置值
             submitData.publicGrantSection = this.CountRangeList.map(item=>{
-                return `${item.payLeast}|${item.payMost}#${item.bonusLeast}|${item.bonusMost}`
+                return `${item.payLeast*100}|${item.payMost*100}#${item.bonusLeast*100}|${item.bonusMost*100}`
             }).join('&')
             submitData.upperLimitAmount = String(submitData.upperLimitAmount*100)
             //活动时间选择限制时 必传字段

@@ -220,16 +220,16 @@ export default {
 		        		let payArr = item.split('#')[0]
 		        		let bonusArr = item.split('#')[1]
 		        		if(index == 0){
-		        			this.CountRangeList[0].payLeast = payArr.split('|')[0]
-		        			this.CountRangeList[0].payMost = payArr.split('|')[1]
-		        			this.CountRangeList[0].bonusLeast = bonusArr.split('|')[0]
-		        			this.CountRangeList[0].bonusMost = bonusArr.split('|')[1]
+		        			this.CountRangeList[0].payLeast = payArr.split('|')[0]/100+''
+		        			this.CountRangeList[0].payMost = payArr.split('|')[1]/100+''
+		        			this.CountRangeList[0].bonusLeast = bonusArr.split('|')[0]/100+''
+		        			this.CountRangeList[0].bonusMost = bonusArr.split('|')[1]/100+''
 		        		}else{
 		        			this.CountRangeList.push({
-		        				payLeast : payArr.split('|')[0],
-		        				payMost : payArr.split('|')[1],
-		        				bonusLeast : bonusArr.split('|')[0],
-		        				bonusMost : bonusArr.split('|')[1]
+		        				payLeast : payArr.split('|')[0]/100+'',
+		        				payMost : payArr.split('|')[1]/100+'',
+		        				bonusLeast : bonusArr.split('|')[0]/100+'',
+		        				bonusMost : bonusArr.split('|')[1]/100+''
 		        			})
 		        		}
 		        	})

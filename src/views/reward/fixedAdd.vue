@@ -251,7 +251,7 @@ export default {
                 "timeLimitType": this.timeLimitType,
                 "directAmount":this.directAmount,
                 "isCheckUserCreateTime":this.isCheckUserCreateTime,
-                "directGrantSection":this.directGrantSection.least+'|'+this.directGrantSection.most,
+                "directGrantSection":this.directGrantSection.least*100+'|'+this.directGrantSection.most*100,
                 "amountLimitType": this.amountLimitType,
                 "upperLimitAmount": this.upperLimitAmount, 
             }

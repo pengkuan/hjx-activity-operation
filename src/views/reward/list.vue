@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id = "rewardList">
         <el-breadcrumb separator-class="el-icon-arrow-right">
             <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
             <el-breadcrumb-item>红包管理</el-breadcrumb-item>
@@ -9,7 +9,7 @@
             <!-- ################### 随机 ###################### -->
             <el-tab-pane label="随机" name="ramdom">
                 <!-- 搜索start -->
-                <el-form :inline="true" :model="random_reward.search" ref="random_reward.search"  size="small" class="demo-form-inline">
+                <el-form :inline="true" :model="random_reward.search" ref="random_reward.search"  size="mini" class="demo-form-inline">
                     <el-form-item label="活动名称:" prop="activityName">
                         <el-input v-model="random_reward.search.activityName" @change="random_reward.search.activityName = _Util.Trim(random_reward.search.activityName)" @keyup.13.native="random_init($event)" placeholder="请输入活动名称" ></el-input>
                     </el-form-item>
@@ -65,16 +65,16 @@
                     <el-table-column width="120px" prop="updateUserName" label="最近操作人"></el-table-column>
                     <el-table-column label="操作">
                         <template slot-scope="scope">
-                            <el-button class='indexFunBtn' type="primary" :disabled="power.active_reward_look" @click="random_check(scope.row.activityId,scope.row.valid)" size="small">查看</el-button>
-                            <el-button v-if="scope.row.valid == '1' " class='indexFunBtn' type="danger" :disabled="power.active_reward_setStatus" @click="setStatus('1',scope.row.activityId , '0',scope.row.limitStatus)" size="small">禁用</el-button>
+                            <el-button class='indexFunBtn' type="primary" :disabled="power.active_reward_look" @click="random_check(scope.row.activityId,scope.row.valid)" size="mini">查看</el-button>
+                            <el-button v-if="scope.row.valid == '1' " class='indexFunBtn' type="danger" :disabled="power.active_reward_setStatus" @click="setStatus('1',scope.row.activityId , '0',scope.row.limitStatus)" size="mini">禁用</el-button>
                             <span v-else >
-                                <el-button class='indexFunBtn' type="primary" :disabled="power.active_reward_edit" @click="random_edit(scope.row.activityId)" size="small">编辑</el-button>
-                                <el-button class='indexFunBtn' type="primary" :disabled="power.active_reward_setStatus" @click="setStatus('1',scope.row.activityId , '1',scope.row.limitStatus)" size="small">启用</el-button>
+                                <el-button class='indexFunBtn' type="primary" :disabled="power.active_reward_edit" @click="random_edit(scope.row.activityId)" size="mini">编辑</el-button>
+                                <el-button class='indexFunBtn' type="primary" :disabled="power.active_reward_setStatus" @click="setStatus('1',scope.row.activityId , '1',scope.row.limitStatus)" size="mini">启用</el-button>
                             </span>
 
                             <span>
-                                <el-button class = 'indexFunBtn' :disabled="power.active_reward_setpriority" @click="setActivityLevel('1',scope.row.activityId , '0')"  size="small">上移</el-button>
-                                <el-button class = 'indexFunBtn' :disabled="power.active_reward_setpriority" @click="setActivityLevel('1',scope.row.activityId , '1')"  size="small">下移</el-button>
+                                <el-button class = 'indexFunBtn' :disabled="power.active_reward_setpriority" @click="setActivityLevel('1',scope.row.activityId , '0')"  size="mini">上移</el-button>
+                                <el-button class = 'indexFunBtn' :disabled="power.active_reward_setpriority" @click="setActivityLevel('1',scope.row.activityId , '1')"  size="mini">下移</el-button>
                             </span>
                         </template>
                     </el-table-column>
@@ -87,7 +87,7 @@
             <!-- ################### 定额定向 ###################### -->
             <el-tab-pane label="定额定向" name="fixed">
                 <!-- 搜索start -->
-                <el-form :inline="true" :model="fixed_reward.search" ref="fixed_reward.search" size="small" class="demo-form-inline">
+                <el-form :inline="true" :model="fixed_reward.search" ref="fixed_reward.search" size="mini" class="demo-form-inline">
                     <el-form-item label="活动名称:" prop="activityName">
                         <el-input v-model="fixed_reward.search.activityName" @change="fixed_reward.search.activityName = _Util.Trim(fixed_reward.search.activityName)" @keyup.13.native="fixed_init($event)" placeholder="请输入活动名称"></el-input>
                     </el-form-item>
@@ -149,15 +149,15 @@
                     <el-table-column width="120px" prop="updateUserName" label="最近操作人"></el-table-column>
                     <el-table-column label="操作">
                         <template slot-scope="scope">
-                            <el-button class='indexFunBtn' type="primary" :disabled="power.active_reward_look" @click="fixed_check(scope.row.activityId,scope.row.valid)" size="small">查看</el-button>
-                            <el-button v-if="scope.row.valid == '1' " :disabled="power.active_reward_setStatus" class='indexFunBtn' type="danger" @click="setStatus('2',scope.row.activityId , '0')" size="small">禁用</el-button>
+                            <el-button class='indexFunBtn' type="primary" :disabled="power.active_reward_look" @click="fixed_check(scope.row.activityId,scope.row.valid)" size="mini">查看</el-button>
+                            <el-button v-if="scope.row.valid == '1' " :disabled="power.active_reward_setStatus" class='indexFunBtn' type="danger" @click="setStatus('2',scope.row.activityId , '0')" size="mini">禁用</el-button>
                             <span v-else >
-                                <el-button class='indexFunBtn' type="primary" :disabled="power.active_reward_edit" @click="fixed_edit(scope.row.activityId)" size="small">编辑</el-button>
-                                <el-button class='indexFunBtn' type="primary" :disabled="power.active_reward_setStatus" @click="setStatus('2',scope.row.activityId , '1',scope.row.limitStatus)" size="small">启用</el-button>
+                                <el-button class='indexFunBtn' type="primary" :disabled="power.active_reward_edit" @click="fixed_edit(scope.row.activityId)" size="mini">编辑</el-button>
+                                <el-button class='indexFunBtn' type="primary" :disabled="power.active_reward_setStatus" @click="setStatus('2',scope.row.activityId , '1',scope.row.limitStatus)" size="mini">启用</el-button>
                             </span>
                             <span>
-                                <el-button class = 'indexFunBtn' :disabled="power.active_reward_setpriority" @click="setActivityLevel('1',scope.row.activityId , '0')"  size="small">上移</el-button>
-                                <el-button class = 'indexFunBtn' :disabled="power.active_reward_setpriority" @click="setActivityLevel('1',scope.row.activityId , '1')"  size="small">下移</el-button>
+                                <el-button class = 'indexFunBtn' :disabled="power.active_reward_setpriority" @click="setActivityLevel('1',scope.row.activityId , '0')"  size="mini">上移</el-button>
+                                <el-button class = 'indexFunBtn' :disabled="power.active_reward_setpriority" @click="setActivityLevel('1',scope.row.activityId , '1')"  size="mini">下移</el-button>
                             </span>
                         </template>
                     </el-table-column>
@@ -342,3 +342,6 @@ export default {
 }
 
 </script>
+<style type="text/css" scoped="scoped">
+     #rewardList .el-table{font-size: 12px}
+</style>

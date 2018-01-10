@@ -237,8 +237,8 @@ export default {
                     this.checkUserCreateTime = [res.checkUserCreateStartTime , res.checkUserCreateEndTime]
                 }
                 //设置付款金额
-                this.directGrantSection.least = res.directGrantSection.split('|')[0]
-                this.directGrantSection.most = res.directGrantSection.split('|')[1]
+                this.directGrantSection.least = res.directGrantSection.split('|')[0] / 100
+                this.directGrantSection.most = res.directGrantSection.split('|')[1] / 100
                 //设置环保回收方式
                 let recycleArr = ( Number(res.recycleType).toString(2) / 1000).toFixed(3)
                 recycleArr = recycleArr.substr(recycleArr.length-3,3).split('')
