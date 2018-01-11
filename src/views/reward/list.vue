@@ -29,7 +29,7 @@
                     <el-button type="primary" @click="random_add" :disabled="power.active_reward_add" size="mini">新增</el-button>
                 </div>
                 <!-- 搜索end -->
-                <el-table border :data="random_reward.list" style="width: 100%,min-height:300px">
+                <el-table size="mini" border :data="random_reward.list" style="width: 100%,min-height:300px">
                     <el-table-column width="100px" prop="activityId" label="活动ID"></el-table-column>
                     <el-table-column width="100px" prop="activityLevel" label="优先级"></el-table-column>
                     <el-table-column width="180px" label="活动名称">
@@ -44,8 +44,8 @@
                         <template slot-scope="scope">
                             <span v-if="!scope.row.activityStartTime">不限</span>
                             <span v-else>
-                                {{scope.row.activityStartDate}}~{{scope.row.activityEndDate}}
-                                {{scope.row.activityStartTime}}~{{scope.row.activityEndTime}}
+                                {{scope.row.activityStartDate}}~{{scope.row.activityEndDate}}&nbsp;&nbsp;
+                                {{scope.row.activityStartTime.substr(0,5)}}~{{scope.row.activityEndTime.substr(0,5)}}
                             </span>
                         </template>
                     </el-table-column>
@@ -109,7 +109,7 @@
                     </router-link>
                 </div>
                 <!-- 搜索end -->
-                <el-table border :data="fixed_reward.list" style="width: 100%,min-height:300px">
+                <el-table size="mini" border :data="fixed_reward.list" style="width: 100%,min-height:300px">
                     <el-table-column width="100px" prop="activityId" label="活动ID"></el-table-column>
                     <el-table-column width="100px" prop="activityLevel" label="优先级"></el-table-column>
                     <el-table-column width="180px" label="活动名称">
@@ -120,12 +120,12 @@
                             </span>
                         </template>
                     </el-table-column>
-                    <el-table-column  label="生效时间">
+                    <el-table-column  label="生时间">
                         <template slot-scope="scope">
                             <span v-if="!scope.row.activityStartTime">不限</span>
                             <span v-else>
-                                {{scope.row.activityStartDate}}~{{scope.row.activityEndDate}}
-                                {{scope.row.activityStartTime}}~{{scope.row.activityEndTime}}
+                                {{scope.row.activityStartDate}}~{{scope.row.activityEndDate}}&nbsp;&nbsp;
+                                {{scope.row.activityStartTime.substr(0,5)}}~{{scope.row.activityEndTime.substr(0,5)}}
                             </span>
                         </template>
                     </el-table-column>
@@ -342,6 +342,7 @@ export default {
 }
 
 </script>
-<style type="text/css" scoped="scoped">
-     #rewardList .el-table{font-size: 12px}
+<style type="text/css">
+     /*#rewardList .el-table{font-size: 12px}
+     #rewardList .el-table td,#rewardList .el-table th{padding: 8px 0}*/
 </style>

@@ -5,7 +5,7 @@ export default {
 	IS_PRO : process.env.NODE_ENV == 'production',
 	IS_TEST : process.env.NODE_ENV == 'test',
 	IS_NO_DEV :  process.env.NODE_ENV == 'production' ||  process.env.NODE_ENV == 'test',
-	
+	BASE_URL : 'https://business.huishoubao.com/api/',
 	ENV_MARK: process.env.NODE_ENV == 'production' ? '' : process.env.NODE_ENV == 'development' ? '您正在访问开发环境！' : '您正在访问测试环境！', //环境标识
 	SYSTEM_ID: '101', 
 	SYSTEM_HOME_ID: '100', 

@@ -24,11 +24,11 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="发放时间:" prop="createTime">
-                <el-date-picker class="search-width" v-model="search.createTime" type="datetime" value-format="yy-MM-dd HH:mm:ss" placeholder="选择日期时间">
+                <el-date-picker class="search-width" v-model="search.createTime111" type="daterange" value-format="yy-MM-dd" start-placeholder="开始日期" end-placeholder="结束日期">
                 </el-date-picker>
             </el-form-item>
             <el-form-item label="领取时间:" prop="receiveTime">
-                <el-date-picker class="search-width" v-model="search.receiveTime" type="datetime" value-format="yy-MM-dd HH:mm:ss" placeholder="选择日期时间">
+                <el-date-picker class="search-width" v-model="search.receiveTime111" type="daterange" value-format="yy-MM-dd" start-placeholder="开始日期" end-placeholder="结束日期">
                 </el-date-picker>
             </el-form-item>
             <el-form-item label="红包状态:" prop="packetStatus">
@@ -51,9 +51,9 @@
             <el-form-item label="S1手机号/姓名:" prop="s1Info">
                 <el-input v-model="search.s1Info" @keyup.13.native="init($event)" @change="search.s1Info = _Util.Trim(search.s1Info)" placeholder="请输入S1手机号/姓名"></el-input>
             </el-form-item>
-            <!-- <el-form-item label="O3 ID/名称:" prop="o4Info">
-                <el-input v-model="search.o4Info" @keyup.13.native="init($event)" @change="search.o4Info = _Util.Trim(search.o4Info)" placeholder="请输入O3 ID/名称"></el-input>
-            </el-form-item> -->
+            <el-form-item label="O3 ID/名称:" prop="o3Info">
+                <el-input v-model="search.o3Info" @keyup.13.native="init($event)" @change="search.o3Info = _Util.Trim(search.o3Info)" placeholder="请输入O3 ID/名称"></el-input>
+            </el-form-item>
             <el-form-item label="O1 ID/名称:" prop="o1Info">
                 <el-input v-model="search.o1Info" @keyup.13.native="init($event)" @change="search.o1Info = _Util.Trim(search.o1Info)" placeholder="请输入O1 ID/名称"></el-input>
             </el-form-item>
@@ -67,31 +67,31 @@
         </el-form>
         <br>
         <!-- 搜索end -->
-        <el-table border :data="list" style="width: 100%,min-height:300px">
+        <el-table size="mini" border :data="list" style="width: 100%,min-height:300px">
             <el-table-column prop="txnId" label="流水号"></el-table-column>
             <el-table-column prop="createTime" label="发放时间"></el-table-column>
             <el-table-column prop="receiveTime" label="领取时间"></el-table-column>
-            <el-table-column prop="activityId" width="70" label="活动ID"></el-table-column>
+            <el-table-column prop="activityId" width="100" label="活动ID"></el-table-column>
             <el-table-column prop="orderNum" label="订单编号"></el-table-column>
-            <el-table-column width="70" label="奖励类型">
+            <el-table-column width="100" label="奖励类型">
                 <template slot-scope="scope">
                     <span v-if="scope.row.activityType == '1' ">随机</span>
-                    <span v-else-if="scope.row.activityType == '2' ">定向</span>
+                    <span v-else-if="scope.row.activityType == '2' ">定额定向</span>
                 </template>
             </el-table-column>
-            <el-table-column width="70" label="奖金">
+            <el-table-column width="100" label="奖金">
                 <template slot-scope="scope">
                     <span> {{(scope.row.amount / 100).toFixed(2)}} </span>
                 </template>
             </el-table-column>
-            <el-table-column width="70" label="红包状态">
+            <el-table-column width="100" label="红包状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.packetStatus == '1' ">未领取</span>
                     <span v-else-if="scope.row.packetStatus == '2' ">已领取</span>
                     <span v-if="scope.row.packetStatus == '3' ">已失效</span>
                 </template>
             </el-table-column>
-            <el-table-column width="70" label="奖金状态">
+            <el-table-column width="100" label="奖金状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.amountStatus == '1' ">未领取</span>
                     <span v-else-if="scope.row.amountStatus == '2' ">未激活</span>
@@ -104,11 +104,11 @@
                     {{scope.row.s1Info.phone}}/{{scope.row.s1Info.name}}
                 </template>
             </el-table-column>
-            <!-- <el-table-column label="O3 ID/名称">
+            <el-table-column label="O3 ID/名称">
                 <template slot-scope="scope">
-                    {{scope.row.o4Info.id}}/{{scope.row.o4Info.name}}
+                    {{scope.row.o3Info.id}}/{{scope.row.o3Info.name}}
                 </template>
-            </el-table-column> -->
+            </el-table-column>
             <el-table-column label="O1 ID/名称">
                 <template slot-scope="scope">
                     {{scope.row.o1Info.id}}/{{scope.row.o1Info.name}}
@@ -137,9 +137,11 @@ export default {
                 "s1Info": "",
                 "o1Info": "",
                 "o1City": "",
-                "o4Info": "",
+                "o3Info": "",
                 "createTime": "",
                 "receiveTime": "",
+                "createTime111": "",
+                "receiveTime111": "",
                 "packetStatus": "",
                 "amountStatus": "",
                 "pageIndex": "0",
@@ -182,6 +184,5 @@ export default {
     #search .el-input__inner ,
     #search .el-date-editor.el-input
     {width: 200px!important}
-    #rewardRecord .el-table{font-size: 12px}
 </style>
 

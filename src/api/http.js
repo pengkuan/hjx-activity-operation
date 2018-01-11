@@ -10,7 +10,7 @@ let UserInfo = `user_id=${util.getQueryStringByName('user_id')};login_token=${ut
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 axios.defaults.headers['User-Info'] = UserInfo
 // axios.defaults.withCredentials = true
-axios.defaults.baseURL = 'https://business.huishoubao.com/api/'
+axios.defaults.baseURL = config.BASE_URL
 
 import { Message } from 'element-ui'
 //POST传参序列化
@@ -31,6 +31,7 @@ axios.interceptors.response.use((res) => {
     if(res.data._data._errCode == '900006'){
         Message({ message: res.data._data._errStr, type: 'warning' })
         window.location.href = `${config.POWER_CENTER_LOGIN}/login?system_id=${config.SYSTEM_HOME_ID}&jump_url=${config.RETURN_URL}`
+        return
     }
     return res.data._data
 }, (error) => {

@@ -4,7 +4,7 @@
 ::-webkit-scrollbar-track {-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);border-radius: 8px;}
 /* 滚动条滑块 */
 ::-webkit-scrollbar-thumb { border-radius: 8px; background: rgba(206,206,206,0.1);-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);}
-button.indexFunBtn{margin: 4px 8px 4px 0 !important}
+button.indexFunBtn{margin: 2px 8px 2px 0 !important}
 body{padding:0px;margin:0px auto;background-color: #fff;}
 a{text-decoration:none;}
 i{font-style: normal;}
