@@ -17,22 +17,22 @@
                 <el-input v-model="search.orderNum" @keyup.13.native="init($event)" @change="search.orderNum = _Util.Trim(search.orderNum)" placeholder="请输入订单编号"></el-input>
             </el-form-item>
             <el-form-item label="奖励类型:" prop="activityType">
-                <el-select class="search-width" v-model="search.activityType" placeholder="请选择奖励类型">
+                <el-select class="aaa" v-model="search.activityType" placeholder="请选择奖励类型">
                     <el-option label="全部" value="0"></el-option>
                     <el-option label="随机" value="1"></el-option>
                     <el-option label="定额定向" value="2"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="发放时间:" prop="createTime">
-                <el-date-picker class="search-width" v-model="search.createTime111" type="daterange" value-format="yy-MM-dd" start-placeholder="开始日期" end-placeholder="结束日期">
+                <el-date-picker size class="aaa" v-model="search.createTime" type="daterange" value-format="yy-MM-dd" start-placeholder="开始日期" end-placeholder="结束日期" :clearable="false">
                 </el-date-picker>
             </el-form-item>
             <el-form-item label="领取时间:" prop="receiveTime">
-                <el-date-picker class="search-width" v-model="search.receiveTime111" type="daterange" value-format="yy-MM-dd" start-placeholder="开始日期" end-placeholder="结束日期">
+                <el-date-picker class="aaa" v-model="search.receiveTime" type="daterange" value-format="yy-MM-dd" start-placeholder="开始日期" end-placeholder="结束日期" :clearable="false">
                 </el-date-picker>
             </el-form-item>
             <el-form-item label="红包状态:" prop="packetStatus">
-                <el-select class="search-width" v-model="search.packetStatus" placeholder="请选择红包状态">
+                <el-select class="aaa" v-model="search.packetStatus" placeholder="请选择红包状态">
                     <el-option label="全部" value="0"></el-option>
                     <el-option label="未领取" value="1"></el-option>
                     <el-option label="已领取" value="2"></el-option>
@@ -40,7 +40,7 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="奖金状态:" prop="amountStatus">
-                <el-select class="search-width" v-model="search.amountStatus" placeholder="请选择奖金状态">
+                <el-select class="aaa" v-model="search.amountStatus" placeholder="请选择奖金状态">
                     <el-option label="全部" value="0"></el-option>
                     <el-option label="未领取" value="1"></el-option>
                     <el-option label="未激活" value="2"></el-option>
@@ -124,6 +124,7 @@
 </template>
 <script>
 import api from '@/api/index'
+import merge from '@/util/merge'
 import { mapGetters } from 'vuex'
 export default {
     data() {
@@ -138,10 +139,8 @@ export default {
                 "o1Info": "",
                 "o1City": "",
                 "o3Info": "",
-                "createTime": "",
-                "receiveTime": "",
-                "createTime111": "",
-                "receiveTime111": "",
+                "createTime": '',
+                "receiveTime": '',
                 "packetStatus": "",
                 "amountStatus": "",
                 "pageIndex": "0",
@@ -149,15 +148,25 @@ export default {
             },
             currentPage: 1,
             total: 0
-
         }
+    },
+    computed:{
+
     },
     mounted() {
         this.init()
     },
     methods: {
         init() {
-            api.search_grant_record(this.search).then(res => {
+            let submitData = {}
+            
+            submitData.createTimeStart = this.search.createTime[0] ? this.search.createTime[0] + ' 00:00:00' : ''
+            submitData.createTimeEnd = this.search.createTime[1] ? this.search.createTime[1] + ' 23:59:59' : ''
+            submitData.receiveTimeStart = this.search.receiveTime[0] ? this.search.receiveTime[0] + ' 00:00:00' : ''
+            submitData.receiveTimeEnd = this.search.receiveTime[1] ? this.search.receiveTime[1] + ' 23:59:59' : ''
+
+            submitData = merge(submitData,this.search)
+            api.search_grant_record(submitData).then(res => {
                 if (res._ret != 0) {
                     this.$alert(res._errStr)
                     return
@@ -183,6 +192,6 @@ export default {
 <style type="text/css">
     #search .el-input__inner ,
     #search .el-date-editor.el-input
-    {width: 200px!important}
+    {width: 240px!important}
 </style>
 
