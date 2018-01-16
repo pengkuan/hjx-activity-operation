@@ -11,7 +11,7 @@ export default {
 	SYSTEM_HOME_ID: '100', 
 	POWER_CENTER_LOGIN: 'http://api-amc.huishoubao.com.cn',
 	RETURN_URL: 'https://mba.huanjixia.com/login', //登录后，后台跳转到home页面
-	JSONP_URL: process.env.NODE_ENV == 'development' ? 'http://10.0.10.67:8080/index/index' : process.env.NODE_ENV == 'production' ? 'https://access.huanjixia.com/index/index' : 'https://dev-access.huanjixia.com/index/index',//本地开发环境(志鹏)、243测试环境
-	UPLOAD_URL: process.env.NODE_ENV == 'development' ? 'http://10.0.10.67:8080/index/index' : process.env.NODE_ENV == 'production' ? 'https://access.huanjixia.com/index/index' : 'https://dev-access.huanjixia.com/index/index',//本地开发环境(志鹏)、243测试环境
+	JSONP_URL: process.env.NODE_ENV == 'development' ? 'https://dev-access.huanjixia.com/index/index' : process.env.NODE_ENV == 'production' ? 'https://access.huanjixia.com/index/index' : 'https://dev-access.huanjixia.com/index/index',//本地开发环境(志鹏)、243测试环境
+	UPLOAD_URL: process.env.NODE_ENV == 'development' ? 'https://dev-access.huanjixia.com/index/index' : process.env.NODE_ENV == 'production' ? 'https://access.huanjixia.com/index/index' : 'https://dev-access.huanjixia.com/index/index',//本地开发环境(志鹏)、243测试环境
 
 }

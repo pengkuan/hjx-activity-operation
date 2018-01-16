@@ -170,7 +170,7 @@
             </el-form-item>
             <el-form-item label="广告排序" class="w300 pos-rel">
                 <el-input v-model="form.sort" disabled></el-input>
-                <el-button type="primary" size="mini" class="my-select-sort" @click="ad_sort" :disabled="this.$route.query.from == 'adPosition'">选择</el-button>
+                <el-button type="primary" size="mini" class="my-select-sort" @click="ad_sort">选择</el-button>
             </el-form-item>  
             <el-form-item>
                 <el-button type="primary" @click="onSubmit">确认添加</el-button>
@@ -283,7 +283,7 @@ export default {
                 useType: 1, //1是立即生效 2是自定义时间  
                 startTime: '', //开始时间
                 endTime: '', //结束时间
-                sort: 1, //广告排序
+                sort: '', //广告排序
             },
             // 部分可见数据
             addConditionValue: '', //选择什么条件添加
@@ -643,8 +643,12 @@ export default {
         },
         sort_select_ok() {//排序选择ok  
             this.needChangeAdFlag = false
+            if (this.$route.query.from == 'adPosition') {
+                this.form.sort = '1'
+            }
             if (!this.sortData.length || this.sortData.length == 1) {
                 this.adOrder = 1
+                this.form.sort = '1'
                 this.dialog2 = false 
             } else {
                 this.sortData.forEach((item,index)=>{
@@ -791,6 +795,7 @@ export default {
         ['form.positionCode'](code){
             // console.log(code)
             this.ad_getPositionaInfo(code) 
+            this.form.sort = ''
         },
         sortData() {
             // this.form.sort = this.sortData.length + 1
@@ -806,12 +811,12 @@ export default {
             this.form.adType = this.adPositionParams.adType
             this.form.imgWidth = this.adPositionParams.imgWidth
             this.form.imgHigh = this.adPositionParams.imgHigh
-            this.form.sort = 1
+            this.form.sort = ''
             // console.log(this.adPositionParams)
         }
     },
     mounted() {  
-        this.form.sort = this.sortData.length + 1  
+        // this.form.sort = this.sortData.length + 1  
         this.getClientList() //客户端列表 
         this.getAdPosList() //广告位列表
         this.getChannel() //渠道列表
