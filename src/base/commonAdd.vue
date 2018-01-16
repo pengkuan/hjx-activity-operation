@@ -339,6 +339,10 @@ export default {
             if (!/^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(this.form.adTitle)) {
                 this.$message.error('广告标题只能输入中文，数字和字母') 
                 return false
+            }
+            if (this.form.adTitle.gblen() > '20') {
+                this.$message.error('广告标题最多20个字符') 
+                return false 
             } 
             if (this.form.adType == 1) {
                 if (!this.form.adText) {
@@ -348,6 +352,10 @@ export default {
                 if (!/^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(this.form.adText)) {
                     this.$message.error('广告素材只能输入中文，数字和字母') 
                     return false
+                }
+                if (this.form.adText.gblen() > '100') {
+                    this.$message.error('广告素材最多100个字符') 
+                    return false 
                 }
             }
             if (this.form.adType == 2) {
@@ -367,7 +375,11 @@ export default {
             if (!/^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(this.form.adDesc)) {
                 this.$message.error('广告描述只能输入中文，数字和字母') 
                 return false
-            }  
+            } 
+            if (this.form.adDesc.gblen() > '200') {
+                this.$message.error('广告描述最多200个字符') 
+                return false 
+            } 
             if (this.form.isJump == 2) {
                 if (!this.form.jumpUrl) {
                     this.$message.error('跳转链接不能为空')  //跳转链接可能传中文的参数
