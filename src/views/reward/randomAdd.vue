@@ -70,7 +70,7 @@
                 <hjx-underline-input type='number' width="50" v-model="item.bonusMost" @change="val_CountRangeList(index)" :textCenter="true"></hjx-underline-input>
                 <span v-if="CountRangeList.length==1" class="underline-text"><i class="iconfont icon-roundaddfill hjx-hover" @click="addCountRange(index)"></i></span>
                 <span v-else-if="(CountRangeList.length>1) && (index == CountRangeList.length - 1)" class="underline-text">
-                    <i class="iconfont icon-roundaddfill hjx-hover" @click="addCountRange(index)"></i>
+                    <i v-if="CountRangeList.length < addTopCount" class="iconfont icon-roundaddfill hjx-hover" @click="addCountRange(index)"></i>
                     <i class="iconfont icon-round_close_fill_light hjx-hover" @click="delCountRange"></i>
                 </span>
                 <span class="errorInfo">{{errorInfo['CountRangeList_'+index]}}</span>
@@ -181,6 +181,7 @@ export default {
             ],
             upperLimitAmount:'',
             /************ 数额设置 ************/
+            addTopCount: 10 , //可添加最高条数
             CountRangeList:[
             	{
             		payLeast:'',

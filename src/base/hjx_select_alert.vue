@@ -5,18 +5,18 @@
         <div class="alert-title hjx-text-center hjx-blue">选择{{mappingResult[9]}}和{{mappingResult[10]}}</div>
         <div class="clear choose-container">
           <div class="fl box-left">
-            <p class="second-title">选择：</p>
+            <p class="second-title hjx-blue">备选</p>
             <div class="choose-field">
               <div v-if="first">
                 <el-input size="small" @input="searchL1(searchL1Name)" :placeholder=" '搜索'+mappingResult[9]" prefix-icon="el-icon-search" v-model="searchL1Name" clearable></el-input>
-                <span class="noTap breadcrumb">一级列表</span>
+                <p class="breadcrumb"><span class="noTap ">{{mappingResult[9]}}列表</span></p>
                 <p class="left-item-second">
-                  <el-checkbox v-show="showSearchL1" @change="changeL1(chooseAllL1)" :indeterminate="isIndeterminateFirst" v-model="chooseAllL1">全选</el-checkbox>
+                  <el-checkbox v-show="showSearchL1" @change="changeL1(chooseAllL1)" :indeterminate="isIndeterminateFirst" v-model="chooseAllL1"><span class="ft12">全选</span></el-checkbox>
                 </p>
                 <div class="list-container">
                   <p class="left-item overflow" v-for="item in preChooseL1" v-show="item.ifshow || showSearchL1">
-                    <el-checkbox class="fl" v-model="item.ifChoosed" :key="item[mappingResult[0]]" @change="handleL1(item.ifChoosed,item[mappingResult[1]],item[mappingResult[0]])">
-                      <i class="iconfont icon-wenjianjia"></i>{{item[mappingResult[1]]}}
+                    <el-checkbox size="mini" class="fl" v-model="item.ifChoosed" :key="item[mappingResult[0]]" @change="handleL1(item.ifChoosed,item[mappingResult[1]],item[mappingResult[0]])">
+                      <span class="ft12"><i class="iconfont icon-wenjianjia"></i> {{item[mappingResult[1]]}}</span>
                     </el-checkbox>
                     <el-button @click="setSecond(item[mappingResult[0]])" type="text" size="mini" class="fr clear-padding" :disabled="item.ifChoosed"><i class="iconfont icon-xiajiicon"></i>下级</el-button>
                   </p>
@@ -24,14 +24,14 @@
               </div>
               <div v-else>
                 <el-input size="small" @input="searchL2(searchL2Name)" :placeholder=" '搜索'+mappingResult[10]" prefix-icon="el-icon-search" v-model="searchL2Name" clearable></el-input>
-                <div class="breadcrumb"><span class="canTap hjx-hover" @click="first = true">一级列表</span><i class="iconfont icon-right"></i><span class="noTap">二级列表</span></div>
+                <div class="breadcrumb"><span class="canTap hjx-hover" @click="first = true">{{mappingResult[9]}}列表 <i class="iconfont icon-right"></i></span><span class="noTap">{{mappingResult[10]}}列表</span></div>
                 <p class="left-item-second">
-                  <el-checkbox v-show="showSearchL2" @change="changeL2(chooseAllL2)" :indeterminate="isIndeterminateFirst" v-model="chooseAllL2">全选</el-checkbox>
+                  <el-checkbox v-show="showSearchL2" @change="changeL2(chooseAllL2)" :indeterminate="isIndeterminateFirst" v-model="chooseAllL2"><span class="ft12">全选</span></el-checkbox>
                 </p>
                 <div class="list-container">
                   <p class="left-item" v-for="item in preChooseL2" v-show="item.ifshow || showSearchL2">
                     <el-checkbox v-model="item.ifChoosed" :key="item[mappingResult[3]]" @change="handleL2(item.ifChoosed,item[mappingResult[4]],item[mappingResult[3]],item.parentId)">
-                      <i class="iconfont icon-dian"></i>{{item[mappingResult[4]]}}
+                      <span class="ft12"><i class="iconfont icon-dian"></i>{{item[mappingResult[4]]}}</span>
                     </el-checkbox>
                   </p>
                 </div>
@@ -39,7 +39,7 @@
             </div>
           </div>
           <div class="fr box-right">
-            <p class="second-title">已选：</p>
+            <p class="second-title hjx-blue">已选</p>
             <div class="choose-field list-container-choosed">
               <div v-for="(list,key) in choosedList">
                 <p class="right-item clear" v-for="(item,index) in list">
@@ -318,113 +318,29 @@ export default {
 
 </script>
 <style type="text/css" scoped="scoped">
-.hjx-alert-container{
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  z-index: 2000;
-}
-.hjx-alert-container .hjx-bg{
-  position: absolute;top:0;left: 0;bottom: 0;right: 0;background-color: rgba(0,0,0,0.5);
-}
-.alert-title {
-  background-color: #f3f4f5;
-  font-size: 16px;
-  height: 35px;
-  line-height: 35px;
-  font-weight: 600;
-}
-
-.hjx-alert-container .hjx-message-box {
-  background: #fff;
-  width: 800px;
-  position: absolute;
-  display: inline-block;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 2006;
-}
-
-.box-left {
-  width: 45%;
-}
-
-.box-right {
-  width: 45%;
-}
-
-.clear-padding {
-  padding: 0
-}
-
-.choose-field {
-  text-align: left;
-  background-color: #f3f4f5;
-  padding: 12px;
-  overflow: hidden;
-}
-
-.choose-container {
-  padding: 0 20px 10px 20px;
-  overflow: hidden;
-}
-
+.hjx-alert-container{position: fixed;top: 0;left: 0;width: 100%;height: 100%;text-align: center;z-index: 2000;}
+.hjx-alert-container .hjx-bg{position: absolute;top:0;left: 0;bottom: 0;right: 0;background-color: rgba(0,0,0,0.5);}
+.alert-title {border-radius: 5px;background-color: #f3f4f5;font-size: 15px;height: 35px;line-height: 35px;font-weight: 600;}
+.hjx-message-box{border-radius: 5px;}
+.hjx-alert-container .hjx-message-box {background: #fff;width: 800px;position: absolute;display: inline-block;top: 50%;left: 50%;transform: translate(-50%, -50%);z-index: 2006;}
+.box-left {width: 45%;}
+.box-right {width: 45%;}
+.clear-padding {padding: 0}
+.choose-field {text-align: left;background-color: #f3f4f5;padding: 12px;overflow: hidden;}
+.choose-container {padding: 0 20px 10px 20px;overflow: hidden;}
 .left-item,
-.right-item {
-  margin: 6px 0;
-}
+.right-item {margin: 6px 0;}
+.right-item {color: #5a5e66;font-size: 12px;overflow: hidden;}
+.left-item-second {padding-left: 23px;margin: 0;}
+.second-title {font-size: 14px;margin: 8px 0;}
+.btn {text-align: right;padding-top: 16px;}
+.noTap {font-size: 12px;color: #878D99;}
+.canTap {font-size: 12px;color: #409EFF;}
+.icon-right {font-size: 13px}
+.breadcrumb {margin: 4px 0 8px 0;}
+.list-container{height: 300px;overflow-y:auto;font-size: 12px}
 
-.right-item {
-  color: #5a5e66;
-  font-size: 14px;
-  overflow: hidden;
-}
-
-.left-item-second {
-  padding-left: 25px;
-  margin: 0
-}
-
-.second-title {
-  font-size: 16px;
-  margin: 12px 0;
-}
-
-.btn {
-  text-align: right;
-  padding-top: 16px;
-}
-
-.noTap {
-  font-size: 15px;
-  color: #324057;
-  padding: 6px 2px
-}
-
-.canTap {
-  font-size: 15px;
-  color: #409EFF;
-  padding: 6px 2px 6px 20px
-}
-
-.icon-right {
-  font-size: 13px
-}
-
-.breadcrumb {
-  margin: 6px auto;
-}
-.list-container{height: 300px;overflow-y:auto;}
 .list-container-choosed{height: 380px;overflow-y:auto;}
-
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s
-}
-.fade-enter, .fade-leave-to /* .fade-leave-active in below version 2.1.8 */ {
-  opacity: 0
-}
+.fade-enter-active, .fade-leave-active {transition: opacity .5s}
+.fade-enter, .fade-leave-to /* .fade-leave-active in below version 2.1.8 */ {opacity: 0}
 </style>
