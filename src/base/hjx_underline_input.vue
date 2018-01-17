@@ -10,7 +10,9 @@
                 }
             ]"
             :type="type"
+            
             @change="handleChange" :index="index" :disabled="disabled"  
+
             :readonly="readonly" 
             :value="value" @input="$emit('input', $event.target.value)" 
             :placeholder="placeholder" 
@@ -42,6 +44,10 @@ export default {
     methods:{
         handleChange(event) {
             if(this.index != undefined) this.$emit('change', event.target.value,this.index)
+                else this.$emit('change', event.target.value)
+        },
+        handleInput(event) {
+            if(this.index != undefined) this.$emit('input', event.target.value,this.index)
                 else this.$emit('change', event.target.value)
         },
     }

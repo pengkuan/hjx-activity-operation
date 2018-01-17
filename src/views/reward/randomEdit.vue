@@ -428,7 +428,6 @@ export default {
                 submitData.activityEndTime = this.activityEndTime + ':00'
             }
             
-
             /********** 提交 ***********/
             let res = await api.update_activity_info(submitData)
             if(res._ret != 0){
@@ -496,7 +495,13 @@ export default {
             }else if(this.CountRangeList[index+1]){
                 this.CountRangeList[index+1].payLeast = val
             }
-            this.val_CountRangeList(index)
+            //验证
+            this.pre_val_CountRangeList(index , this.CountRangeList[index])
+            //判断是否有下一条
+            const len = this.CountRangeList.length
+            if(index != len-1){
+                this.pre_val_CountRangeList(index+1 , this.CountRangeList[index+1])
+            }
             
         },
         /**************** 验证 *******************/
@@ -541,54 +546,33 @@ export default {
             }
         },
         //验证数额设置
+        pre_val_CountRangeList(index , theItem){
+            if(!theItem.payLeast||!theItem.payMost||!theItem.bonusLeast||!theItem.bonusMost){
+                this.$set(this.errorInfo , 'CountRangeList_'+index , '请完善当条信息')
+                return false  
+            }else if(Number(theItem.payMost) < Number(theItem.payLeast)) {
+                this.$set(this.errorInfo , 'CountRangeList_'+index , '付款金额上限值不应小于下限值')
+                return false  
+            }else if(Number(theItem.bonusMost) < Number(theItem.bonusLeast) ){
+                this.$set(this.errorInfo , 'CountRangeList_'+index , '奖金金额上限值不应小于下限值')
+                return false  
+            }else if(Number(theItem.bonusMost) > Number(theItem.payMost) ){
+                this.$set(this.errorInfo , 'CountRangeList_'+index , '奖金上线不应大于付款金额上限')
+                return false  
+            }else{
+                this.$set(this.errorInfo , 'CountRangeList_'+index , '')
+                return true
+            }
+        },
         val_CountRangeList(index){
             if(index == undefined){//表示确认提交时的验证
                 for(const [key,val] of this.CountRangeList.entries() ){
                     let theItem = val
-                    var ifpass = true
-                    if(
-                        (!this._Util.validate.fixed2(theItem.payLeast)) ||
-                        (!this._Util.validate.fixed2(theItem.payMost)) ||
-                        (!this._Util.validate.fixed2(theItem.bonusLeast)) ||
-                        (!this._Util.validate.fixed2(theItem.bonusMost) )
-                    ){
-                        this.$set(this.errorInfo , 'CountRangeList_'+key , '支持两位小数')
-                        ifpass = false  
-                    }else if(!theItem.payLeast||!theItem.payMost||!theItem.bonusLeast||!theItem.bonusMost){
-                        this.$set(this.errorInfo , 'CountRangeList_'+key , '请完善当条信息')
-                        ifpass = false  
-                    }else if(Number(theItem.payMost) <= Number(theItem.payLeast)) {
-                        this.$set(this.errorInfo , 'CountRangeList_'+key , '付款金额上限值不应小于下限值')
-                        ifpass = false
-                    }else if(Number(theItem.bonusMost) < Number(theItem.bonusLeast) ){
-                        this.$set(this.errorInfo , 'CountRangeList_'+key , '奖金金额上限值不应小于下限值')
-                        ifpass = false
-                    }else if(Number(theItem.bonusMost) > Number(theItem.payMost) ){
-                        this.$set(this.errorInfo , 'CountRangeList_'+key , '奖金上线不应大于付款金额上限')
-                        ifpass = false 
-                    }else{
-                        this.$set(this.errorInfo , 'CountRangeList_'+key , '')
-                    }
+                    if( !this.pre_val_CountRangeList(key , theItem) ) return false
                 }
-                return ifpass
+                return true
             }else{ //表示触发单条change事件时的验证
-                let theItem = this.CountRangeList[index]
-                if(!theItem.payLeast||!theItem.payMost||!theItem.bonusLeast||!theItem.bonusMost){
-                    this.$set(this.errorInfo , 'CountRangeList_'+index , '请完善当条信息')
-                    return false  
-                }else if(Number(theItem.payMost) <= Number(theItem.payLeast)) {
-                    this.$set(this.errorInfo , 'CountRangeList_'+index , '付款金额上限值不应小于下限值')
-                    return false  
-                }else if(Number(theItem.bonusMost) < Number(theItem.bonusLeast) ){
-                    this.$set(this.errorInfo , 'CountRangeList_'+index , '奖金金额上限值不应小于下限值')
-                    return false  
-                }else if(Number(theItem.bonusMost) > Number(theItem.payMost) ){
-                    this.$set(this.errorInfo , 'CountRangeList_'+index , '奖金上线不应大于付款金额上限')
-                    return false  
-                }else{
-                    this.$set(this.errorInfo , 'CountRangeList_'+index , '')
-                    return true
-                }
+                this.pre_val_CountRangeList(index , this.CountRangeList[index])
             }
         },
         //验证回收方式
