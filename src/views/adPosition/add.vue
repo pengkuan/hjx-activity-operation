@@ -23,7 +23,7 @@
             </el-form-item>
             <el-form-item label="位置描述（选填）" class="w600">  
                 <el-input type="textarea" :maxlength="200" :autosize="{ minRows: 4, maxRows: 8}" v-model="form.positionDesc" placeholder="请输入位置描述"></el-input>
-                <div class="tips pos-rel">支持中文、数字、英文、字符<span class="control-font-count">{{fontCount}}/200</span></div>
+                <div class="tips pos-rel">最多200个字符</span></div>
             </el-form-item>
             <el-form-item label="广告素材类型" class="w600">
                 <el-radio-group v-model="form.adType">
@@ -33,7 +33,7 @@
             </el-form-item>
             <el-form-item label="" class="w600 pos-rel" v-show="form.adType == 2">
                 <p>
-                    尺寸：&nbsp;&nbsp;&nbsp;&nbsp;长 <el-input v-model.number="form.imgWidth" type="number" class="w80" placeholder="请输入" :disabled="imgSizeControl"></el-input> 像素&nbsp;&nbsp;*&nbsp;&nbsp;高 <el-input v-model.number="form.imgHigh" type="number" class="w80" placeholder="请输入" :disabled="imgSizeControl"></el-input> 像素
+                    尺寸：&nbsp;&nbsp;&nbsp;&nbsp;长 <el-input v-model.number="form.imgWidth" type="number" class="w80" placeholder="请输入"></el-input> 像素&nbsp;&nbsp;*&nbsp;&nbsp;高 <el-input v-model.number="form.imgHigh" type="number" class="w80" placeholder="请输入"></el-input> 像素
                 </p>  
             </el-form-item> 
             <el-form-item label="最多展示素材数量" class="w600">
@@ -95,8 +95,7 @@ export default {
                 useType: 1, //1是立即生效 2是自定义时间  
                 startTime: null, //直接传数字时间戳，或者空字符串，不能是字符串 开始时间
                 endTime: null, //直接传数字时间戳，或者空字符串，不能是字符串 结束时间  
-            }, 
-            imgSizeControl: false,  
+            },  
             loading: false,
         }
     },
@@ -249,31 +248,7 @@ export default {
             return this.form.positionDesc.gblen()
         } 
     }, 
-    watch: {
-        ['form.positionType'](val) { 
-            if (val == '2' && this.form.adType == '2') {
-                this.imgSizeControl = true
-                this.form.imgWidth = 1200
-                this.form.imgHigh = 500
-            }
-            if (val == '1') {
-                this.imgSizeControl = false
-                this.form.imgWidth = ''
-                this.form.imgHigh = ''
-            }
-        },
-        ['form.adType'](val) {
-            if (this.form.positionType =='2' && val == '2' ) {
-                this.imgSizeControl = true
-                this.form.imgWidth = 1200
-                this.form.imgHigh = 500
-            } 
-            if (val == '1') {
-                this.imgSizeControl = false
-                this.form.imgWidth = ''
-                this.form.imgHigh = ''
-            }
-        }
+    watch: { 
     },
     mounted() { 
         this.clientList()  

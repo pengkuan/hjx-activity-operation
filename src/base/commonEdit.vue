@@ -277,7 +277,7 @@ export default {
                     },
                     amount: {
                         status: '3', //3是大于等于 4是小于等于
-                        values: 0 //金额
+                        values: '' //金额
                     }
                 }, 
                 isUse: 1, //1是生效 0是不生效
@@ -1049,6 +1049,12 @@ export default {
         text-align: center;
         line-height: 140px;
         overflow: hidden;
+        img {  
+            width: 210px; 
+            border: none;
+            vertical-align: middle;
+            display:inline-block;
+        }
     }
     .selct-channel {
         position: absolute;

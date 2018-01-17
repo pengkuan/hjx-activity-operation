@@ -1022,8 +1022,15 @@ export default {
         top: -50px;
         background: #ccc;
         text-align: center;
-        line-height: 140px;
+        line-height: 140px; 
         overflow: hidden;
+        box-sizing: border-box;  
+        img {  
+            min-height: 10px;
+            width: 210px;
+            margin-top: -2px;
+            border: none;  
+        }
     }
     .selct-channel {
         position: absolute;

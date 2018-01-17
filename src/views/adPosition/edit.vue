@@ -19,7 +19,7 @@
             </el-form-item>
             <el-form-item label="位置描述（选填）" class="w600">
                 <el-input type="textarea" :maxlength="200" :autosize="{ minRows: 4, maxRows: 8}" v-model="form.positionDesc" placeholder="请输入位置描述"></el-input>
-                <div class="tips pos-rel">支持中文、数字、英文、字符<span class="control-font-count">{{fontCount}}/200</span></div>
+                <div class="tips pos-rel">最多200个字符</span></div>
             </el-form-item>
             <el-form-item label="广告素材类型" class="w600">
                 <el-radio-group v-model="form.adType">
@@ -29,7 +29,7 @@
             </el-form-item>
             <el-form-item label="" class="w600 pos-rel" v-show="form.adType == 2">
                 <p>
-                    尺寸：&nbsp;&nbsp;&nbsp;&nbsp;长 <el-input v-model="form.imgWidth" class="w80" placeholder="请输入" :disabled="isForever"></el-input> 像素&nbsp;&nbsp;*&nbsp;&nbsp;高 <el-input v-model="form.imgHigh" class="w80" placeholder="请输入" :disabled="isForever"></el-input> 像素
+                    尺寸：&nbsp;&nbsp;&nbsp;&nbsp;长 <el-input v-model="form.imgWidth" class="w80" placeholder="请输入" ></el-input> 像素&nbsp;&nbsp;*&nbsp;&nbsp;高 <el-input v-model="form.imgHigh" class="w80" placeholder="请输入" ></el-input> 像素
                 </p>  
             </el-form-item> 
             <el-form-item label="最多展示素材数量" class="w600">
@@ -221,11 +221,7 @@ export default {
     computed: {
         fontCount() { //文本框倒计数
             return this.form.positionDesc.gblen()
-        },
-        isForever() {
-            let a = this.form.positionType == '永久开启' ? true : false
-            return a
-        } 
+        }, 
     }, 
     watch: { 
         ['form.effectiveAdNum'](val) {
