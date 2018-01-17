@@ -144,15 +144,13 @@ export default {
                 if (!this.form.imgWidth || !this.form.imgHigh) {
                     this.$message.error('图片像素不能为空') 
                     return false 
-                }
-                if (this.form.imgWidth < 0 || this.form.imgHigh < 0) {
-                    this.$message.error('像素只能输入正整数') 
-                    return false
                 } 
-                if (Math.floor(this.form.imgWidth) !== this.form.imgWidth || Math.floor(this.form.imgHigh) !== this.form.imgHigh) { 
+                let w = this.form.imgWidth,
+                    h = this.form.imgHigh 
+                if (!/^[1-9]\d*$/.test(w) || !/^[1-9]\d*$/.test(h)) {
                     this.$message.error('像素只能输入正整数') 
                     return false
-                }
+                }  
             }
             if (!this.form.adNum) {
                 this.$message.error('素材数量不能为空') 
@@ -164,7 +162,7 @@ export default {
                     return false 
                 } 
                 if (Date.now() > this.form.startTime.getTime()) {
-                    this.$message.error('开始时间不能小于当前时间') 
+                    this.$message.error('开始时间不能小于当前北京时间') 
                     return false 
                 }
                 if (!this.form.endTime) {

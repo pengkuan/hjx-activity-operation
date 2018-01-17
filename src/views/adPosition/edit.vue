@@ -29,7 +29,7 @@
             </el-form-item>
             <el-form-item label="" class="w600 pos-rel" v-show="form.adType == 2">
                 <p>
-                    尺寸：&nbsp;&nbsp;&nbsp;&nbsp;长 <el-input v-model="form.imgWidth" class="w80" placeholder="请输入"></el-input> 像素&nbsp;&nbsp;*&nbsp;&nbsp;高 <el-input v-model="form.imgHigh" class="w80" placeholder="请输入"></el-input> 像素
+                    尺寸：&nbsp;&nbsp;&nbsp;&nbsp;长 <el-input v-model="form.imgWidth" class="w80" placeholder="请输入" :disabled="isForever"></el-input> 像素&nbsp;&nbsp;*&nbsp;&nbsp;高 <el-input v-model="form.imgHigh" class="w80" placeholder="请输入" :disabled="isForever"></el-input> 像素
                 </p>  
             </el-form-item> 
             <el-form-item label="最多展示素材数量" class="w600">
@@ -165,22 +165,18 @@ export default {
                     this.$message.error('图片像素不能为空或0') 
                     return false 
                 }
-                if (this.form.imgWidth < 0 || this.form.imgHigh < 0) {
+                if (!/^[1-9]\d*$/.test(Number(this.form.imgWidth)) || !/^[1-9]\d*$/.test(Number(this.form.imgHigh))) {
                     this.$message.error('像素只能输入正整数') 
                     return false
                 } 
-                if (Math.floor(this.form.imgWidth) !== this.form.imgWidth || Math.floor(this.form.imgHigh) !== this.form.imgHigh) { 
-                    this.$message.error('像素只能输入正整数') 
-                    return false
-                }
             }
             if (this.form.isUse == '1' && this.form.useType == '2') {
                 if (!this.form.startTime) {
                     this.$message.error('开始时间不能为空')  
                     return false 
-                } 
-                if (Date.now() > this.form.startTime.getTime()) {
-                    this.$message.error('开始时间不能小于当前时间') 
+                }  
+                if (Date.now() > this.form.startTime) {
+                    this.$message.error('开始时间不能小于当前北京时间') 
                     return false 
                 }
                 if (!this.form.endTime) {
@@ -207,7 +203,7 @@ export default {
             // console.log(this.form.startTime)
             // return
             params.startTime = this.form.startTime != '' ? Math.floor(this.form.startTime/1000): this.form.startTime
-            params.endTime = this.form.endTime != null ? Math.floor(this.form.endTime/1000): this.form.endTime
+            params.endTime = this.form.endTime != '' ? Math.floor(this.form.endTime/1000): this.form.endTime 
             api.ad_editAdPosition(params).then((res)=>{
                 console.log(res)
                 if (res._ret != '0') {
@@ -225,6 +221,10 @@ export default {
     computed: {
         fontCount() { //文本框倒计数
             return this.form.positionDesc.gblen()
+        },
+        isForever() {
+            let a = this.form.positionType == '永久开启' ? true : false
+            return a
         } 
     }, 
     watch: { 

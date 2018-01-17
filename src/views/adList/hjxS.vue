@@ -21,7 +21,7 @@
                     <el-select v-model="search.adStatus" placeholder="" size="small" v-show="isIng != 'ing'">
                         <el-option label="全部" value=""></el-option>
                         <el-option label="已过期" value="3"></el-option>
-                        <el-option label="暂不释放" value="4"></el-option> 
+                        <el-option label="暂不投放" value="4"></el-option> 
                     </el-select>
                 </el-form-item>
                 <el-form-item>
@@ -78,13 +78,13 @@
                         <el-table-column prop="range" label="可见范围"></el-table-column>
                         <el-table-column prop="adStatus" label="广告状态"></el-table-column>
                         <el-table-column prop="useStatus" label="投放状态"></el-table-column>
-                        <el-table-column prop="startTime" label="开始时间">
+                        <el-table-column prop="startTime" label="生效时间">
                             <template slot-scope="scope">
                                 <span v-show="scope.row.startTime == ''">----</span>
                                 <span v-show="scope.row.startTime != ''">{{scope.row.startTime}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="endTime" label="结束时间">
+                        <el-table-column prop="endTime" label="失效时间">
                             <template slot-scope="scope">
                                 <span v-show="scope.row.endTime == ''">----</span>
                                 <span v-show="scope.row.endTime != ''">{{scope.row.endTime}}</span>

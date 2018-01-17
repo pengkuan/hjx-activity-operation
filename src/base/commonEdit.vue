@@ -52,8 +52,8 @@
                 <div class="tips pos-rel">最多可输入100字符</div>
             </el-form-item>
             <el-form-item label="广告描述" class="w600">
-                <el-input type="textarea" :maxlength="200" :autosize="{ minRows: 4, maxRows: 8}" v-model="form.adDesc"></el-input>
-                <div class="tips pos-rel">支持中文、数字、字母<span class="control-font-count">{{fontCount}}/200</span></div>
+                <el-input type="textarea" :maxlength="200" :autosize="{ minRows: 4, maxRows: 8}" v-model="form.adDesc" placeholder="请输入广告描述"></el-input>
+                <div class="tips pos-rel">最多可输入200字符</span></div> 
             </el-form-item>
             <el-form-item label="跳转链接" class="w600">
                 <el-radio-group v-model="form.isJump">
@@ -291,7 +291,7 @@ export default {
             },
             // 部分可见数据
             addConditionValue: '', //选择什么条件添加
-            addCondition: [{ label: '渠道类', options: [{ value: 'channel', label: '渠道' }, { value: 'store', label: '门店' }] }, { label: '订单类', options: [{ value: 'money', label: '金额付款' }] }],
+            addCondition: [{ label: '渠道类', options: [{ value: 'channel', label: '渠道' }, { value: 'store', label: '门店' }] }, { label: '订单类', options: [{ value: 'money', label: '付款金额' }] }],
             part_detail_tit: '',//选择渠道和门店弹框的标题  
             partChannelShow: false, 
             partStoreShow: false, 
@@ -344,6 +344,10 @@ export default {
                 this.$message.error('广告标题只能输入中文，数字和字母') 
                 return false
             } 
+            if (this.form.adTitle.gblen() > '20') {
+                this.$message.error('广告标题最多20个字符') 
+                return false 
+            }
             if (this.form.adType == 1) {
                 if (!this.form.adText) {
                     this.$message.error('广告素材不能为空') 
@@ -353,25 +357,24 @@ export default {
                     this.$message.error('广告素材只能输入中文，数字和字母') 
                     return false
                 }
+                if (this.form.adText.gblen() > '100') {
+                    this.$message.error('广告素材最多100个字符') 
+                    return false 
+                }
             }
             if (this.form.adType == 2) {
                 if (!this.form.adImg) {
                     this.$message.error('广告素材不能为空') 
                     return false 
+                } 
+            }  
+            if (this.form.adDesc) {
+                if (this.form.adDesc.gblen() > '200') {
+                    this.$message.error('广告描述最多200个字符') 
+                    return false 
                 }
-                // if (/[\u4e00-\u9fa5]+/.test(this.form.adImg)) {
-                //     this.$message.error('广告素材不能包含中文') 
-                //     return false 
-                // } 
-            }  
-            if (!this.form.adDesc) {
-                this.$message.error('广告描述不能为空') 
-                return false 
-            }
-            if (!/^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(this.form.adDesc)) {
-                this.$message.error('广告描述只能输入中文，数字和字母') 
-                return false
-            }  
+            } 
+             
             if (this.form.isJump == 2) {
                 if (!this.form.jumpUrl) {
                     this.$message.error('跳转链接不能为空')  //跳转链接可能传中文的参数
@@ -398,12 +401,20 @@ export default {
                 if (!this.form.rangeList.amount.values) {
                     this.$message.error('请输入金额')  //跳转链接可能传中文的参数
                     return false
+                } 
+                if (!/^[1-9]\d*$/.test(Number(this.form.rangeList.amount.values))) {
+                    this.$message.error('付款金额只能为正整数')  //跳转链接可能传中文的参数
+                    return false
                 }
             }
 
             if (this.form.isUse == 1 && this.form.useType == 2) { //广告生效且自定义时间 就校验时间
                 if (!this.form.startTime) {
-                    this.$message.error('开始时间不能为空')  //结束时间可不校验
+                    this.$message.error('开始时间不能为空')  
+                    return false 
+                } 
+                if (Date.now() > this.form.startTime.getTime()) {
+                    this.$message.error('开始时间不能小于当前北京时间') 
                     return false 
                 }
                 if (!this.form.endTime) {
@@ -411,9 +422,13 @@ export default {
                     return false 
                 }
                 if (this.form.endTime - this.form.startTime < 0) {
-                    this.$message.error('结束时间不能小于开始时间')  //结束时间存在就必须比较大小
+                    this.$message.error('结束时间不能小于开始时间')  
                     return false
                 }
+            }
+            if (this.form.isUse == 1 && !this.form.sort) {
+                this.$message.error('请选择广告排序') 
+                return false
             } 
             // if (this.form.isUse == 1 && this.form.adNum == this.form.effectiveAdNum) {
             //     this.$message.error('改广告位删除广告已达上限')  //广告生效且改广告位的最大值和生效值一致，那么不能添加 
@@ -462,6 +477,7 @@ export default {
             if(this.form.isJump == 1) params.jumpUrl = ''  //不需要跳转，则取消跳转链接
             if(this.form.isUse == 2) params.startTime = '' //不生效，则取消时间 
             if(this.form.isUse == 2) params.endTime = ''   //不生效，则取消时间
+            if(this.form.isUse == 2) params.sort = ''   //不生效，排序为空
             if(this.form.isUse == 1 && this.form.useType == 1) params.startTime = '' //生效且，立即生效，则取消时间
             if(this.form.isUse == 1 && this.form.useType == 1) params.endTime = ''   //生效且，立即生效，则取消时间 
             if(this.form.isUse == 1 && this.form.useType == 2) { //启动，且阶段生效
@@ -759,9 +775,9 @@ export default {
     //     }
     // },
     computed: {
-        fontCount() { //文字倒计数
-            return this.form.adDesc.length
-        },
+        // fontCount() { //文字倒计数
+        //     return this.form.adDesc.gblen()
+        // },
         hasSelectChannel() { //已选渠道列表的文字描述  
             let str = '',
                 len = this.channelResultList.length
