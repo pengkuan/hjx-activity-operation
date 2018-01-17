@@ -89,8 +89,7 @@ export function jsonp(_interface, params) {
             "userid": userid, 
             "token": token,   
         }
-    }
-    if (config.IS_DEV) resParams._param.userid = '694' , resParams._param.token = 'a578664b01a26d11c11217c6f50159ab'
+    } 
     // 合并参数 
     resParams._param = Object.assign({}, resParams._param, params) 
     // 拼接参数,注意jsonp不能直接字符串化json,后台解析不了   尝试递归方法??

@@ -1,5 +1,5 @@
 <template>
-    <div class="addNewAd-wrap">
+    <div class="addNewAd-wrap" v-loading="loading">
         <div class="title">添加广告位
             <el-button type="primary" size="mini" @click="back">关闭</el-button>
         </div>
@@ -14,16 +14,16 @@
                 </el-select> 
             </el-form-item>
             <el-form-item label="位置编码" class="w600">
-                <el-input v-model="form.positionCode" placeholder="请向研发人员申请此编码" :maxlength="200"></el-input>
+                <el-input v-model="form.positionCode" placeholder="请输入位置编码" :maxlength="200"></el-input>
                 <div class="tips">最多200个字符</div>
             </el-form-item>
             <el-form-item label="广告位置" class="w600"> 
-                <el-input v-model="form.positionName" placeholder="请填写广告所在的位置名称" :maxlength="20"></el-input>
+                <el-input v-model="form.positionName" placeholder="请输入广告位置" :maxlength="20"></el-input>
                 <div class="tips">最多20个字符</div> 
             </el-form-item>
             <el-form-item label="位置描述（选填）" class="w600">  
-                <el-input type="textarea" :maxlength="200" :autosize="{ minRows: 4, maxRows: 8}" v-model="form.positionDesc" placeholder="详细描述广告位置"></el-input>
-                <div class="tips pos-rel">支持中文、数字、字母<span class="control-font-count">{{fontCount}}/200</span></div>
+                <el-input type="textarea" :maxlength="200" :autosize="{ minRows: 4, maxRows: 8}" v-model="form.positionDesc" placeholder="请输入位置描述"></el-input>
+                <div class="tips pos-rel">支持中文、数字、英文、字符<span class="control-font-count">{{fontCount}}/200</span></div>
             </el-form-item>
             <el-form-item label="广告素材类型" class="w600">
                 <el-radio-group v-model="form.adType">
@@ -33,7 +33,7 @@
             </el-form-item>
             <el-form-item label="" class="w600 pos-rel" v-show="form.adType == 2">
                 <p>
-                    尺寸：&nbsp;&nbsp;&nbsp;&nbsp;长 <el-input v-model.number="form.imgWidth" type="number" class="w80"></el-input> 像素&nbsp;&nbsp;*&nbsp;&nbsp;高 <el-input v-model.number="form.imgHigh" type="number" class="w80"></el-input> 像素
+                    尺寸：&nbsp;&nbsp;&nbsp;&nbsp;长 <el-input v-model.number="form.imgWidth" type="number" class="w80" placeholder="请输入" :disabled="imgSizeControl"></el-input> 像素&nbsp;&nbsp;*&nbsp;&nbsp;高 <el-input v-model.number="form.imgHigh" type="number" class="w80" placeholder="请输入" :disabled="imgSizeControl"></el-input> 像素
                 </p>  
             </el-form-item> 
             <el-form-item label="最多展示素材数量" class="w600">
@@ -41,13 +41,13 @@
                     <el-option :label="item" :value="item" v-for="(item,index) in form.adNumList" :key="index"></el-option>  
                 </el-select> 
             </el-form-item>
-            <el-form-item label="广告状态">
+            <el-form-item label="广告状态" v-show="form.positionType==1">
                 <el-radio-group v-model="form.isUse">
                     <el-radio :label="1">启用</el-radio>
                     <el-radio :label="0">不启用</el-radio>
                 </el-radio-group>
             </el-form-item>
-            <el-form-item label="投放时间" v-show="form.isUse=='1'">
+            <el-form-item label="投放时间" v-show="form.positionType==1 && form.isUse=='1'">
                 <el-radio-group v-model="form.useType">
                     <el-radio :label="1">投放后立即开始</el-radio>
                     <el-radio :label="2">自定义时间</el-radio>
@@ -89,13 +89,15 @@ export default {
                 adType: 1, //广告素材类型，1是文字广告，2是图片广告
                 imgWidth: '', //图片宽度
                 imgHigh: '', //图片高度
-                adNum: '', //展示素材数量
+                adNum: '1', //展示素材数量
                 adNumList: 9, //展示素材数量,固定为9
                 isUse: 1, //1是启用 0是不启用
                 useType: 1, //1是立即生效 2是自定义时间  
                 startTime: null, //直接传数字时间戳，或者空字符串，不能是字符串 开始时间
                 endTime: null, //直接传数字时间戳，或者空字符串，不能是字符串 结束时间  
-            },   
+            }, 
+            imgSizeControl: false,  
+            loading: false,
         }
     },
     methods: {  
@@ -110,6 +112,10 @@ export default {
             }
             if (/[\u4e00-\u9fa5]+/.test(this.form.positionCode)) {
                 this.$message.error('位置编码不能包含中文') 
+                return false   
+            } 
+            if (this.form.positionCode.gblen() > '200') {
+                this.$message.error('位置编码最多200个字符') 
                 return false 
             }  
             if (!this.form.positionName) {
@@ -120,18 +126,32 @@ export default {
                 this.$message.error('广告位置只能输入中文，数字和字母') 
                 return false
             } 
-            if (!this.form.positionDesc) {
-                this.$message.error('位置描述不能为空') 
+            if (this.form.positionName.gblen() > '20') {
+                this.$message.error('广告位置最多20个字符') 
                 return false 
-            } 
-            if (!/^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(this.form.positionDesc)) {
-                this.$message.error('位置描述只能输入中文，数字和字母') 
-                return false
             }
+            if (this.form.positionDesc) {
+                // if (!/^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(this.form.positionDesc)) {
+                //     this.$message.error('位置描述只能输入中文，数字和字母') 
+                //     return false
+                // }
+                if (this.form.positionDesc.gblen() > '200') {
+                    this.$message.error('位置描述最多200个字符') 
+                    return false 
+                }
+            }  
             if (this.form.adType == '2') {   
                 if (!this.form.imgWidth || !this.form.imgHigh) {
                     this.$message.error('图片像素不能为空') 
                     return false 
+                }
+                if (this.form.imgWidth < 0 || this.form.imgHigh < 0) {
+                    this.$message.error('像素只能输入正整数') 
+                    return false
+                } 
+                if (Math.floor(this.form.imgWidth) !== this.form.imgWidth || Math.floor(this.form.imgHigh) !== this.form.imgHigh) { 
+                    this.$message.error('像素只能输入正整数') 
+                    return false
                 }
             }
             if (!this.form.adNum) {
@@ -140,22 +160,22 @@ export default {
             }
             if (this.form.isUse == '1' && this.form.useType == '2') {
                 if (!this.form.startTime) {
-                    this.$message.error('开始时间不能为空')  //结束时间可不校验
+                    this.$message.error('开始时间不能为空')  
+                    return false 
+                } 
+                if (Date.now() > this.form.startTime.getTime()) {
+                    this.$message.error('开始时间不能小于当前时间') 
                     return false 
                 }
-            } 
-            if (this.form.isUse == '1' && this.form.useType == '2') {
                 if (!this.form.endTime) {
                     this.$message.error('结束时间不能为空')  
                     return false 
                 }
-            }  
-            if (this.form.isUse == '1' && this.form.useType == '2') { 
-                 if (this.form.endTime - this.form.startTime < 0) {
-                    this.$message.error('结束时间不能小于开始时间')  //结束时间存在就必须比较大小
+                if (this.form.endTime - this.form.startTime < 0) {
+                    this.$message.error('结束时间不能小于开始时间')  
                     return false
                 }
-            } 
+            }   
             return true //都验证ok，返回true
         },
         back() { //返回和取消
@@ -178,8 +198,10 @@ export default {
                 endTime: ''
             }
             params.startTime = this.form.startTime != null ? Math.floor(this.form.startTime.getTime()/1000): '' 
-            params.endTime = this.form.endTime != null ? Math.floor(this.form.endTime.getTime()/1000): '' 
+            params.endTime = this.form.endTime != null ? Math.floor(this.form.endTime.getTime()/1000): ''  
+            this.loading = true
             api.ad_addAdPositionDeadline(params).then((res)=> {
+                this.loading = false
                 if (res._ret != '0') {
                     this.$message.error(res._errStr)
                     return
@@ -209,7 +231,8 @@ export default {
             }
             params.startTime = this.form.startTime != null ? Math.floor(this.form.startTime.getTime()/1000): '' 
             params.endTime = this.form.endTime != null ? Math.floor(this.form.endTime.getTime()/1000): ''  
-            util.Set_lsdata('adParams',params) //本地缓存数据
+            if (this.form.adType == '1') params.imgHigh = '' , params.imgWidth = '' 
+            util.Set_lsdata('adParams',params) //本地缓存数据  
             this.$router.push({path: '/commonAdd', query:{from:'adPosition', pagePath:'/adPosition/adPosSet', clientId:params.clientId}})
         },
         clientList() { //获取客户端列表数据
@@ -224,13 +247,34 @@ export default {
         },
     },
     computed: {
-        fontCount() { //文本框倒计数
-            return this.form.positionDesc.length
+        fontCount() { //文本框倒计数 
+            return this.form.positionDesc.gblen()
         } 
     }, 
     watch: {
-        ['form.endTime'](val) {
-            console.log(val) 
+        ['form.positionType'](val) { 
+            if (val == '2' && this.form.adType == '2') {
+                this.imgSizeControl = true
+                this.form.imgWidth = 1200
+                this.form.imgHigh = 500
+            }
+            if (val == '1') {
+                this.imgSizeControl = false
+                this.form.imgWidth = ''
+                this.form.imgHigh = ''
+            }
+        },
+        ['form.adType'](val) {
+            if (this.form.positionType =='2' && val == '2' ) {
+                this.imgSizeControl = true
+                this.form.imgWidth = 1200
+                this.form.imgHigh = 500
+            } 
+            if (val == '1') {
+                this.imgSizeControl = false
+                this.form.imgWidth = ''
+                this.form.imgHigh = ''
+            }
         }
     },
     mounted() { 
