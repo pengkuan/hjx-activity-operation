@@ -413,7 +413,7 @@ export default {
                     this.$message.error('开始时间不能为空')  
                     return false 
                 } 
-                if (Date.now() > this.form.startTime.getTime()) {
+                if (Date.now() > this.form.startTime) {
                     this.$message.error('开始时间不能小于当前北京时间') 
                     return false 
                 }
