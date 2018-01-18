@@ -14,12 +14,12 @@
                 <el-input v-model="form.positionCode" disabled></el-input>  
             </el-form-item>
             <el-form-item label="广告位置" class="w600"> 
-                <el-input v-model="form.positionName" :maxlength="20" placeholder="请填写广告所在的位置名称"></el-input>
+                <el-input v-model="form.positionName" :maxlength="20" placeholder="请输入广告位置"></el-input>
                 <div class="tips">最多20个字符</div> 
             </el-form-item>
             <el-form-item label="位置描述（选填）" class="w600">
-                <el-input type="textarea" :maxlength="200" :autosize="{ minRows: 4, maxRows: 8}" v-model="form.positionDesc"></el-input>
-                <div class="tips pos-rel">支持中文、数字、字母<span class="control-font-count">{{fontCount}}/200</span></div>
+                <el-input type="textarea" :maxlength="200" :autosize="{ minRows: 4, maxRows: 8}" v-model="form.positionDesc" placeholder="请输入位置描述"></el-input>
+                <div class="tips pos-rel">最多200个字符</span></div>
             </el-form-item>
             <el-form-item label="广告素材类型" class="w600">
                 <el-radio-group v-model="form.adType">
@@ -29,7 +29,7 @@
             </el-form-item>
             <el-form-item label="" class="w600 pos-rel" v-show="form.adType == 2">
                 <p>
-                    尺寸：&nbsp;&nbsp;&nbsp;&nbsp;长 <el-input v-model="form.imgWidth" class="w80"></el-input> 像素&nbsp;&nbsp;*&nbsp;&nbsp;高 <el-input v-model="form.imgHigh" class="w80"></el-input> 像素
+                    尺寸：&nbsp;&nbsp;&nbsp;&nbsp;长 <el-input v-model="form.imgWidth" class="w80" placeholder="请输入" ></el-input> 像素&nbsp;&nbsp;*&nbsp;&nbsp;高 <el-input v-model="form.imgHigh" class="w80" placeholder="请输入" ></el-input> 像素
                 </p>  
             </el-form-item> 
             <el-form-item label="最多展示素材数量" class="w600">
@@ -71,7 +71,7 @@
                 <el-input v-model="form.modifyTime" disabled></el-input> 
             </el-form-item>   
             <el-form-item> 
-                <el-button type="primary" @click="onSubmit" >确认修改</el-button> 
+                <el-button type="primary" @click="onSubmit" :disabled="needChange">确认修改</el-button> 
                 <el-button @click="back">取消</el-button>
             </el-form-item>
         </el-form>  
@@ -94,12 +94,14 @@ export default {
                 adNum: 0, //展示素材数量,用于取值
                 adNumList: 9, //展示素材数量,用于循环
                 isUse: 1, //1是启用 0是不启用
+                effectiveAdNum: 0, //启用广告位的数量
                 useType: 1, //1是立即生效 2是自定义时间 
                 startTime: '', //直接传数字时间戳，或者空字符串，不能是字符串 开始时间
                 endTime: '',  //直接传数字时间戳，或者空字符串，不能是字符串 结束时间
                 modifier: '', //修改人
                 modifyTime: '' //修改时间
             },  
+            needChange: false,
         }
     },
     methods: { 
@@ -119,8 +121,8 @@ export default {
                 this.form.positionName = res.positionInfo.positionName //位置就是名称
                 this.form.positionDesc = res.positionInfo.positionDesc  
                 this.form.adType = res.positionInfo.adType
-                this.form.imgWidth = res.positionInfo.imgWidth
-                this.form.imgHigh = res.positionInfo.imgHigh 
+                this.form.imgWidth = res.positionInfo.imgWidth == '0' ? '' : res.positionInfo.imgWidth
+                this.form.imgHigh = res.positionInfo.imgHigh == '0' ? '' : res.positionInfo.imgHigh
                 this.form.adNum = res.positionInfo.adNum    
                 this.form.isUse = res.positionInfo.isUse   
                 this.form.useType = res.positionInfo.useType //永久开启，就没有使用类型
@@ -144,37 +146,46 @@ export default {
                 this.$message.error('广告位置不能为空')
                 return
             }
-            if (!this.form.positionDesc) {
-                this.$message.error('位置描述不能为空') 
-                return 
+            // if (!/^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(this.form.positionName)) {
+            //     this.$message.error('广告位置只能输入中文，数字和字母') 
+            //     return false
+            // } 
+            if (this.form.positionName.gblen() > '20') {
+                this.$message.error('广告位置最多20个字符') 
+                return false 
             }
-            let reg = /^[a-zA-Z0-9\u4e00-\u9fa5]+$/ //验证中文数字和字母
-            if (!reg.test(this.form.positionDesc)) {
-                this.$message.error('位置描述只能输入中文，数字和字母') 
-                return
-            }
+            if (this.form.positionDesc) { 
+                if (this.form.positionDesc.gblen() > '200') {
+                    this.$message.error('位置描述最多200个字符') 
+                    return false 
+                }
+            } 
             if (this.form.adType == 2) {
                 if (!this.form.imgWidth || !this.form.imgHigh) {
-                    this.$message.error('图片尺寸不能为空或者0')  
-                    return  
+                    this.$message.error('图片像素不能为空或0') 
+                    return false 
                 }
+                if (!/^[1-9]\d*$/.test(Number(this.form.imgWidth)) || !/^[1-9]\d*$/.test(Number(this.form.imgHigh))) {
+                    this.$message.error('像素只能输入正整数') 
+                    return false
+                } 
             }
             if (this.form.isUse == '1' && this.form.useType == '2') {
                 if (!this.form.startTime) {
                     this.$message.error('开始时间不能为空')  
-                    return  
+                    return false 
+                }  
+                if (Date.now() > this.form.startTime) {
+                    this.$message.error('开始时间不能小于当前北京时间') 
+                    return false 
                 }
-            } 
-            if (this.form.isUse == '1' && this.form.useType == '2') {
                 if (!this.form.endTime) {
                     this.$message.error('结束时间不能为空')  
-                    return  
+                    return false 
                 }
-            }  
-            if (this.form.isUse == '1' && this.form.useType == '2') { 
-                 if (this.form.endTime - this.form.startTime < 0) {
-                    this.$message.error('结束时间不能小于开始时间')  //结束时间存在就必须比较大小
-                    return  
+                if (this.form.endTime - this.form.startTime < 0) {
+                    this.$message.error('结束时间不能小于开始时间')  
+                    return false
                 }
             }
             let params = { 
@@ -192,7 +203,7 @@ export default {
             // console.log(this.form.startTime)
             // return
             params.startTime = this.form.startTime != '' ? Math.floor(this.form.startTime/1000): this.form.startTime
-            params.endTime = this.form.endTime != null ? Math.floor(this.form.endTime/1000): this.form.endTime
+            params.endTime = this.form.endTime != '' ? Math.floor(this.form.endTime/1000): this.form.endTime 
             api.ad_editAdPosition(params).then((res)=>{
                 console.log(res)
                 if (res._ret != '0') {
@@ -209,10 +220,13 @@ export default {
     },
     computed: {
         fontCount() { //文本框倒计数
-            return this.form.positionDesc.length
-        } 
+            return this.form.positionDesc.gblen()
+        }, 
     }, 
     watch: { 
+        ['form.effectiveAdNum'](val) {
+            if (val > '0') this.needChange = true
+        }
     },
     mounted() {  
         // console.log(this.$route.query.item)

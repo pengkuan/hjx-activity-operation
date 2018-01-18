@@ -5,11 +5,6 @@ import addList from './addList'
 import adPosition from './adPosition' 
 const home = resolve => require(['@/views/home'], resolve)
 const index = resolve => require(['@/views/index'], resolve)  
-
-const commonDetail = resolve => require(['@/base/commonDetail'], resolve)  
-const commonAdd = resolve => require(['@/base/commonAdd'], resolve)  
-const commonEdit = resolve => require(['@/base/commonEdit'], resolve) 
-
 Vue.use(Router)
 
 let router = new Router({ 
@@ -54,9 +49,9 @@ let router = new Router({
                 {path: '/adList/hjxCustomer', component: addList.hjxCustomer, name: '换机侠顾客端-移动端', menuShow: true},
                 {path: '/adList/hjxD', component: addList.hjxD, name: '换机侠D端-移动端', menuShow: true},
                 {path: '/adList/hjxS', component: addList.hjxS, name: '换机侠S端-移动端', menuShow: true},
-                {path: '/commonAdd', component: commonAdd, name: '添加新广告', menuShow: false}, 
-                {path: '/commonEdit', component: commonEdit, name: '编辑广告', menuShow: false},
-                {path: '/commonDetail', component: commonDetail, name: '广告详情', menuShow: false}, 
+                {path: '/commonAdd', component: addList.commonAdd, name: '添加新广告', menuShow: false}, 
+                {path: '/commonEdit', component: addList.commonEdit, name: '编辑广告', menuShow: false},
+                {path: '/commonDetail', component: addList.commonDetail, name: '广告详情', menuShow: false}, 
             ]
         },
         {
