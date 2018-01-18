@@ -1051,7 +1051,7 @@ export default {
         overflow: hidden;
         img {  
             width: 210px; 
-            border: none;
+            // border: none;
             vertical-align: middle;
             display:inline-block;
         }

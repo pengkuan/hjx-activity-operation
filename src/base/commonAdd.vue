@@ -489,7 +489,9 @@ export default {
                 this.adPositionParams.adTitle = params.adTitle
                 this.adPositionParams.adDesc = params.adDesc
                 this.adPositionParams.isJump = params.isJump
-                this.adPositionParams.jumpUrl = params.jumpUrl  
+                this.adPositionParams.jumpUrl = params.jumpUrl   
+                console.log(params)
+                // return 
                 api.ad_addAdPositionPermanent(this.adPositionParams).then((res)=> {
                     if (res._ret != '0') {
                         this.$message.error(res._errStr)
@@ -1023,13 +1025,11 @@ export default {
         background: #ccc;
         text-align: center;
         line-height: 140px; 
-        overflow: hidden;
-        box-sizing: border-box;  
-        img {  
-            min-height: 10px;
-            width: 210px;
-            margin-top: -2px;
-            border: none;  
+        overflow: hidden;  
+        img {   
+            width: 210px; 
+            vertical-align: middle;
+            display:inline-block;
         }
     }
     .selct-channel {

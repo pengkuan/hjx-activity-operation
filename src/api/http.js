@@ -92,24 +92,24 @@ export function jsonp(_interface, params) {
     } 
     // 合并参数 
     resParams._param = Object.assign({}, resParams._param, params) 
-    // 拼接参数,注意jsonp不能直接字符串化json,后台解析不了   尝试递归方法??
+    // 拼接参数,注意jsonp不能直接字符串化json,后台解析不了   尝试递归方法??   
     for (let i in resParams) { 
         for(let j in resParams[i] ) {
             if (typeof resParams[i][j] == 'object') {
                 for (let k in resParams[i][j]) {
                     if (typeof resParams[i][j][k] == 'object') { 
                         for (let m in resParams[i][j][k]) {
-                            url += `&${i}[${j}][${k}][${m}]=${resParams[i][j][k][m]}`
+                            url += `&${i}[${j}][${k}][${m}]=${encodeURIComponent(resParams[i][j][k][m])}`
                         }
                     }else {
-                        url += `&${i}[${j}][${k}]=${resParams[i][j][k]}`
+                        url += `&${i}[${j}][${k}]=${encodeURIComponent(resParams[i][j][k])}`
                     }
                 }
             } else {
-                url += `&${i}[${j}]=${resParams[i][j]}` 
+                url += `&${i}[${j}]=${encodeURIComponent(resParams[i][j])}` 
             } 
         }
-    }  
+    }   
     return new Promise((resolve, reject) => {
         originJsonp(url, {param: 'callback'}, (err, data) => {
             if (!err) {
