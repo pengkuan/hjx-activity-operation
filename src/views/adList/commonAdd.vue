@@ -310,17 +310,7 @@ export default {
             temporary_channelResultList: [], //渠道临时数据
             temporary_storeResultList: [], //门店临时数据
             needChange: true, //添加渠道或者门店取消标志位，如果取消，那么不保存，确认才保存 
-            // 文件上传参数
-            uploadData: { 
-                type: 'json',
-                _version:"0.01",
-                _msgType:"request",
-                _timestamps:Math.floor(new Date().getTime()/1000) + '',
-                _interface: 'ad_uploadImg',
-                _remark: "",
-                userid: this.$store.getters['userInfo/userId'], 
-                token: this.$store.getters['userInfo/loginToken'],  
-            }, 
+            uploadData: util.commonUploadData(this.$store.getters['userInfo/userId'], this.$store.getters['userInfo/loginToken']), //上传参数
             myscr: '', 
             UPLOAD_URL: config.UPLOAD_URL, 
             adPositionParams: {}, 
@@ -615,7 +605,7 @@ export default {
             this.form.adImg = res.data.url
             this.form.showSrc = res.data.url
 
-            console.log(this.form.fileList)
+            // console.log(this.form.fileList)
         },
         uploadRemove(file) { //删除上传的图片
             this.form.adImg = ''
@@ -736,10 +726,7 @@ export default {
             this.$router.push({path: pagePath})
         }
     },
-    computed: {
-        // fontCount() { //文字倒计数
-        //     return this.form.adDesc.gblen()
-        // },
+    computed: { 
         hasSelectChannel() { //已选渠道列表的文字描述 
             let str = '',
                 len = this.channelResultList.length
@@ -768,17 +755,13 @@ export default {
     watch: {
         searchKey(val) {//关键字搜索
             let arr1 = [] 
-            if (this.part_detail_tit == '渠道类') {
-                this.channelSearchLish.forEach(function(item){  
-                    if (item.channelName.indexOf(val) != -1) {
-                        arr1.push(item)
-                    }
+            if (this.part_detail_tit == '渠道类') { 
+                arr1 = this.channelSearchLish.filter(function(item, index){
+                    return item.channelName.indexOf(val) != -1
                 })
-            } else if (this.part_detail_tit == '门店类') {
-                this.storeSearchLish.forEach(function(item){ 
-                    if (item.storeName.indexOf(val) != -1) {
-                        arr1.push(item)
-                    }
+            } else if (this.part_detail_tit == '门店类') { 
+                arr1 = this.storeSearchLish.filter(function(item, index){
+                    return item.storeName.indexOf(val) != -1
                 })
             }  
             this.defaulSearchList = arr1  

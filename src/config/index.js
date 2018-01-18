@@ -1,5 +1,4 @@
-// 公共配置
-
+// 公共配置 
 export default { 
 	IS_DEV : process.env.NODE_ENV == 'development',
 	IS_PRO : process.env.NODE_ENV == 'production',

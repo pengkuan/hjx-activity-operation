@@ -313,29 +313,148 @@ export default {
             // 临时数据，若不保存，需要回到数据操作前的数据
             temporary_channelResultList: [], //渠道临时数据
             temporary_storeResultList: [], //门店临时数据
-            needChange: true, //添加渠道或者门店取消标志位，如果取消，那么不保存，确认才保存 
-            // 文件上传参数
-            uploadData: { 
-                type: 'json',
-                _version:"0.01",
-                _msgType:"request",
-                _timestamps:Math.floor(new Date().getTime()/1000) + '',
-                _interface: 'ad_uploadImg',
-                _remark: "",
-                userid: this.$store.getters['userInfo/userId'], 
-                token: this.$store.getters['userInfo/loginToken'], 
-            },
+            needChange: true, //添加渠道或者门店取消标志位，如果取消，那么不保存，确认才保存  
+            uploadData: util.commonUploadData(this.$store.getters['userInfo/userId'], this.$store.getters['userInfo/loginToken']), //上传参数
             UPLOAD_URL: config.UPLOAD_URL,
             myscr: '',
             loading: false, 
         }
     },
     methods: {
-        validata() { //提交前表单验证 
-            if (!this.form.positionCode) {
+        validata() { //提交前表单验证  
+            let option = [
+                { 
+                    condition: !this.form.positionCode, 
+                    tips: '广告位置不能为空'
+                },
+                { 
+                    condition: !this.form.adTitle, 
+                    tips: '广告标题不能为空'
+                },
+                { 
+                    condition: !/^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(this.form.adTitle), 
+                    tips: '广告标题只能输入中文，数字和字母'
+                },
+                { 
+                    condition: this.form.adTitle.gblen() > '20', 
+                    tips: '广告标题最多20个字符'
+                },
+                { 
+                    condition: !this.form.positionCode, 
+                    tips: '广告位置不能为空'
+                },
+                { 
+                    condition: this.form.adType == 1, 
+                    children: [
+                        { 
+                           condition: !this.form.adText,
+                           tips: '广告素材不能为空' 
+                        },
+                        { 
+                           condition: !/^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(this.form.adText),
+                           tips: '广告素材只能输入中文，数字和字母' 
+                        },
+                        { 
+                           condition: this.form.adText.gblen() > '100',
+                           tips: '广告素材最多100个字符' 
+                        }, 
+                    ]
+                },
+
+                { 
+                    condition: this.form.adType == 2, 
+                    children: [
+                        { 
+                           condition: !this.form.adImg,
+                           tips: '广告素材不能为空' 
+                        }, 
+                    ]
+                },
+                { 
+                    condition: this.form.adDesc, 
+                    children: [
+                        { 
+                           condition: this.form.adDesc.gblen() > '200',
+                           tips: '广告描述最多200个字符' 
+                        }, 
+                    ]
+                },
+                { 
+                    condition: this.form.isJump == 2, 
+                    children: [
+                        { 
+                           condition: !this.form.jumpUrl,
+                           tips: '跳转链接不能为空' 
+                        }, 
+                    ]
+                },
+                { 
+                    condition: this.form.range == '2' && this.partChannelShow == false && this.partStoreShow == false && this.moneyLimitShow == false, 
+                    tips: '请至少选择1个条件'
+                },
+                { 
+                    condition: this.form.range == 2 && this.partChannelShow == true, 
+                    children: [
+                        { 
+                           condition: !this.form.rangeList.channel.values,
+                           tips: '请选择渠道' 
+                        }, 
+                    ]
+                }, 
+                { 
+                    condition: this.form.range == 2 && this.partStoreShow == true, 
+                    children: [
+                        { 
+                           condition: !this.form.rangeList.store.values,
+                           tips: '请选择门店' 
+                        }, 
+                    ]
+                },
+                { 
+                    condition: this.form.range == 2 && this.moneyLimitShow == true, 
+                    children: [
+                        { 
+                           condition: !this.form.rangeList.amount.values,
+                           tips: '请输入金额' 
+                        }, 
+                        { 
+                           condition: !/^[1-9]\d*$/.test(Number(this.form.rangeList.amount.values)),
+                           tips: '付款金额只能为正整数' 
+                        },
+                    ]   
+                },
+                { 
+                    condition: this.form.isUse == 1 && this.form.useType == 2, 
+                    children: [
+                        { 
+                           condition: !this.form.startTime,
+                           tips: '开始时间不能为空' 
+                        }, 
+                        { 
+                           condition: Date.now() > this.form.startTime,
+                           tips: '开始时间不能小于当前北京时间' 
+                        },
+                        { 
+                           condition: !this.form.endTime,
+                           tips: '结束时间不能为空' 
+                        },
+                        { 
+                           condition: this.form.endTime - this.form.startTime < 0,
+                           tips: '结束时间不能小于开始时间' 
+                        },
+                    ]
+                },
+                { 
+                    condition: this.form.isUse == 1 && !this.form.sort, 
+                    tips: '请选择广告排序'
+                },
+            ] 
+            return util.validata(option) 
+
+            /*if (!this.form.positionCode) {
                 this.$message.error('广告位置不能为空') 
                 return false 
-            } 
+            }   
             if (!this.form.adTitle) {
                 this.$message.error('广告标题不能为空') 
                 return false 
@@ -407,13 +526,13 @@ export default {
                     return false
                 }
             }
-
+            console.log(this.form.startTime)
             if (this.form.isUse == 1 && this.form.useType == 2) { //广告生效且自定义时间 就校验时间
                 if (!this.form.startTime) {
                     this.$message.error('开始时间不能为空')  
                     return false 
                 } 
-                if (Date.now() > this.form.startTime.getTime()) {
+                if (Date.now() > this.form.startTime) {
                     this.$message.error('开始时间不能小于当前北京时间') 
                     return false 
                 }
@@ -430,11 +549,11 @@ export default {
                 this.$message.error('请选择广告排序') 
                 return false
             } 
-            // if (this.form.isUse == 1 && this.form.adNum == this.form.effectiveAdNum) {
-            //     this.$message.error('改广告位删除广告已达上限')  //广告生效且改广告位的最大值和生效值一致，那么不能添加 
-            //     return false
-            // }
-            return true //都验证ok，返回true
+            if (this.form.isUse == 1 && this.form.adNum == this.form.effectiveAdNum) {
+                this.$message.error('改广告位删除广告已达上限')  //广告生效且改广告位的最大值和生效值一致，那么不能添加 
+                return false
+            }
+            return true //都验证ok，返回true*/
         },
         onSubmit() { //确认修改广告
             if (!this.validata()) return  
