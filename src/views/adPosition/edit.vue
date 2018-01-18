@@ -146,10 +146,10 @@ export default {
                 this.$message.error('广告位置不能为空')
                 return
             }
-            if (!/^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(this.form.positionName)) {
-                this.$message.error('广告位置只能输入中文，数字和字母') 
-                return false
-            } 
+            // if (!/^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(this.form.positionName)) {
+            //     this.$message.error('广告位置只能输入中文，数字和字母') 
+            //     return false
+            // } 
             if (this.form.positionName.gblen() > '20') {
                 this.$message.error('广告位置最多20个字符') 
                 return false 
