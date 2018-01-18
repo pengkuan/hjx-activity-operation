@@ -55,8 +55,7 @@
             </el-form-item>
             <el-form-item label="广告描述" class="w600">
                 <el-input type="textarea" :maxlength="200" :autosize="{ minRows: 4, maxRows: 8}" v-model="form.adDesc" placeholder="请输入广告描述"></el-input>
-                <div class="tips pos-rel">最多可输入200字符</div>
-                <!-- <div class="tips pos-rel">支持中文、数字、字母<span class="control-font-count">{{fontCount}}/200</span></div> -->
+                <div class="tips pos-rel">最多可输入200字符</div> 
             </el-form-item>
             <el-form-item label="跳转链接" class="w600">
                 <el-radio-group v-model="form.isJump">
@@ -1027,9 +1026,10 @@ export default {
         line-height: 140px; 
         overflow: hidden;  
         img {   
-            width: 210px; 
-            vertical-align: middle;
-            display:inline-block;
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translate(0,-50%);
         }
     }
     .selct-channel {

@@ -1050,10 +1050,10 @@ export default {
         line-height: 140px;
         overflow: hidden;
         img {  
-            width: 210px; 
-            // border: none;
-            vertical-align: middle;
-            display:inline-block;
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translate(0,-50%);
         }
     }
     .selct-channel {
