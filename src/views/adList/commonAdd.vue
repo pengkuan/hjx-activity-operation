@@ -168,7 +168,7 @@
                     </el-date-picker> 
                 </div>
             </el-form-item>
-            <el-form-item label="广告排序" class="w300 pos-rel" v-show="form.isUse ==1">
+            <el-form-item label="广告排序" class="w300 pos-rel" v-show="form.isUse ==1 && form.positionCode">
                 <el-input v-model="form.sort" disabled></el-input>
                 <el-button type="primary" size="mini" class="my-select-sort" @click="ad_sort">选择</el-button>
             </el-form-item>  
@@ -206,41 +206,20 @@
                 <el-button size="small" @click="dialog1=false">取 消</el-button>
                 <el-button type="primary" @click="dialog1_confirm" size="small" >确 定</el-button>
             </div> 
-        </el-dialog>
-        <el-dialog title="广告排序" width="30%" center :visible.sync="dialog2" class="part-select order-dialog" @close="close2">
-            <div class="sort-box">
-                <el-row>
-                    <el-col :span="4">
-                        排序
-                    </el-col>
-                    <el-col :span="20">
-                        广告标题
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="4">
-                        <p class="sort-p" v-for="(item, index) in sortData" :key="index">{{index+1}}</p>  
-                    </el-col>
-                    <el-col :span="20">
-                        <ul class="sort-ul">   
-                            <li class="sort-li pos-rel" v-for="(item, index) in sortData" :key="index">
-                                {{item.adTitle}}
-                                <span class="iconfont icon-triangleupfill up" :class="{'up-over':index==0}" v-show="item.adTitle == '本条广告'" @click="adSortUp(item,index)"></span> 
-                                <span class="iconfont icon-triangledownfill down" :class="{'up-over':index==sortData.length-1}" v-show="item.adTitle == '本条广告'" @click="adSortDown(item,index)"></span> 
-                            </li>  
-                        </ul>
-                    </el-col>
-                </el-row>
-                <el-button size="small" @click="dialog2=false">取 消</el-button>
-                <el-button type="primary" size="small" @click="sort_select_ok">确 定</el-button>
-            </div>
-        </el-dialog>
+        </el-dialog> 
+        <adSort  
+            :showFlag="adDialog" 
+            :adTitle="form.adTitle" 
+            @adSortClose="adSortClose" 
+            :sortData="sortData"> 
+        </adSort>
     </div>
 </template>
 <script>
 import api from '@/api/ad'
 import util from '@/util'
 import config from '@/config'
+import adSort from '@/base/hjx_ad_sort'
 export default {
     data() {
         return {
@@ -293,11 +272,12 @@ export default {
             partStoreShow: false, 
             moneyLimitShow: false,
             dialog1: false, //选择渠道和门店
-            dialog2: false, //广告排序
+            adDialog: { //广告排序
+                flag: false,
+                where: 'add'
+            }, 
             // 排序数据(之前的广告列表)
-            sortData: [],
-            temporary_sortData: [], //广告临时数据
-            needChangeAdFlag: true, //广告取消标志位
+            sortData: [],  
             // 部分用户dialog1弹框搜索数据和已选数据
             searchKey: '', //搜索关键字
             defaulSearchList:  [], //默认搜索数据，用来赋值用
@@ -479,7 +459,7 @@ export default {
                 this.adPositionParams.adDesc = params.adDesc
                 this.adPositionParams.isJump = params.isJump
                 this.adPositionParams.jumpUrl = params.jumpUrl   
-                console.log(params)
+                // console.log(params)
                 // return 
                 api.ad_addAdPositionPermanent(this.adPositionParams).then((res)=> {
                     if (res._ret != '0') {
@@ -526,7 +506,7 @@ export default {
                     this.$message.error(res._errStr)
                     return
                 } 
-                console.log(res)
+                // console.log(res)
                 this.form.clientList = res.clientList  
                 this.form.clientId = this.$route.query.clientId 
             })
@@ -539,7 +519,7 @@ export default {
                     return
                 }    
                 this.form.positionList = res.positionList 
-                console.log(this.form.positionList) 
+                // console.log(this.form.positionList) 
             })
         },
         ad_getPositionaInfo(code) { //获取广告位详情 
@@ -549,9 +529,9 @@ export default {
                     this.$message.error(res._errStr)
                     return
                 }  
-                console.log(res)
+                // console.log(res)
                 this.sortData = res.positionaInfo.adList 
-                console.log(this.sortData)
+                // console.log(this.sortData)
                 this.form.adNum = res.positionaInfo.adNum
                 this.form.effectiveAdNum = res.positionaInfo.effectiveAdNum
                 this.form.adType = res.positionaInfo.adType
@@ -603,9 +583,7 @@ export default {
             }
             this.form.showImg = true 
             this.form.adImg = res.data.url
-            this.form.showSrc = res.data.url
-
-            // console.log(this.form.fileList)
+            this.form.showSrc = res.data.url 
         },
         uploadRemove(file) { //删除上传的图片
             this.form.adImg = ''
@@ -621,51 +599,8 @@ export default {
             return true
         },
         ad_sort() { //广告排序
-            this.dialog2 = true
-            if (this.checkIsAdd(this.sortData)) {  
-                this.sortData.push({adTitle:'本条广告'})
-            }
-            this.temporary_sortData = [...this.sortData]  
-        },
-        adSortUp(item,index) { //广告排序上升  
-            let so = this.sortData[index] 
-            if (index > 0) { 
-                this.sortData.splice(index,1)
-                this.sortData.splice(index-1,0,so)
-            }  
-        },
-        adSortDown(item,index) { //广告排序下降 
-            let so = this.sortData[index] 
-            let len = this.sortData.length
-            if (index < len-1) {
-                this.sortData.splice(index,1)
-                this.sortData.splice(index+1,0,so)
-                
-            } 
-        },
-        close2() { //广告排序关闭后的回调
-            if(this.needChangeAdFlag) this.sortData = this.temporary_sortData
-            this.needChangeAdFlag = true
-        },
-        sort_select_ok() {//排序选择ok  
-            this.needChangeAdFlag = false
-            if (this.$route.query.from == 'adPosition') {
-                this.form.sort = '1'
-            }
-            if (!this.sortData.length || this.sortData.length == 1) {
-                this.adOrder = 1
-                this.form.sort = '1'
-                this.dialog2 = false 
-            } else {
-                this.sortData.forEach((item,index)=>{
-                    if(item.adTitle == '本条广告') {
-                        // console.log(index,121212)
-                        this.form.sort = index + 1
-                        this.dialog2 = false  
-                    }
-                }) 
-            } 
-        },
+            this.adDialog.flag = true  
+        },  
         add_condition() {//部分用户，条件选择, 分别显示渠道，门店，金额设置项
             if (this.addConditionValue == 'channel') this.partChannelShow = true
             if (this.addConditionValue == 'store') this.partStoreShow = true
@@ -724,6 +659,19 @@ export default {
         back() { //返回和取消
             let pagePath = this.$route.query.pagePath
             this.$router.push({path: pagePath})
+        },
+        adSortClose(flag, data) { //广告排序关闭回调函数  
+            if (flag == 'isOk') {
+                let n = -1
+                data.forEach(function(item, index){
+                    if(item.adTitle == '本条广告') {
+                       n = index + 1 
+                    }
+                })  
+                this.form.sort = n
+            } else {
+                this.sortData = data
+            }  
         }
     },
     computed: { 
@@ -767,7 +715,7 @@ export default {
             this.defaulSearchList = arr1  
         },
         channelResultList(val) { //监控已选渠道结果的变化
-            console.log('channelResultList变了') 
+            // console.log('channelResultList变了') 
             let str = '',
                 len = this.channelResultList.length
             this.channelResultList.forEach(function(item, index){
@@ -813,6 +761,9 @@ export default {
             this.form.sort = ''
             // console.log(this.adPositionParams)
         }
+    },
+    components: {
+        adSort
     },
     mounted() {  
         // this.form.sort = this.sortData.length + 1  

@@ -51,8 +51,7 @@ export default {
         }
         return params
     },
-    validata(option) { 
-        console.log(option)
+    validata(option) {  //表单验证参数化
         let len = option.length
         for (let i = 0; i < len; i++) {
             if (option[i].condition && !option[i].children) {
