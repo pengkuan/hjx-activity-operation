@@ -176,42 +176,20 @@
                 <el-button type="primary" @click="onSubmit">确认添加</el-button>
                 <el-button @click="back">取消</el-button>
             </el-form-item>
-        </el-form>
-        <el-dialog :title="part_detail_tit" center :visible.sync="dialog1" class="part-select" @close="close1">
-            <el-row :gutter="20">
-                <el-col :span="12">
-                    <div class="search">
-                        <el-input v-model.trim="searchKey" class="input"></el-input>
-                        <ul class="search-ul" v-show="part_detail_tit == '门店类'">
-                            <li v-for="(item,index) in defaulSearchList" :key="index" @click="part_add_info(item)">{{item.storeName}}</li>  
-                        </ul>
-                        <ul class="search-ul" v-show="part_detail_tit == '渠道类'"> 
-                            <li v-for="(item,index) in defaulSearchList" :key="index" @click="part_add_info(item)">{{item.channelName}}</li> 
-                        </ul>
-                    </div>
-                </el-col>
-                <el-col :span="12">
-                    <div class="has-select">
-                        <p>已选{{defaultResultList.length}}/100</p>
-                        <ul class="has-select-ul" v-show="part_detail_tit == '门店类'">
-                            <li class="pos-rel" v-for="(item,index) in defaultResultList" :key="index">{{item.storeName}}<span @click="part_del_has_select(item,index)" class="iconfont icon-roundclosefill"></span></li>
-                        </ul>
-                        <ul class="has-select-ul" v-show="part_detail_tit == '渠道类'">
-                            <li class="pos-rel" v-for="(item,index) in defaultResultList" :key="index">{{item.channelName}}<span @click="part_del_has_select(item,index)" class="iconfont icon-roundclosefill"></span></li>
-                        </ul>
-                    </div>
-                </el-col>
-            </el-row>
-            <div style="text-align: center;">
-                <el-button size="small" @click="dialog1=false">取 消</el-button>
-                <el-button type="primary" @click="dialog1_confirm" size="small" >确 定</el-button>
-            </div> 
-        </el-dialog> 
+        </el-form> 
+        <conditionSelect 
+            v-if="this.channelSearchLish.length && this.storeSearchLish.length"
+            :category="part_detail_tit" 
+            :showFlag="conditonDialog"
+            :searchLish="searchLish"
+            :resultList="resultList"
+            @conditionSelectClose="conditionSelectClose"> 
+        </conditionSelect>
         <adSort  
             :showFlag="adDialog" 
             :adTitle="form.adTitle" 
-            @adSortClose="adSortClose" 
-            :sortData="sortData"> 
+            :sortData="sortData"
+            @adSortClose="adSortClose"> 
         </adSort>
     </div>
 </template>
@@ -220,6 +198,7 @@ import api from '@/api/ad'
 import util from '@/util'
 import config from '@/config'
 import adSort from '@/base/hjx_ad_sort'
+import conditionSelect from '@/base/hjx_ad_part'
 export default {
     data() {
         return {
@@ -271,25 +250,21 @@ export default {
             partChannelShow: false, 
             partStoreShow: false, 
             moneyLimitShow: false,
-            dialog1: false, //选择渠道和门店
+            dialog1: false, //选择渠道和门店  
             adDialog: { //广告排序
                 flag: false,
                 where: 'add'
             }, 
-            // 排序数据(之前的广告列表)
-            sortData: [],  
-            // 部分用户dialog1弹框搜索数据和已选数据
-            searchKey: '', //搜索关键字
-            defaulSearchList:  [], //默认搜索数据，用来赋值用
-            defaultResultList: [], //默认结果数据，用来赋值用
-            channelSearchLish: [{channelName:'华为科技公司',channelId:'11'},{channelName:'华为2科技公司',channelId:'22'},{channelName:'华为3科技公司',channelId:'33'},], //渠道搜索数据
+            conditonDialog: { //部分用户条件选择
+                flag: false, 
+            }, 
+            sortData: [],  // 排序数据(之前的广告列表) 
+            channelSearchLish: [], //渠道搜索数据
             channelResultList: [], //渠道结果数据，如果是修改广告，就不为空，新增应该为空
-            storeSearchLish:   [{storeName:'小米科技公司',storeId:'1'},{storeName:'小米2科技公司',storeId:'2'},{storeName:'小米3科技公司',storeId:'3'},], //门店搜索数据
-            storeResultList:   [], //门店结果数据，如果是修改广告，就不为空，新增应该为空
-            // 临时数据，若不保存，需要回到数据操作前的数据
-            temporary_channelResultList: [], //渠道临时数据
-            temporary_storeResultList: [], //门店临时数据
-            needChange: true, //添加渠道或者门店取消标志位，如果取消，那么不保存，确认才保存 
+            storeSearchLish:   [], //门店搜索数据
+            storeResultList:   [], //门店结果数据，如果是修改广告，就不为空，新增应该为空 
+            searchLish: [],
+            resultList: [], 
             uploadData: util.commonUploadData(this.$store.getters['userInfo/userId'], this.$store.getters['userInfo/loginToken']), //上传参数
             myscr: '', 
             UPLOAD_URL: config.UPLOAD_URL, 
@@ -487,7 +462,7 @@ export default {
                     this.$message.error(res._errStr)
                     return
                 }
-                this.channelSearchLish = res.list
+                this.channelSearchLish = res.list 
             })
         },
         getStore() { //获取门店列表数据
@@ -497,7 +472,7 @@ export default {
                     this.$message.error(res._errStr)
                     return
                 }
-                this.storeSearchLish = res.list
+                this.storeSearchLish = res.list 
             })
         },
         getClientList() { //获取客户端列表数据
@@ -590,14 +565,14 @@ export default {
             this.form.showSrc = ''
             this.form.showImg = false
         },
-        checkIsAdd(arr) {
-            for (let i = 0; i < arr.length; i++) {
-                if (arr[i].adTitle == '本条广告') {
-                    return false
-                }
-            }
-            return true
-        },
+        // checkIsAdd(arr) {
+        //     for (let i = 0; i < arr.length; i++) {
+        //         if (arr[i].adTitle == '本条广告') {
+        //             return false
+        //         }
+        //     }
+        //     return true
+        // },
         ad_sort() { //广告排序
             this.adDialog.flag = true  
         },  
@@ -619,42 +594,17 @@ export default {
             }).catch(() => {}) 
         },
         part_add_detail(flag) {//部分用户，添加渠道和门店的详细信息,显示弹框1
-            this.dialog1 = true
-            // 设置临时数据，如果选择渠道，那么数据不能改变
-            this.temporary_channelResultList = [...this.channelResultList]
-            this.temporary_storeResultList = [...this.storeResultList]
+            this.conditonDialog.flag = true 
             if (flag == 'channel') {
                 this.part_detail_tit = '渠道类' 
-                this.defaulSearchList = this.channelSearchLish
-                this.defaultResultList = this.channelResultList
+                this.searchLish = this.channelSearchLish
+                this.resultList = this.channelResultList
             }
             if (flag == 'store') {
                 this.part_detail_tit = '门店类'
-                this.defaulSearchList = this.storeSearchLish
-                this.defaultResultList = this.storeResultList
-            }
-        },
-        part_add_info(item) { //部分用户 - 添加渠道或者门面列表数据 左边搜索和点击选择 
-            if (this.part_detail_tit == '渠道类') {
-                if (this.channelResultList.indexOf(item) < 0) this.channelResultList.push(item) 
-            }
-            if (this.part_detail_tit == '门店类') {
-                if (this.storeResultList.indexOf(item) < 0) this.storeResultList.push(item) 
-            }
-        },
-        part_del_has_select(item,index) { //部分用户 - 添加渠道或者门面列表数据  右边删除
-            if (this.part_detail_tit == '渠道类') this.channelResultList.splice(index,1)  
-            if (this.part_detail_tit == '门店类') this.storeResultList.splice(index,1)  
-        },
-        close1() { //添加渠道或者门店的关闭按钮回调 
-            if (this.part_detail_tit == '渠道类' && this.needChange) this.channelResultList = this.temporary_channelResultList
-            if (this.part_detail_tit == '门店类' && this.needChange) this.storeResultList = this.temporary_storeResultList
-            this.needChange = true
-            this.searchKey = ''
-        }, 
-        dialog1_confirm() { //选择渠道，门店 点击确认按钮
-            this.needChange = false
-            this.dialog1 = false 
+                this.searchLish = this.storeSearchLish
+                this.resultList = this.storeResultList
+            }   
         }, 
         back() { //返回和取消
             let pagePath = this.$route.query.pagePath
@@ -672,6 +622,13 @@ export default {
             } else {
                 this.sortData = data
             }  
+        },
+        conditionSelectClose(flag, data) { //部分用户类别选择关闭的回调函数
+            if (flag == '渠道类') {
+                this.channelResultList = data
+            } else {
+                this.storeResultList = data
+            } 
         }
     },
     computed: { 
@@ -700,20 +657,7 @@ export default {
             return str 
         }
     },
-    watch: {
-        searchKey(val) {//关键字搜索
-            let arr1 = [] 
-            if (this.part_detail_tit == '渠道类') { 
-                arr1 = this.channelSearchLish.filter(function(item, index){
-                    return item.channelName.indexOf(val) != -1
-                })
-            } else if (this.part_detail_tit == '门店类') { 
-                arr1 = this.storeSearchLish.filter(function(item, index){
-                    return item.storeName.indexOf(val) != -1
-                })
-            }  
-            this.defaulSearchList = arr1  
-        },
+    watch: { 
         channelResultList(val) { //监控已选渠道结果的变化
             // console.log('channelResultList变了') 
             let str = '',
@@ -763,10 +707,10 @@ export default {
         }
     },
     components: {
-        adSort
+        adSort,
+        conditionSelect
     },
-    mounted() {  
-        // this.form.sort = this.sortData.length + 1  
+    mounted() {     
         this.getClientList() //客户端列表 
         this.getAdPosList() //广告位列表
         this.getChannel() //渠道列表
@@ -982,7 +926,7 @@ export default {
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
-            max-width: 160px;
+            max-width: 150px;
             vertical-align: top;
             margin-right: 5px;
         }

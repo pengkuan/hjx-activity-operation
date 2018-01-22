@@ -7,7 +7,7 @@ import config from '@/config'
 const state = {
     userId: config.IS_DEV ? '694' : '',
     userName: 'pengkuan', 
-    loginToken: config.IS_DEV ? '837b272de2ef7026239146a352b75c88' : '',
+    loginToken: config.IS_DEV ? '3cea6a957ffe3ba68bb213b5ce8de6c8' : '',
     power: { 
         //店奖权限管理
         active_reward_look: true, //查看活动
