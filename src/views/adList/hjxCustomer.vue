@@ -2,7 +2,7 @@
     <div class="hjxCustomer-wrap">
         <div class="title">换机侠顾客端-移动端</div>
         <div class="search-box">
-            <el-form :inline="true" :model="search" class="demo-form-inline">
+            <el-form :inline="true" :model="search" class="demo-form-inline" size="mini">
                 <el-form-item label="广告位置">
                     <el-select v-model="search.positionId" placeholder="请输入广告位置搜索" size="small">
                         <el-option label="全部" value=""></el-option>
@@ -33,9 +33,9 @@
             <el-button type="primary" size="mini" @click="addNewAd" :disabled="power.active_ad_add">+ 添加广告</el-button>
         </div>
         <div class="tab-box">
-            <el-tabs @tab-click="handleTabClick" v-model="activeName">
+            <el-tabs @tab-click="handleTabClick" v-model="activeName" >
                 <el-tab-pane label="进行中的广告" name="ing">
-                    <el-table :data="tableData1" stripe style="width: 100%">
+                    <el-table :data="tableData1" stripe style="width: 100%" size="mini">
                         <el-table-column prop="positionName" label="广告位置"></el-table-column>
                         <el-table-column prop="adTitle" label="广告标题"></el-table-column> 
                         <el-table-column prop="range" label="可见范围"></el-table-column>
@@ -72,7 +72,7 @@
                     </div>
                 </el-tab-pane>
                 <el-tab-pane label="未运行的广告" name="not_ing">
-                    <el-table :data="tableData2" stripe style="width:100%">
+                    <el-table :data="tableData2" stripe style="width:100%" size="mini">
                         <el-table-column prop="positionName" label="广告位置"></el-table-column>
                         <el-table-column prop="adTitle" label="广告标题"></el-table-column> 
                         <el-table-column prop="range" label="可见范围"></el-table-column>

@@ -2,7 +2,7 @@
     <div class="adPosset-wrap">
         <div class="title">广告位管理</div>
         <div class="search-box">
-            <el-form :inline="true" :model="formData" class="demo-form-inline">
+            <el-form :inline="true" :model="formData" class="demo-form-inline" size="mini">
                 <el-form-item label="所属客户端">
                     <el-select v-model="formData.clientId" placeholder="请输入广告位置搜索" size="small">
                         <el-option label="全部" value=""></el-option>
@@ -28,7 +28,7 @@
             <el-button type="primary" size="mini" @click="addNewAd" :disabled="power.active_adpos_add">+ 添加广告位</el-button>
         </div>
         <div class="tab-box">
-             <el-table :data="tableData" stripe style="width:100%" >
+             <el-table :data="tableData" stripe style="width:100%" size="mini">
                  <el-table-column prop="positionType" label="广告位类型"></el-table-column>
                  <el-table-column prop="clientName" label="所属客户端"></el-table-column> 
                  <el-table-column prop="positionName" label="广告位置"></el-table-column> 
