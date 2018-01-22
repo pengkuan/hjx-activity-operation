@@ -36,9 +36,40 @@ function checkSpecialWord(val) {
 function checkNumber(val) {
     var reg = new RegExp("[0-9]")
     return reg.test(val)
-}
-
+} 
 export default {
+    commonUploadData(userid, token) { //文件上传参数列表
+        let params = {
+            type: 'json',
+            _version:"0.01",
+            _msgType:"request",
+            _timestamps:Math.floor(new Date().getTime()/1000) + '',
+            _interface: 'ad_uploadImg',
+            _remark: "",
+            userid: userid, 
+            token: token, 
+        }
+        return params
+    },
+    validata(option) {  //表单验证参数化
+        let len = option.length
+        for (let i = 0; i < len; i++) {
+            if (option[i].condition && !option[i].children) {
+                Message.error(option[i].tips)
+                return false
+                break
+            } else if (option[i].condition && option[i].children) {
+                for (let j = 0, l = option[i].children.length; j < l; j++) {
+                    if (option[i].children[j].condition) {
+                        Message.error(option[i].children[j].tips)
+                        return false
+                        break
+                    }
+                }
+            }
+        }
+        return true
+    },
     bitOperation(arr){
         let str = arr.join('')
         return String(parseInt(str,2))
