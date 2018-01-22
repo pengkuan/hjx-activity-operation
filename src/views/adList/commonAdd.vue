@@ -168,7 +168,7 @@
                     </el-date-picker> 
                 </div>
             </el-form-item>
-            <el-form-item label="广告排序" class="w300 pos-rel" v-show="form.isUse ==1 && form.positionCode">
+            <el-form-item label="广告排序" class="w300 pos-rel" v-show="form.isUse ==1 && (isFromPos ? true : form.positionCode)">
                 <el-input v-model="form.sort" disabled></el-input>
                 <el-button type="primary" size="mini" class="my-select-sort" @click="ad_sort">选择</el-button>
             </el-form-item>  
@@ -269,6 +269,7 @@ export default {
             myscr: '', 
             UPLOAD_URL: config.UPLOAD_URL, 
             adPositionParams: {}, 
+            isFromPos: false,
         }
     },
     methods: {
@@ -695,6 +696,7 @@ export default {
     },
     created() {
         if (this.$route.query.from == 'adPosition') { 
+            this.isFromPos = true
             this.adPositionParams = util.Get_lsdata('adParams')
             this.form.positionCode_pos = this.adPositionParams.positionCode 
             this.form.adNum = this.adPositionParams.adNum
