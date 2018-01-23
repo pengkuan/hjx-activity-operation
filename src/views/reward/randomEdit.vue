@@ -475,26 +475,7 @@ export default {
         },
         //修改数额设置
         payRangeChange(val,index){
-            //获取当条数据之前 最小值
-            let before = [] , after = [] ,beforeMax , afterMin
-            this.CountRangeList.forEach((item,itemIndex)=>{
-                if(itemIndex < index && item.payMost) before.push(item.payMost)
-                if(itemIndex > index && item.payMost) after.push(item.payMost)
-            })
-            beforeMax = Math.max.apply(null, before)
-            afterMin = Math.min.apply(null, after)
-            //判断不能小于之前值
-            if(before.length>0 && val < beforeMax){    
-                this.CountRangeList[index].payMost = String(beforeMax + 5)
-                if(this.CountRangeList[index+1]){
-                    this.CountRangeList[index+1].payLeast = String(beforeMax + 5)
-                }
-            }else if(before.length>0 && val > afterMin ){
-                this.CountRangeList[index].payMost = String(afterMin -5)
-                this.CountRangeList[index+1].payLeast = String(afterMin -5)
-            }else if(this.CountRangeList[index+1]){
-                this.CountRangeList[index+1].payLeast = val
-            }
+            this.CountRangeList[index+1].payLeast = val
             //验证
             this.pre_val_CountRangeList(index , this.CountRangeList[index])
             //判断是否有下一条

@@ -223,7 +223,7 @@ export default {
        
         /*****更改状态*****/
         setStatus(activityType,id,status,limitStatus) {
-            if(limitStatus == '1'){
+            if(activityType == '2' && limitStatus == '1' && status == '1'){
                 this.$alert('该活动上限已触发，不支持启用')
                 return
             }
