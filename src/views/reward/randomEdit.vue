@@ -475,12 +475,12 @@ export default {
         },
         //修改数额设置
         payRangeChange(val,index){
-            this.CountRangeList[index+1].payLeast = val
             //验证
             this.pre_val_CountRangeList(index , this.CountRangeList[index])
             //判断是否有下一条
             const len = this.CountRangeList.length
             if(index != len-1){
+                this.CountRangeList[index+1].payLeast = val
                 this.pre_val_CountRangeList(index+1 , this.CountRangeList[index+1])
             }
             
