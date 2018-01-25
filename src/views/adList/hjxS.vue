@@ -4,28 +4,28 @@
         <div class="search-box">
             <el-form :inline="true" :model="search" class="demo-form-inline" size="mini">
                 <el-form-item label="广告位置">
-                    <el-select v-model="search.positionId" placeholder="请输入广告位置搜索" size="small">
+                    <el-select v-model="search.positionId" placeholder="请输入广告位置搜索">
                         <el-option label="全部" value=""></el-option>
                         <el-option :label="item.positionName" :value="item.positionId" v-for="(item,index) in search.positionList" :key="index"></el-option> 
                     </el-select>
                 </el-form-item>
                 <el-form-item label="广告标题">
-                    <el-input v-model="search.adTitle" placeholder="请输入广告标题搜索" size="small"></el-input>
+                    <el-input v-model="search.adTitle" placeholder="请输入广告标题搜索"></el-input>
                 </el-form-item>
                 <el-form-item label="投放状态">
-                    <el-select v-model="search.adStatus" placeholder="" size="small" v-show="isIng == 'ing'">
+                    <el-select v-model="search.adStatus" placeholder="" v-show="isIng == 'ing'">
                         <el-option label="全部" value=""></el-option>
                         <el-option label="已开始" value="1"></el-option>
                         <el-option label="待开始" value="2"></el-option>
                     </el-select>
-                    <el-select v-model="search.adStatus" placeholder="" size="small" v-show="isIng != 'ing'">
+                    <el-select v-model="search.adStatus" placeholder="" v-show="isIng != 'ing'">
                         <el-option label="全部" value=""></el-option>
                         <el-option label="已过期" value="3"></el-option>
                         <el-option label="暂不投放" value="4"></el-option> 
                     </el-select>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" size="small" @click="onSearch">搜索</el-button>
+                    <el-button type="primary" @click="onSearch">搜索</el-button>
                 </el-form-item>
             </el-form>
         </div>
