@@ -4,23 +4,23 @@
         <div class="search-box">
             <el-form :inline="true" :model="formData" class="demo-form-inline" size="mini">
                 <el-form-item label="所属客户端">
-                    <el-select v-model="formData.clientId" placeholder="请输入广告位置搜索" size="small">
+                    <el-select v-model="formData.clientId" placeholder="请输入广告位置搜索">
                         <el-option label="全部" value=""></el-option>
                         <el-option :label="item.clientName" :value="item.clientId" v-for="(item,index) in formData.clientList" :key="index"></el-option> 
                     </el-select>
                 </el-form-item>
                 <el-form-item label="广告位置">
-                    <el-input v-model="formData.positionName" placeholder="请输入广告位置" size="small"></el-input>
+                    <el-input v-model="formData.positionName" placeholder="请输入广告位置"></el-input>
                 </el-form-item>
                 <el-form-item label="广告位状态">
-                    <el-select v-model="formData.positionStatus" placeholder="" size="small">
+                    <el-select v-model="formData.positionStatus" placeholder="">
                         <el-option label="全部" value="0"></el-option>
                         <el-option label="启用" value="1"></el-option>
                         <el-option label="不启用" value="2"></el-option> 
                     </el-select>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" size="small" @click="search">搜索</el-button>
+                    <el-button type="primary" @click="search">搜索</el-button>
                 </el-form-item>
             </el-form>
         </div>

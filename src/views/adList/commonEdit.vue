@@ -384,11 +384,7 @@ export default {
                         { 
                            condition: !this.form.startTime,
                            tips: '开始时间不能为空' 
-                        }, 
-                        { 
-                           condition: Date.now() > this.form.startTime,
-                           tips: '开始时间不能小于当前北京时间' 
-                        },
+                        },  
                         { 
                            condition: !this.form.endTime,
                            tips: '结束时间不能为空' 

@@ -41,7 +41,7 @@
                         :limit="1" 
                         :data = "uploadData" 
                         :file-list="form.fileList">
-                        <el-button size="small" type="primary" class="my-close">选择图片</el-button>
+                        <el-button size="mini" type="primary" class="my-close">选择图片</el-button>
                     </el-upload> 
                 </p>
                 <div class="thumbnail">
