@@ -265,7 +265,7 @@ export default {
                 this.tableData2 = res.adList
                 this.pagination.total_notRun = res.num 
             })
-        },
+        }
     },
     computed:{
         ...mapGetters({ 
