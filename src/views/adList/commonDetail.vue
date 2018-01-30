@@ -321,7 +321,7 @@ export default {
             right: 0;
             top: 0;
         }
-    }
+    } 
     .tips {
         height: 20px;
         font-size: 12px;
@@ -408,6 +408,12 @@ export default {
         text-align: center;
         line-height: 140px;
         overflow: hidden;
+        img {   
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translate(0,-50%);
+        }
     }
     .selct-channel {
         position: absolute;
@@ -436,7 +442,7 @@ export default {
         top: 0;
         color: blue;
         cursor: pointer;
-    }
+    } 
     .channell-close {
         position: absolute;
         right: 15px;
