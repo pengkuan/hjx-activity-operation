@@ -188,7 +188,7 @@
             @conditionSelectClose="conditionSelectClose"> 
         </conditionSelect> 
         <adSort 
-            v-if="sortData.length&&form.adTitle"
+            v-if="form.adTitle"
             :showFlag="adDialog" 
             :adTitle="form.adTitle" 
             @adSortClose="adSortClose" 
