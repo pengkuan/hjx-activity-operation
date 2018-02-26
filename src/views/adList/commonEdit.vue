@@ -143,13 +143,13 @@
             <el-form-item label="广告状态">
                 <el-radio-group v-model="form.isUse">
                     <el-radio :label="1">生效</el-radio>
-                    <el-radio :label="0">不生效</el-radio>
+                    <el-radio :label="0" :disabled="form.isDefault">不生效</el-radio>
                 </el-radio-group>
             </el-form-item>
             <el-form-item label="投放时间" v-show="form.isUse==1">
                 <el-radio-group v-model="form.useType">
                     <el-radio :label="1">投放后立即开始</el-radio>
-                    <el-radio :label="2">自定义时间</el-radio>
+                    <el-radio :label="2" :disabled="form.isDefault">自定义时间</el-radio>
                 </el-radio-group>
                 <div v-show="form.useType == 2">
                     <el-date-picker
@@ -188,7 +188,7 @@
             @conditionSelectClose="conditionSelectClose"> 
         </conditionSelect> 
         <adSort 
-            v-if="sortData.length&&form.adTitle"
+            v-if="form.adTitle"
             :showFlag="adDialog" 
             :adTitle="form.adTitle" 
             @adSortClose="adSortClose" 
@@ -208,6 +208,7 @@ export default {
         return {
             form: {
                 clientId: this.$route.query.clientId, //客户端
+                isDefault:this.$route.query.isDefault,
                 clientList: [], //客户端列表，用于循环
                 positionCode: '', //广告位置code吗 
                 positionId: '', //广告位置id码

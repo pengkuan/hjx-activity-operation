@@ -37,7 +37,8 @@ export default {
         return {
             bSign: 'isCancel',
             mySortData: [],
-            midData: []
+            midData: [],
+            ifHave:false
         }
     },
     props: ['sortData', 'showFlag', 'adTitle'],
@@ -76,17 +77,23 @@ export default {
             if (this.showFlag.where == 'add') { //添加
                 this.check() && this.mySortData.push({adTitle: '本条广告'})
             } else { //编辑
-                this.changeTitle() 
+                // this.changeTitle() 
+                this.addTitle()
             }
             
         },
-        changeTitle() { //添加本条广告
-            let adTitle = this.adTitle
+        addTitle() { //添加本条广告
+            let adTitle = this.adTitle ,
+                self = this
             this.mySortData.forEach(function(item, index) {
                 if (adTitle == item.adTitle) {
+                    self.ifHave = true
                     item.adTitle = '本条广告'
                 }
             })
+            if(!this.ifHave){
+                this.mySortData.push({adTitle: '本条广告'})
+            }
         },
         check() { //检查是否有本条广告  
             let n = this.mySortData.findIndex(function(item, index){

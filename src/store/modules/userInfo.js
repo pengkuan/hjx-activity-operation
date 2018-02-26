@@ -1,13 +1,14 @@
 import api from '@/api/index'
 import * as types from '../mutation-types.js'
 import config from '@/config'
+import util from '@/util'
 
  
 // initial state
 const state = {
-    userId: config.IS_DEV ? '694' : '',
+    userId: config.IS_DEV ? util.getQueryStringByName('user_id') : '',
     userName: 'pengkuan', 
-    loginToken: config.IS_DEV ? 'f2f5d0d5128b2b4fe13e9699ce1292bb' : '',
+    loginToken: config.IS_DEV ? util.getQueryStringByName('login_token') : '',
     power: { 
         //店奖权限管理
         active_reward_look: true, //查看活动

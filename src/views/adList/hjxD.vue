@@ -36,7 +36,11 @@
             <el-tabs @tab-click="handleTabClick" v-model="activeName">
                 <el-tab-pane label="进行中的广告" name="ing">
                     <el-table :data="tableData1" stripe style="width: 100%" size="mini">
-                        <el-table-column prop="positionName" label="广告位置"></el-table-column>
+                        <el-table-column  label="广告位置">
+                            <template slot-scope="scope">
+                                <span v-if="scope.row.default == '1' " class="hjx-danger">默认</span>{{scope.row.positionName}}
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="adTitle" label="广告标题"></el-table-column> 
                         <el-table-column prop="range" label="可见范围"></el-table-column>
                         <el-table-column prop="adStatus" label="广告状态"></el-table-column>
@@ -202,13 +206,15 @@ export default {
         },
         lookDetail(item) {//查看詳情  
             let path = this.$route.path,
-                adId = item.row.adId
-            this.$router.push({path:'/commonDetail',query:{clientId:this.clientId,pagePath:path, adId:adId}})
+                adId = item.row.adId,
+                isDefault = item.row.default == '1'
+            this.$router.push({path:'/commonDetail',query:{clientId:this.clientId,pagePath:path, adId:adId,isDefault:isDefault}})
         },
         edit(item) {//编辑广告
             let path = this.$route.path,
-                adId = item.row.adId  
-            this.$router.push({path:'/commonEdit',query:{clientId:this.clientId,pagePath:path,adId:adId}})
+                adId = item.row.adId ,
+                isDefault = item.row.default == '1' 
+            this.$router.push({path:'/commonEdit',query:{clientId:this.clientId,pagePath:path,adId:adId,isDefault:isDefault}})
         }, 
         getAdPosList() { //获取广告位列表
             let params = {clientId: this.clientId}
@@ -265,7 +271,7 @@ export default {
                 this.tableData2 = res.adList
                 this.pagination.total_notRun = res.num 
             })
-        },
+        }
     },
     computed:{
         ...mapGetters({ 

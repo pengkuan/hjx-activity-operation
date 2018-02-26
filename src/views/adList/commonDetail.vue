@@ -181,8 +181,9 @@ export default {
         onSubmit() {//跳转到修改页
             let returnPath = this.$route.query.pagePath,
                 clientId = this.$route.query.clientId,
-                adId = this.$route.query.adId
-            this.$router.push({path:'/commonEdit', query:{clientId:clientId, pagePath:returnPath, adId:adId}})
+                adId = this.$route.query.adId,
+                isDefault = this.$route.query.isDefault
+            this.$router.push({path:'/commonEdit', query:{clientId:clientId, pagePath:returnPath, adId:adId,isDefault:isDefault}})
         },
         back() { 
             let returnPath = this.$route.query.pagePath
