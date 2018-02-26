@@ -158,7 +158,7 @@
                 <div v-show="form.useType == 2">
                     <el-date-picker
                         v-model="form.startTime"
-                        type="datetime"
+                        type="datetime" 
                         placeholder="开始日期">
                     </el-date-picker> 
                     <el-date-picker
@@ -201,6 +201,7 @@ import adSort from '@/base/hjx_ad_sort'
 import conditionSelect from '@/base/hjx_ad_part'
 export default {
     data() {
+        let _this = this
         return {
             form: {
                 clientId: '', //客户端
@@ -269,7 +270,7 @@ export default {
             myscr: '', 
             UPLOAD_URL: config.UPLOAD_URL, 
             adPositionParams: {}, 
-            isFromPos: false,
+            isFromPos: false
         }
     },
     methods: {
@@ -776,7 +777,7 @@ export default {
         .down-over {
             color: #606266;
         }
-    }
+    } 
     .part-select {
         .search {
             border: 1px solid #ccc;
