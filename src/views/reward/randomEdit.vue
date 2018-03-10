@@ -416,10 +416,11 @@ export default {
             }
 
             //校验通过 设置值
-            submitData.publicGrantSection = this.CountRangeList.map(item=>{
-                return `${item.payLeast*100}|${item.payMost*100}#${item.bonusLeast*100}|${item.bonusMost*100}`
+
+            submitData.publicGrantSection = this.CountRangeList.map(item=>{ 
+                return `${Math.round(item.payLeast*100)}|${Math.round(item.payMost*100)}#${Math.round(item.bonusLeast*100)}|${Math.round(item.bonusMost*100)}`
             }).join('&')
-            submitData.upperLimitAmount = String(submitData.upperLimitAmount*100)
+            submitData.upperLimitAmount = String(Math.round(submitData.upperLimitAmount*100))
             //活动时间选择限制时 必传字段
             if (this.timeLimitType == '2') {
                 submitData.activityStartDate = this.activityStartDate
@@ -528,9 +529,14 @@ export default {
         },
         //验证数额设置
         pre_val_CountRangeList(index , theItem){
+
+            let reg = /^\d+(\.\d{1,2})?$/;
             if(!theItem.payLeast||!theItem.payMost||!theItem.bonusLeast||!theItem.bonusMost){
                 this.$set(this.errorInfo , 'CountRangeList_'+index , '请完善当条信息')
                 return false  
+            }else if(!reg.test(theItem.payLeast)||!reg.test(theItem.payMost)||!reg.test(theItem.bonusLeast)||!reg.test(theItem.bonusMost)){
+                this.$set(this.errorInfo , 'CountRangeList_'+index , '只支持两位小数')
+                return false 
             }else if(Number(theItem.payMost) < Number(theItem.payLeast)) {
                 this.$set(this.errorInfo , 'CountRangeList_'+index , '付款金额上限值不应小于下限值')
                 return false  
