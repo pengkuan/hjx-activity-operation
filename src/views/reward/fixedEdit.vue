@@ -316,7 +316,7 @@ export default {
                 "timeLimitType": this.timeLimitType,
                 "directAmount": this.directAmount,
                 "isCheckUserCreateTime": this.isCheckUserCreateTime,
-                "directGrantSection": this.directGrantSection.least*100 + '|' + this.directGrantSection.most*100,
+                "directGrantSection": Math.round(this.directGrantSection.least*100) + '|' + Math.round(this.directGrantSection.most*100),
                 "amountLimitType": this.amountLimitType,
                 "upperLimitAmount": this.upperLimitAmount , //单位为分
             }
@@ -399,8 +399,8 @@ export default {
                 if(!this[val]() ) return
             }
             //校验通过 设置值
-            submitData.upperLimitAmount = String(submitData.upperLimitAmount*100)
-            submitData.directAmount = String(submitData.directAmount*100)
+            submitData.upperLimitAmount = String( Math.round(submitData.upperLimitAmount*100) )
+            submitData.directAmount = String( Math.round(submitData.directAmount*100) )
             //活动时间选择限制时 必传字段
             if (this.timeLimitType == '2') {
                 submitData.activityStartDate = this.activityStartDate
