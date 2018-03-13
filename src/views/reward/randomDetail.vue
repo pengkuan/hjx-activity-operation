@@ -59,7 +59,7 @@
                 <span class='detailData' >{{item.payMost}}</span>
             	<span class="detailData"><i class="iconfont icon-play_forward_fill"></i></span>
             	<span class='detailData'>{{item.bonusLeast}}</span>
-            	<span class="detailData"> ≤ 店奖金额 < </span>
+            	<span class="detailData"> ≤ 店奖金额 ≤ </span>
             	<span class='detailData'>{{item.bonusMost}}</span>
             </div>
         </div>
