@@ -72,7 +72,7 @@
             </el-form-item>   
             <el-form-item> 
                 <el-button type="primary" @click="onSubmit" :disabled="needChange">确认修改</el-button> 
-                <el-button @click="back">取消</el-button>
+                <el-button @click="back">取消</el-button><br><span class="hjx-danger" v-if="needChange">此广告位存在已开启的广告，不能修改相关属性</span> 
             </el-form-item>
         </el-form>  
     </div>
