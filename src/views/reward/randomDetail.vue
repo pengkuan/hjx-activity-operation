@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div>  
         <el-breadcrumb separator-class="el-icon-arrow-right">
             <el-breadcrumb-item :to="{ path: '/reward/list' }">随机红包</el-breadcrumb-item>
             <el-breadcrumb-item>详情</el-breadcrumb-item>
@@ -51,16 +51,16 @@
         </div>
         <div class="mrg-b10">
             <div class="mrg-b10">
-            	<span class="hjx-left-label">数额设置：</span><span class="reward-remind hjx-info">（参与算法计算的相乘系数，为活动成本）</span>
+              <span class="hjx-left-label">数额设置：</span><span class="reward-remind hjx-info">（参与算法计算的相乘系数，为活动成本）</span>
             </div>
             <div class="mrg-l120 mrg-b10" v-for="(item , index) in CountRangeList" :key="index">
-            	<span class='detailData'>{{item.payLeast}}</span>
-            	<span class="detailData"> ≤ 付款金额 < </span>
+              <span class='detailData'>{{item.payLeast}}</span>
+              <span class="detailData"> ≤ 付款金额 < </span>
                 <span class='detailData' >{{item.payMost}}</span>
-            	<span class="detailData"><i class="iconfont icon-play_forward_fill"></i></span>
-            	<span class='detailData'>{{item.bonusLeast}}</span>
-            	<span class="detailData"> ≤ 店奖金额 ≤ </span>
-            	<span class='detailData'>{{item.bonusMost}}</span>
+              <span class="detailData"><i class="iconfont icon-play_forward_fill"></i></span>
+              <span class='detailData'>{{item.bonusLeast}}</span>
+              <span class="detailData"> ≤ 店奖金额 ≤ </span>
+              <span class='detailData'>{{item.bonusMost}}</span>
             </div>
         </div>
 
@@ -88,7 +88,7 @@
             <span class="hjx-left-label">参与机型：</span>
             <span class="hjx-hover ft13 hjx-blue mrg-l20" @click="showChooseDetail('modelList','categoryName','productName')">
                 <el-button v-if="modelList.L1.length>0||modelList.L2.length>0" type="text" >查看<i class="el-icon-arrow-right el-icon--right"></i></el-button>
-            	<el-button v-else type="text" disabled>未设置<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+              <el-button v-else type="text" disabled>未设置<i class="el-icon-arrow-right el-icon--right"></i></el-button>
             </span>
             <p class="reward-remind mrg-l40 hjx-info">(满足选中机型的订单，可参与到活动中)</p>
         </div>
@@ -101,15 +101,29 @@
             </span>
         </div>
         <div class="mrg-b10">
-        	<span class="hjx-left-label">门店地域：</span>
+          <span class="hjx-left-label">门店地域：</span>
             <span class="hjx-hover ft13 hjx-blue mrg-l20" @click="showChooseDetail('addrList','name','name')">
                 <el-button v-if="addrList.L1.length>0||addrList.L2.length>0" type="text" >查看<i class="el-icon-arrow-right el-icon--right"></i></el-button>
-            	<el-button v-else type="text" disabled>未设置<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+              <el-button v-else type="text" disabled>未设置<i class="el-icon-arrow-right el-icon--right"></i></el-button>
             </span>
         </div>
         <div class="operate">
             <router-link to="/reward/list"><el-button size="mini">返回</el-button></router-link>
         </div>
+
+        <el-dialog title="详情" :visible.sync="detailVisible" width="420px"> 
+            <div style="height:400px;overflow:auto;">
+                <pull-to @infinite-scroll="refresh">
+                  <ul>
+                    <li v-for="(item, index) in this.channelList.L1" class="hjx-blue t-li"><i class="iconfont icon-wenjianjia"></i>{{item.name}}</li>
+                    <li v-for="(item, index) in this.channelList.L2" class="hjx-blue t-li"><i class="iconfont icon-dian"></i>{{item.name}}</li>
+                  </ul>
+                </pull-to>
+            </div>
+            <span slot="footer" class="dialog-footer"> 
+                <el-button type="primary" @click="detailVisible = false" size="mini">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -119,11 +133,18 @@ import hjxPart from '@/base/hjx_part'
 import hjxLeftTitle from '@/base/hjx_left_title'
 import hjxUnderlineInput from '@/base/hjx_underline_input'
 import hjxSelectAlert from '@/base/hjx_select_alert'
+
+import PullTo from 'vue-pull-to'
+
 export default {
-    components: { hjxPart, hjxLeftTitle, hjxUnderlineInput,hjxSelectAlert },
+    components: { hjxPart, hjxLeftTitle, hjxUnderlineInput,hjxSelectAlert,PullTo },
     data() {
         return {
-        	ifshowDetail:true, //查看详情时所以选项为禁用状态
+            // 查看详情dialog
+            detailVisible: false,
+            pageIndex: '0',
+
+            ifshowDetail:true, //查看详情时所以选项为禁用状态
 
             amountLimitType:'1',//总金额限制类型 
             activityName: '',
@@ -131,11 +152,11 @@ export default {
             rewardType: '1',//随机抽奖
             operateType:'1',
             ticketTypeList:[
-            	{name:'店奖券',id:'1'}
+              {name:'店奖券',id:'1'}
             ],
             showPlan:'1',
             showPlanList:[
-            	{name:'方案1',id:'1',}
+              {name:'方案1',id:'1',}
             ],
             /************ 生效时间限制 ************/
             timeLimitType: '1',
@@ -148,12 +169,12 @@ export default {
             upperLimitAmount:'',
             /************ 数额设置 ************/
             CountRangeList:[
-            	{
-            		payLeast:'',
-            		payMost:'',
-            		bonusLeast:'',
-            		bonusMost:''
-            	},
+              {
+                payLeast:'',
+                payMost:'',
+                bonusLeast:'',
+                bonusMost:''
+              },
             ],
             publicAlgorithmCoefficient:'',//算法系数
             recycleTypeList:[
@@ -190,15 +211,15 @@ export default {
         })
     },
     methods: {
-    	/******获取并设置初始数据********/
-    	setDeault(){
+      /******获取并设置初始数据********/
+      setDeault(){
             const loading = this.$loading({
                     lock: true,
                     text: '获取数据中...',
                     spinner: 'el-icon-loading',
                     background: 'rgba(0, 0, 0, 0.7)'
                 })
-    		api.search_activity_detail({activityId:this.$route.query.id}).then(res=>{
+        api.search_activity_detail({activityId:this.$route.query.id}).then(res=>{
                 if(res._ret != 0){
                     loading.close()
                     this.$alert(res._errStr)
@@ -214,71 +235,75 @@ export default {
                 this.timeLimitType = res.timeLimitType
                 this.upperLimitAmount = res.upperLimitAmount / 100
                 //数额设置
-		        if(res.publicGrantSection){
-		        	let countArr = res.publicGrantSection.split('&')
-		        	countArr.forEach((item,index) =>{
-		        		let payArr = item.split('#')[0]
-		        		let bonusArr = item.split('#')[1]
-		        		if(index == 0){
-		        			this.CountRangeList[0].payLeast = payArr.split('|')[0]/100+''
-		        			this.CountRangeList[0].payMost = payArr.split('|')[1]/100+''
-		        			this.CountRangeList[0].bonusLeast = bonusArr.split('|')[0]/100+''
-		        			this.CountRangeList[0].bonusMost = bonusArr.split('|')[1]/100+''
-		        		}else{
-		        			this.CountRangeList.push({
-		        				payLeast : payArr.split('|')[0]/100+'',
-		        				payMost : payArr.split('|')[1]/100+'',
-		        				bonusLeast : bonusArr.split('|')[0]/100+'',
-		        				bonusMost : bonusArr.split('|')[1]/100+''
-		        			})
-		        		}
-		        	})
-		        	
-		        }
+            if(res.publicGrantSection){
+              let countArr = res.publicGrantSection.split('&')
+              countArr.forEach((item,index) =>{
+                let payArr = item.split('#')[0]
+                let bonusArr = item.split('#')[1]
+                if(index == 0){
+                  this.CountRangeList[0].payLeast = payArr.split('|')[0]/100+''
+                  this.CountRangeList[0].payMost = payArr.split('|')[1]/100+''
+                  this.CountRangeList[0].bonusLeast = bonusArr.split('|')[0]/100+''
+                  this.CountRangeList[0].bonusMost = bonusArr.split('|')[1]/100+''
+                }else{
+                  this.CountRangeList.push({
+                    payLeast : payArr.split('|')[0]/100+'',
+                    payMost : payArr.split('|')[1]/100+'',
+                    bonusLeast : bonusArr.split('|')[0]/100+'',
+                    bonusMost : bonusArr.split('|')[1]/100+''
+                  })
+                }
+              })
+              
+            }
 
                 //设置生效时间
                 if(res.timeLimitType == '2'){
-                	this.dateLimitRange = [res.activityStartDate , res.activityEndDate]
-                	this.timeLimitRange = [res.activityStartTime , res.activityEndTime]
+                  this.dateLimitRange = [res.activityStartDate , res.activityEndDate]
+                  this.timeLimitRange = [res.activityStartTime , res.activityEndTime]
                 }
                 //设置验证工号开通时间
                 if(res.checkUserCreateTime == '1'){
-                	this.checkUserCreateTime = [res.checkUserCreateStartTime , res.checkUserCreateEndTime]
+                  this.checkUserCreateTime = [res.checkUserCreateStartTime , res.checkUserCreateEndTime]
                 }
                 
                 //设置环保回收方式
                 let recycleArr = ( Number(res.recycleType).toString(2) / 1000 ).toFixed(3)
                 recycleArr = recycleArr.substr(recycleArr.length-3,3).split('')
                 recycleArr.forEach((item, index) => {
-	                if(item == 1) this.recycleTypeList[index].ifChoosed = true
-	                else this.recycleTypeList[index].ifChoosed = false
-	            })
-	            //设置已选 省市、品牌机型、商户门店
-	            this.addrList.L1 = res.provinceIdList
-	            this.addrList.L2 = res.cityIdList
+                  if(item == 1) this.recycleTypeList[index].ifChoosed = true
+                  else this.recycleTypeList[index].ifChoosed = false
+              })
+              //设置已选 省市、品牌机型、商户门店
+              this.addrList.L1 = res.provinceIdList
+              this.addrList.L2 = res.cityIdList
 
-	            this.modelList.L1 = res.brandIdList
-	            this.modelList.L2 = res.productIdList
+              this.modelList.L1 = res.brandIdList
+              this.modelList.L2 = res.productIdList
 
-	            this.channelList.L1 = res.businessesIdList
-	            this.channelList.L2 = res.storeIdList
-
+              this.channelList.L1 = res.businessesIdList
+              this.channelList.L2 = res.storeIdList 
             })
-    	},
+      },
         /******* 展示选择详情*******/
         showChooseDetail(list,nameL1,nameL2){
-            let html = ''
-            this[list].L1.forEach(item =>{
-                html+=`<p class="hjx-blue"><i class="iconfont icon-wenjianjia"></i> ${item[nameL1]}</p>`
-            })
-            this[list].L2.forEach(item =>{
-                html+=`<p class="hjx-blue"><i class="iconfont icon-dian"></i> ${item[nameL2]}</p>`
-            })
-            this.$alert(html, '详情', {
-                showClose:false,
-                customClass:'show-detail-box',
-                dangerouslyUseHTMLString: true
-            })
+            if (list == 'channelList') {
+                this.detailVisible = true 
+
+            } else {
+                let html = ''
+                this[list].L1.forEach(item =>{
+                    html+=`<p class="hjx-blue"><i class="iconfont icon-wenjianjia"></i> ${item[nameL1]}</p>`
+                })
+                this[list].L2.forEach(item =>{
+                    html+=`<p class="hjx-blue"><i class="iconfont icon-dian"></i> ${item[nameL2]}</p>`
+                })
+                this.$alert(html, '详情', {
+                    showClose:false,
+                    customClass:'show-detail-box',
+                    dangerouslyUseHTMLString: true
+                })
+            }  
         },
         /******* go to Edit *******/
         random_edit(id){
@@ -290,18 +315,41 @@ export default {
                 name:'randomEdit',
                 query:{id:this.$route.query.id}
             })
+        }, 
+        /******* 加载商户和门店数据 *******/
+        loadBusinessesStoreList(){ 
+            let params = {
+                activityId: this.$route.query.id,
+                pageIndex: this.pageIndex,
+                pageSize: '16',
+            }
+            api.search_activity_channel_store_list(params).then((res) => {
+                if(res._ret != 0){ 
+                    this.$alert(res._errStr)
+                    return
+                }
+                this.channelList.L1 = this.channelList.L1.concat(res.businessesIdList)
+                this.channelList.L2 = this.channelList.L2.concat(res.storeIdList) 
+            })
         },
+        refresh(falg) {
+            //防止到顶部也触发函数
+            if (falg == undefined) {
+                console.log('底部了') 
+                console.log('concat数据')
+            } 
+        }  
     },
     mounted() {
-        this.setDeault()
-	}
+        this.setDeault()  
+    }
 }
 
 </script>
 <style type="text/css" scoped="scoped">
     p{margin-bottom: 10px}
-	.reward-remind{font-size: 12px;}
-	.underline-text{
+  .reward-remind{font-size: 12px;}
+  .underline-text{
         font-size: 14px;
         color: #48576a;
         line-height: 1;
@@ -311,8 +359,11 @@ export default {
         display: inline-block;
     }
     .detailData{
-		font-size: 14px;
-	    color: #48576a;
-	}
+    font-size: 14px;
+      color: #48576a;
+  } 
+  .t-li {
+    height: 25px;
+  }
 
 </style>
