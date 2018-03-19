@@ -122,7 +122,8 @@
         </div>
         <hjx-select-alert  :action="'category'" :ifshow="ifshowModel" @close="closeAlert" :data="modelList" @setData="setModelData"></hjx-select-alert>
         <hjx-select-alert  :action="'addr'" :ifshow="ifshowAddr" @close="closeAlert" :data="addrList" @setData="setAddrData"></hjx-select-alert>
-        <hjx-select-alert  :action="'channel'" :ifshow="ifshowChannel" @close="closeAlert" :data="channelList" @setData="setChannelData"></hjx-select-alert>
+        <!-- <hjx-select-alert  :action="'channel'" :ifshow="ifshowChannel" @close="closeAlert" :data="channelList" @setData="setChannelData"></hjx-select-alert> -->
+        <hjx-select-alert-ty  :action="'channel'" :ifshow="ifshowChannel" @close="closeAlert" :data="channelList" @setData="setChannelData"></hjx-select-alert-ty>
         <div class="operate">
             <el-button @click="onSubmit" type="primary" size="mini">确认</el-button>
             <router-link to="/reward/list"><el-button size="mini">取消</el-button></router-link>
@@ -137,8 +138,9 @@ import hjxPart from '@/base/hjx_part'
 import hjxLeftTitle from '@/base/hjx_left_title'
 import hjxUnderlineInput from '@/base/hjx_underline_input'
 import hjxSelectAlert from '@/base/hjx_select_alert'
+import hjxSelectAlertTy from '@/base/hjx_select_alert_ty'
 export default {
-    components: { hjxPart, hjxLeftTitle, hjxUnderlineInput,hjxSelectAlert },
+    components: { hjxPart, hjxLeftTitle, hjxUnderlineInput,hjxSelectAlert, hjxSelectAlertTy },
     data() {
         return {
             errorInfo:{},
