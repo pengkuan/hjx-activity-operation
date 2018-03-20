@@ -8,14 +8,14 @@
             <p class="second-title hjx-blue">备选</p>
             <div class="choose-field">
               <div v-if="first">
-                <el-input size="small" @input="searchL1(searchL1Name)" placeholder="搜索商户" prefix-icon="el-icon-search" v-model="searchL1Name" clearable></el-input>
+                <el-input size="small" @input="searchL1(searchL1Name)" placeholder="搜索商户" prefix-icon="el-icon-search" v-model="searchL1Name" clearable :disabled="chooseAllL1"></el-input>
                 <p class="breadcrumb"><span class="noTap ">商户列表</span></p>
                 <p class="left-item-second">
-                  <el-checkbox v-show="showSearchL1" @change="changeL1(chooseAllL1)" :indeterminate="isIndeterminateFirst" v-model="chooseAllL1"><span class="ft12">全选所有商户</span></el-checkbox>
+                  <el-checkbox v-show="showSearchL1" @change="changeL1(chooseAllL1)" :indeterminate="isIndeterminateFirst" v-model="chooseAllL1"><span class="ft12" >全选所有商户</span></el-checkbox>
                 </p>
                 <div class="list-container"> 
                   <p class="left-item overflow" v-for="(item, index) in channelList" >
-                    <el-checkbox size="mini" class="fl" v-model="item.status" @change="handleL1(item)">
+                    <el-checkbox size="mini" class="fl" v-model="item.status" @change="handleL1(item)" :disabled="item.status">
                       <span class="ft12"><i class="iconfont icon-wenjianjia"></i> {{item.name}}</span>
                     </el-checkbox>
                     <el-button @click="setSecond(item.storeList)" type="text" size="mini" class="fr clear-padding" :disabled="item.status"><i class="iconfont icon-xiajiicon"></i>下级</el-button>
@@ -30,7 +30,7 @@
                 </p>
                 <div class="list-container">
                   <p class="left-item" v-for="item in storeList" v-show="item.ifshow">
-                    <el-checkbox v-model="item.status"  @change="handleL2(item)">
+                    <el-checkbox v-model="item.status"  @change="handleL2(item)" :disabled="item.status">
                       <span class="ft12"><i class="iconfont icon-dian"></i>{{item.name}}</span>
                     </el-checkbox>
                   </p>
@@ -131,6 +131,110 @@ export default {
           ]
         }
       ], 
+      channelList2: [
+        {
+          id: '5',
+          name: '魅族1',
+          status: false,
+          storeList: [
+            {
+              id: '51',
+              name: '魅族门店1',
+              status: false,
+              pid: '5',
+              ifshow: true,
+
+            },
+            {
+              id: '52',
+              name: '魅族门店2',
+              status: false,
+              pid: '5',
+              ifshow: true,
+            },
+            {
+              id: '53',
+              name: '魅族门店3',
+              status: false,
+              pid: '5',
+              ifshow: true,
+            }
+          ]
+        },
+        {
+          id: '72',
+          name: '联想',
+          status: false,
+          storeList: [
+            {
+              id: '861',
+              name: '联想门店1',
+              status: false,
+              pid: '72',
+              ifshow: true,
+            },
+            {
+              id: '8622',
+              name: '联想门店2',
+              status: false,
+              pid: '72',
+              ifshow: true,
+            },
+          ]
+        }
+      ],
+      channelList3: [
+        {
+          id: '1',
+          name: '华为',
+          status: false,
+          storeList: [
+            {
+              id: '11',
+              name: '华为门店1',
+              status: false,
+              pid: '1',
+              ifshow: true,
+
+            },
+            {
+              id: '12',
+              name: '华为门店2',
+              status: false,
+              pid: '1',
+              ifshow: true,
+            },
+            {
+              id: '13',
+              name: '华为门店3',
+              status: false,
+              pid: '1',
+              ifshow: true,
+            }
+          ]
+        },
+        {
+          id: '2',
+          name: '小米',
+          status: false,
+          storeList: [
+            {
+              id: '21',
+              name: '小米门店1',
+              status: false,
+              pid: '2',
+              ifshow: true,
+            },
+            {
+              id: '22',
+              name: '小米门店2',
+              status: false,
+              pid: '2',
+              ifshow: true,
+            },
+          ]
+        }
+      ],
       searchL1Name: '',
       searchL2Name: '',
       isIndeterminateFirst: false,
@@ -189,6 +293,20 @@ export default {
     setSecond(item) {  
       this.first = false
       this.storeList = item
+
+      this.storeList.forEach((list, index) => {
+        let idx = this.hasChoosedList.L2.findIndex((li, i) => {
+          return li.id == list.id
+        })
+
+        if (idx >= 0) {
+          list.status = true
+        }
+        
+      })
+
+
+
     },
     /********/
     //单选L1
@@ -227,6 +345,7 @@ export default {
         this.copyHasChoosedList = JSON.parse(JSON.stringify(this.hasChoosedList))
         this.channelList = []
         this.hasChoosedList = {}
+        this.searchL1Name = ''
       } else {
         this.channelList = this.copyChannelList
         this.hasChoosedList = this.copyHasChoosedList
@@ -237,15 +356,25 @@ export default {
       if(!val) {
         this.showSearchL1 = true
         return
-      }else{
-        this.preChooseL1.forEach(item =>{
-          if( item[this.mappingResult[1]].search(val) != -1) {
-              item.ifshow = true 
-              this.showSearchL1 = false
-          }else{
-              item.ifshow = false
+      } else {
+        this.showSearchL1 = false
+        if (val == '1234') {
+          this.channelList = [...this.channelList2]
+        } else if (val == '2234') {
+          this.channelList = [...this.channelList3]
+        }
+
+        this.channelList.forEach((item, index) => {
+          let idx = this.hasChoosedList.L1.findIndex((list, index) => {
+            return list.id == item.id
+          })
+          if (idx != -1) {
+            item.status = true
+          } else {
+            item.status = false
           }
         })
+
       }
     },
     /**************************@L2************************/
