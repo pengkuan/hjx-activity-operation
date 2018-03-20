@@ -45,7 +45,21 @@
                 <i class="el-icon-refresh" style="color:#409EFF;cursor: pointer;" @click="blackAndWhiteFlag=!blackAndWhiteFlag"> 
                 </i>)</span> 
             </p>
+
             <div class="choose-field list-container-choosed">
+                <pull-to @infinite-scroll="refresh">
+                  <div v-for="(list,key) in hasChoosedList">
+                    <p class="right-item clear" v-for="(item,index) in list">
+                      {{key}}
+                      <span v-if="key=='L1'" class="fl hjx-blue"><i class="iconfont icon-wenjianjia"></i> {{item.name}}</span>
+                      <span v-else class="fl hjx-blue"><i class="iconfont icon-dian"></i> {{item.name}}</span>
+                      <i @click="delRightItem(key,index,item)" class="iconfont icon-round_close_fill_light fr hjx-hover"></i>
+                    </p>
+                  </div>
+                </pull-to>
+            </div>
+
+            <!-- <div class="choose-field list-container-choosed">
               <div v-for="(list,key) in hasChoosedList">
                 <p class="right-item clear" v-for="(item,index) in list">
                   {{key}}
@@ -54,7 +68,7 @@
                   <i @click="delRightItem(key,index,item)" class="iconfont icon-round_close_fill_light fr hjx-hover"></i>
                 </p>
               </div>
-            </div> 
+            </div>  -->
           </div>
           <div class="clear btn">
             <el-button @click="submit" type="primary" size="mini">确认</el-button>
@@ -68,12 +82,16 @@
   </transition>
 </template>
 <script type="text/javascript">
+import PullTo from 'vue-pull-to'
 import api from '@/api'
 import { mapGetters, mapActions } from 'vuex'
 export default {
   name:'hjxSelectAlert',
+  components: { PullTo },
   data() {
     return {
+      addList: [], //新增列表
+      delList: [], //删除列表
       first: true,
       chooseAllL1: false,
       chooseAllL2: false,
@@ -112,7 +130,120 @@ export default {
               status: false,
               pid: '1',
               ifshow: true,
-            }
+            },
+            {
+              id: '134',
+              name: '华为门店3',
+              status: false,
+              pid: '1',
+              ifshow: true,
+            },
+            {
+              id: '135',
+              name: '华为门店3',
+              status: false,
+              pid: '1',
+              ifshow: true,
+            },
+            {
+              id: '136',
+              name: '华为门店3',
+              status: false,
+              pid: '1',
+              ifshow: true,
+            },
+            {
+              id: '137',
+              name: '华为门店3',
+              status: false,
+              pid: '1',
+              ifshow: true,
+            },
+            {
+              id: '138',
+              name: '华为门店3',
+              status: false,
+              pid: '1',
+              ifshow: true,
+            },
+            {
+              id: '139',
+              name: '华为门店3',
+              status: false,
+              pid: '1',
+              ifshow: true,
+            },
+            {
+              id: '1312',
+              name: '华为门店3',
+              status: false,
+              pid: '1',
+              ifshow: true,
+            },
+            {
+              id: '1313',
+              name: '华为门店3',
+              status: false,
+              pid: '1',
+              ifshow: true,
+            },
+            {
+              id: '1314',
+              name: '华为门店3',
+              status: false,
+              pid: '1',
+              ifshow: true,
+            },
+            {
+              id: '1315',
+              name: '华为门店3',
+              status: false,
+              pid: '1',
+              ifshow: true,
+            },
+            {
+              id: '1316',
+              name: '华为门店3',
+              status: false,
+              pid: '1',
+              ifshow: true,
+            },
+            {
+              id: '1317',
+              name: '华为门店3',
+              status: false,
+              pid: '1',
+              ifshow: true,
+            },
+            {
+              id: '1318',
+              name: '华为门店3',
+              status: false,
+              pid: '1',
+              ifshow: true,
+            },
+            {
+              id: '1319',
+              name: '华为门店3',
+              status: false,
+              pid: '1',
+              ifshow: true,
+            },
+            {
+              id: '1323',
+              name: '华为门店3',
+              status: false,
+              pid: '1',
+              ifshow: true,
+            },
+            {
+              id: '1325',
+              name: '华为门店3',
+              status: false,
+              pid: '1',
+              ifshow: true,
+            },
+
           ]
         },
         {
@@ -257,6 +388,12 @@ export default {
   computed: {   
   },
   methods: { 
+    /********上拉加载************/
+    refresh() { 
+      console.log('上拉了')
+      this.hasChoosedList.L2.push({id:1212, name: '测试中'})
+
+    },
     /********提交和取消************/
     submit() {
       this.$emit('setData', this.choosedList)
