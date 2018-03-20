@@ -15,7 +15,7 @@
                 </p>
                 <div class="list-container">
                   <p class="left-item overflow" v-for="item in preChooseL1" v-show="item.ifshow || showSearchL1">
-                    <el-checkbox size="mini" class="fl" v-model="item.ifChoosed" :key="item[mappingResult[0]]" @change="handleL1(item.ifChoosed,item[mappingResult[1]],item[mappingResult[0]])">
+                    <el-checkbox size="mini" class="fl" v-model="item.ifChoosed" :key="item[mappingResult[0]]" @change="handleL1(item.ifChoosed,item[mappingResult[1]],item[mappingResult[0]], item)">
                       <span class="ft12"><i class="iconfont icon-wenjianjia"></i> {{item[mappingResult[1]]}}</span>
                     </el-checkbox>
                     <el-button @click="setSecond(item[mappingResult[0]])" type="text" size="mini" class="fr clear-padding" :disabled="item.ifChoosed"><i class="iconfont icon-xiajiicon"></i>下级</el-button>
@@ -30,10 +30,10 @@
                 </p>
                 <div class="list-container">
                   <p class="left-item" v-for="item in preChooseL2" v-show="item.ifshow || showSearchL2">
-                    <el-checkbox v-model="item.ifChoosed" :key="item[mappingResult[3]]" @change="handleL2(item.ifChoosed,item[mappingResult[4]],item[mappingResult[3]],item.parentId)">
+                    <el-checkbox v-model="item.ifChoosed" :key="item[mappingResult[3]]" @change="handleL2(item.ifChoosed,item[mappingResult[4]],item[mappingResult[3]],item.parentId, item)">
                       <span class="ft12"><i class="iconfont icon-dian"></i>{{item[mappingResult[4]]}}</span>
                     </el-checkbox>
-                  </p>
+                  </p> 
                 </div>
               </div>
             </div>
@@ -45,7 +45,7 @@
                 <p class="right-item clear" v-for="(item,index) in list">
                   <span v-if="key=='L1'" class="fl hjx-blue"><i class="iconfont icon-wenjianjia"></i> {{item[mappingResult[1]]}}</span>
                   <span v-else class="fl hjx-blue"><i class="iconfont icon-dian"></i> {{item[mappingResult[4]]}}</span>
-                  <i @click="delRightItem(key,index)" class="iconfont icon-round_close_fill_light fr hjx-hover"></i>
+                  <i @click="delRightItem(key,index)" class="iconfont icon-round_close_fill_light fr hjx-hover"></i> 
                 </p>
               </div>
             </div>
@@ -199,7 +199,8 @@ export default {
     },
     /********/
     //单选L1
-    handleL1(val, name, id) {
+    handleL1(val, name, id, item) {  
+
       if (val) {
         let pushObj = {}
         pushObj[this.mappingResult[0]] = id
@@ -258,7 +259,7 @@ export default {
     },
     /**************************@L2************************/
     //单个change事件
-    handleL2(val, name, id ,parentId) {
+    handleL2(val, name, id ,parentId, item) { 
       if (val) {
         let pushObj = {}
         pushObj[this.mappingResult[3]] = id
@@ -272,6 +273,7 @@ export default {
           }
         })
       }
+
     },
     //全选L2操作
     changeL2(val) {
@@ -318,6 +320,13 @@ export default {
 
 </script>
 <style type="text/css" scoped="scoped">
+
+.disable { color: #ccc;}
+.relative {position: relative;}
+.cusor {cursor: pointer;}
+.right {position:absolute;right: 4px;top:0;}
+
+
 .hjx-alert-container{position: fixed;top: 0;left: 0;width: 100%;height: 100%;text-align: center;z-index: 2000;}
 .hjx-alert-container .hjx-bg{position: absolute;top:0;left: 0;bottom: 0;right: 0;background-color: rgba(0,0,0,0.5);}
 .alert-title {border-radius: 5px;background-color: #f3f4f5;font-size: 15px;height: 35px;line-height: 35px;font-weight: 600;}

@@ -102,12 +102,13 @@
             </span>
             <span class="reward-remind hjx-info">(满足选中机型的订单，可参与到活动中)</span>
         </div>
-        <hjx-left-title label="对象"></hjx-left-title>
+        <hjx-left-title label="对象"><span class="errorInfo" style="color:#878D99">机构和地域做交集判断</span></hjx-left-title>
         <div>
             <span class="hjx-left-label">商户/门店：</span>
             <span class="hjx-hover ft13 hjx-blue mrg-l14" @click="showChooseDetail('channelList','name','name')">
-                <el-button v-if="channelList.L1.length>0||channelList.L2.length>0" type="text" >查看<i class="el-icon-arrow-right el-icon--right"></i></el-button>
-                <el-button v-else type="text" disabled>未设置<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                <el-button type="text" >查看<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                <!-- <el-button v-if="channelList.L1.length>0||channelList.L2.length>0" type="text" >查看<i class="el-icon-arrow-right el-icon--right"></i></el-button> -->
+                <!-- <el-button v-else type="text" disabled>未设置<i class="el-icon-arrow-right el-icon--right"></i></el-button> -->
             </span>
         </div>
         <div class="mrg-b10">
@@ -121,6 +122,30 @@
         <div class="operate">
             <router-link to="/reward/list"><el-button size="mini">返回</el-button></router-link>
         </div>
+
+        <el-dialog title="详情" :visible.sync="detailVisible" width="420px">  
+            <div v-loading="channelLoading">
+                <el-input size="small" @input="search(keywords)" 
+                    placeholder="搜索" 
+                    prefix-icon="el-icon-search" 
+                    :disabled = "channelIsAll=='0'" 
+                    style="margin-bottom:15px;"
+                    v-model="keywords" clearable> 
+                </el-input>
+                <div style="height:400px;overflow:auto;">
+                    <p v-if="channelIsAll=='0'" class="is-all">全选</p>
+                    <pull-to @infinite-scroll="refresh" v-else>
+                      <ul>
+                        <li v-for="(item, index) in this.channelList.L1" class="hjx-blue t-li"><i class="iconfont icon-wenjianjia"></i>{{item.name}}</li>
+                        <li v-for="(item, index) in this.channelList.L2" class="hjx-blue t-li"><i class="iconfont icon-dian"></i>{{item.name}}</li>
+                      </ul>
+                    </pull-to> 
+                </div>
+            </div> 
+            <span slot="footer" class="dialog-footer"> 
+                <el-button type="primary" @click="detailVisible = false" size="mini">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -130,10 +155,24 @@ import hjxPart from '@/base/hjx_part'
 import hjxLeftTitle from '@/base/hjx_left_title'
 import hjxUnderlineInput from '@/base/hjx_underline_input'
 import hjxSelectAlert from '@/base/hjx_select_alert'
+
+import PullTo from 'vue-pull-to'
 export default {
-    components: { hjxPart, hjxLeftTitle, hjxUnderlineInput, hjxSelectAlert },
+    components: { hjxPart, hjxLeftTitle, hjxUnderlineInput, hjxSelectAlert, PullTo },
     data() {
         return {
+            // 查看详情dialog
+            detailVisible: false,
+            pageIndex: '1',
+            keywords: '', 
+            timer: '',
+            channelIsAll: '',   //渠道是否全选标志 
+            channelLoading: false, //加载门店loading
+            ifshowDetail:true,  //查看详情时所以选项为禁用状态
+
+
+
+
             ifshowDetail:true, //查看详情时所以选项为禁用状态
 
             amountLimitType: '1', //总金额限制类型 
@@ -203,6 +242,51 @@ export default {
         }),
     },
     methods: {
+        search(val, type) {
+            console.log(val)
+            console.log(type)
+            clearTimeout(this.timer)
+            this.timer = setTimeout(() => {
+                let params = {
+                  activityId: this.$route.query.id,
+                  searchKey: val,
+                  // pageIndex: this.pageIndex + '',
+                  pageIndex: '0',
+                  pageSize: '100' 
+                }
+
+                if (type == '下拉') {
+                    params.pageIndex = this.pageIndex + ''
+                }  
+                this.channelLoading = true
+                console.log(this.channelLoading)
+                api.search_activity_channel_store_list(params).then((res) => {
+                    this.channelLoading = false
+                    if (res._ret != '0') {
+                      this.$alert(res._errStr)
+                      return
+                    } 
+                    this.channelIsAll = res.businessesFlage
+                    if (type == '下拉') {
+                        this.pageIndex++
+                        this.channelList.L1 = this.channelList.L1.concat(res.businessesIdList)
+                        this.channelList.L2 = this.channelList.L2.concat(res.storeIdList)
+                    } else {
+                        this.channelList.L1 = res.businessesIdList
+                        this.channelList.L2 = res.storeIdList
+                    } 
+                    console.log(res)
+                })
+
+            }, 700) 
+        },
+        // 上拉刷新
+        refresh(falg) {
+            //防止到顶部也触发函数
+            if (falg == undefined) {
+                this.search(this.keywords, '下拉')      
+            } 
+        },
         /******获取并设置初始数据********/
         setDeault(){
             const loading = this.$loading({
@@ -260,18 +344,25 @@ export default {
         },
         /******* 展示选择详情*******/
         showChooseDetail(list,nameL1,nameL2){
-            let html = ''
-            this[list].L1.forEach(item =>{
-                html+=`<p class="hjx-blue"><i class="iconfont icon-wenjianjia"></i> ${item[nameL1]}</p>`
-            })
-            this[list].L2.forEach(item =>{
-                html+=`<p class="hjx-blue"><i class="iconfont icon-dian"></i> ${item[nameL2]}</p>`
-            })
-            this.$alert(html, '详情', {
-                showClose:false,
-                customClass:'show-detail-box',
-                dangerouslyUseHTMLString: true
-            })
+            if (list == 'channelList') {
+                this.detailVisible = true 
+                this.search('', '自动加载')
+                this.channelLoading = true
+            } else {
+               let html = ''
+               this[list].L1.forEach(item =>{
+                   html+=`<p class="hjx-blue"><i class="iconfont icon-wenjianjia"></i> ${item[nameL1]}</p>`
+               })
+               this[list].L2.forEach(item =>{
+                   html+=`<p class="hjx-blue"><i class="iconfont icon-dian"></i> ${item[nameL2]}</p>`
+               })
+               this.$alert(html, '详情', {
+                   showClose:false,
+                   customClass:'show-detail-box',
+                   dangerouslyUseHTMLString: true
+               }) 
+            }
+            
         },
         /******* go to Edit *******/
         fixed_edit(id){
@@ -285,6 +376,11 @@ export default {
             })
         },
 
+    },
+    watch: {
+        keywords() {
+            this.pageIndex = '1'
+        }
     },
     mounted() {
         this.setDeault()

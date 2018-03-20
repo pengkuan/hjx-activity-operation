@@ -403,6 +403,24 @@ export default {
             return true
         }
     },
+    /**
+    *@ 数组对象去重，只适合id唯一的 
+    */
+    distinct(oldArr) {
+        var allArr = [];
+        for(var i=0;i<oldArr.length;i++){
+        　　var flag = true;
+        　　for(var j=0;j<allArr.length;j++){
+        　　　　if(oldArr[i].id === allArr[j].id){
+        　　　　　　flag = false;
+        　　　　};
+        　　}; 
+        　　if(flag){
+        　　　　allArr.push(oldArr[i]);
+        　　};
+        };
+        return allArr;
+    },
     formatDate: {
 
         format: function(date, pattern) {

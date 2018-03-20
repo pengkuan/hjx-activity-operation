@@ -92,12 +92,15 @@
             </span>
             <p class="reward-remind mrg-l40 hjx-info">(满足选中机型的订单，可参与到活动中)</p>
         </div>
-        <hjx-left-title label="对象"></hjx-left-title>
+        <hjx-left-title label="对象"><span class="errorInfo" style="color:#878D99">机构和地域做交集判断</span></hjx-left-title> 
         <div>
             <span class="hjx-left-label">商户/门店：</span>
             <span class="hjx-hover ft13 hjx-blue mrg-l14" @click="showChooseDetail('channelList','name','name')">
-                <el-button v-if="channelList.L1.length>0||channelList.L2.length>0" type="text" >查看<i class="el-icon-arrow-right el-icon--right"></i></el-button>
-                <el-button v-else type="text" disabled>未设置<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                <!-- <el-button v-if="channelList.L1.length>0||channelList.L2.length>0" type="text" >查看<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                <el-button v-else type="text" disabled>未设置<i class="el-icon-arrow-right el-icon--right"></i></el-button> -->
+
+                <el-button type="text" >查看<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                <!-- <el-button v-else type="text" disabled>未设置<i class="el-icon-arrow-right el-icon--right"></i></el-button> -->
             </span>
         </div>
         <div class="mrg-b10">
@@ -111,15 +114,25 @@
             <router-link to="/reward/list"><el-button size="mini">返回</el-button></router-link>
         </div>
 
-        <el-dialog title="详情" :visible.sync="detailVisible" width="420px"> 
-            <div style="height:400px;overflow:auto;">
-                <pull-to @infinite-scroll="refresh">
-                  <ul>
-                    <li v-for="(item, index) in this.channelList.L1" class="hjx-blue t-li"><i class="iconfont icon-wenjianjia"></i>{{item.name}}</li>
-                    <li v-for="(item, index) in this.channelList.L2" class="hjx-blue t-li"><i class="iconfont icon-dian"></i>{{item.name}}</li>
-                  </ul>
-                </pull-to>
-            </div>
+        <el-dialog title="详情" :visible.sync="detailVisible" width="420px">  
+            <div v-loading="channelLoading">
+                <el-input size="small" @input="search(keywords)" 
+                    placeholder="搜索" 
+                    prefix-icon="el-icon-search" 
+                    :disabled = "channelIsAll=='0'" 
+                    style="margin-bottom:15px;"
+                    v-model="keywords" clearable> 
+                </el-input>
+                <div style="height:400px;overflow:auto;">
+                    <p v-if="channelIsAll=='0'" class="is-all">全选</p>
+                    <pull-to @infinite-scroll="refresh" v-else>
+                      <ul>
+                        <li v-for="(item, index) in this.channelList.L1" class="hjx-blue t-li"><i class="iconfont icon-wenjianjia"></i>{{item.name}}</li>
+                        <li v-for="(item, index) in this.channelList.L2" class="hjx-blue t-li"><i class="iconfont icon-dian"></i>{{item.name}}</li>
+                      </ul>
+                    </pull-to> 
+                </div>
+            </div> 
             <span slot="footer" class="dialog-footer"> 
                 <el-button type="primary" @click="detailVisible = false" size="mini">确 定</el-button>
             </span>
@@ -142,9 +155,12 @@ export default {
         return {
             // 查看详情dialog
             detailVisible: false,
-            pageIndex: '0',
-
-            ifshowDetail:true, //查看详情时所以选项为禁用状态
+            pageIndex: '1',
+            keywords: '', 
+            timer: '',
+            channelIsAll: '',   //渠道是否全选标志 
+            channelLoading: false, //加载门店loading
+            ifshowDetail:true,  //查看详情时所以选项为禁用状态
 
             amountLimitType:'1',//总金额限制类型 
             activityName: '',
@@ -210,7 +226,52 @@ export default {
             'userName':'userInfo/userName',
         })
     },
-    methods: {
+    methods: { 
+        search(val, type) {
+            console.log(val)
+            console.log(type)
+            clearTimeout(this.timer)
+            this.timer = setTimeout(() => {
+                let params = {
+                  activityId: this.$route.query.id,
+                  searchKey: val,
+                  // pageIndex: this.pageIndex + '',
+                  pageIndex: '0',
+                  pageSize: '100' 
+                }
+
+                if (type == '下拉') {
+                    params.pageIndex = this.pageIndex + ''
+                }  
+                this.channelLoading = true
+                console.log(this.channelLoading)
+                api.search_activity_channel_store_list(params).then((res) => {
+                    this.channelLoading = false
+                    if (res._ret != '0') {
+                      this.$alert(res._errStr)
+                      return
+                    } 
+                    this.channelIsAll = res.businessesFlage
+                    if (type == '下拉') {
+                        this.pageIndex++
+                        this.channelList.L1 = this.channelList.L1.concat(res.businessesIdList)
+                        this.channelList.L2 = this.channelList.L2.concat(res.storeIdList)
+                    } else {
+                        this.channelList.L1 = res.businessesIdList
+                        this.channelList.L2 = res.storeIdList
+                    } 
+                    console.log(res)
+                })
+
+            }, 700) 
+        },
+        // 上拉刷新
+        refresh(falg) {
+            //防止到顶部也触发函数
+            if (falg == undefined) {
+                this.search(this.keywords, '下拉')      
+            } 
+        },
       /******获取并设置初始数据********/
       setDeault(){
             const loading = this.$loading({
@@ -289,6 +350,8 @@ export default {
         showChooseDetail(list,nameL1,nameL2){
             if (list == 'channelList') {
                 this.detailVisible = true 
+                this.search('', '自动加载')
+                this.channelLoading = true
 
             } else {
                 let html = ''
@@ -331,14 +394,12 @@ export default {
                 this.channelList.L1 = this.channelList.L1.concat(res.businessesIdList)
                 this.channelList.L2 = this.channelList.L2.concat(res.storeIdList) 
             })
-        },
-        refresh(falg) {
-            //防止到顶部也触发函数
-            if (falg == undefined) {
-                console.log('底部了') 
-                console.log('concat数据')
-            } 
-        }  
+        },  
+    },
+    watch: {
+        keywords() {
+            this.pageIndex = '1'
+        }
     },
     mounted() {
         this.setDeault()  
@@ -365,5 +426,6 @@ export default {
   .t-li {
     height: 25px;
   }
+  .is-all {line-height: 80px;text-align: center;}
 
 </style>
