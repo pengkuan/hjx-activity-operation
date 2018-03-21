@@ -13,6 +13,9 @@ export default {
     get_channel_list(params) {return http.fetch('channel_org','get_channel_list', params)},//获取渠道
     get_channel_store_list(params) {return http.fetch('channel_org','get_channel_store_list', params)},//获取门店
 
+
+    //改了的
+    get_channel_list_change(params) {return http.fetch('operation_center','get_channel_list', params)},//获取渠道
     search_activity_channel_store_list(params) {return http.fetch('operation_center','search_activity_channel_store_list', params)},//商户门店列表分页
 /**
  * @随机红包
