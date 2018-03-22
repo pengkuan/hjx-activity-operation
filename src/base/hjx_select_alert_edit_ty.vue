@@ -1,11 +1,12 @@
 <template>
   <transition name="fade" >
     <div class="hjx-alert-container" v-if="ifshow">
-      <div class="hjx-message-box" >
+      <div class="hjx-message-box relative" >
         <div class="alert-title hjx-text-center hjx-blue">选择商户和门店</div>
         <div class="clear choose-container">
           <div class="fl box-left">
             <p class="second-title hjx-blue">备选</p>
+            <p class="no-search" v-show="!searchL1Name && !chooseAllL1">搜索后将展示相应数据</p>
             <div class="choose-field">
               <div v-if="first">
                 <el-input size="small" @input="searchL1(searchL1Name)" placeholder="搜索商户" prefix-icon="el-icon-search" v-model="searchL1Name" clearable :disabled="chooseAllL1"></el-input>
@@ -23,10 +24,7 @@
               </div>
               <div v-else>
                 <el-input size="small" @input="searchL2(searchL2Name)" placeholder="搜索门店" prefix-icon="el-icon-search" v-model="searchL2Name" clearable></el-input>
-                <div class="breadcrumb"><span class="canTap hjx-hover" @click="backChannel">商户列表 <i class="iconfont icon-right"></i></span><span class="noTap">门店列表</span></div>
-                <!-- <p class="left-item-second">
-                  <el-checkbox v-show="showSearchL2" @change="changeL2(chooseAllL2)" :indeterminate="isIndeterminateFirst" v-model="chooseAllL2"><span class="ft12" :disabled="chooseAllL2" >全选所有门店</span></el-checkbox>
-                </p> -->
+                <div class="breadcrumb"><span class="canTap hjx-hover" @click="backChannel">商户列表 <i class="iconfont icon-right"></i></span><span class="noTap">门店列表</span></div> 
                 <div class="list-container"> 
                   <p class="left-item" v-for="item in storeList" v-show="item.ifshow" @click="handleL2(item)" :class="{'disable':item.status, 'relative':true, 'cusor': true}">
                     <span class="ft12"><i class="iconfont icon-dian"></i>{{item.name}}</span> 
@@ -39,36 +37,20 @@
           <div class="fr box-right" v-loading="refleshLoading">
             <p class="second-title hjx-blue">
               已选 
-              <span style="color:#000;">({{blackAndWhiteFlag ? '黑名单' : '白名单'}}
-                <i class="el-icon-refresh" style="color:#409EFF;cursor: pointer;" @click="blackAndWhiteFlag=!blackAndWhiteFlag"> 
-                </i>)</span> 
-            </p>
-
+              <span style="color:#000;" v-if="businessesFlage == '1'">(白名单)</span> 
+              <span style="color:#000;" v-if="businessesFlage == '0'">(黑名单)</span> 
+            </p> 
             <div class="choose-field list-container-choosed" ref="scrollDiv" @scroll="scroll">
-                <pull-to @infinite-scroll="refresh" @bottom-state-change="isbottom">
+                <pull-to @infinite-scroll="refresh">
                   <div v-for="(list,key) in hasChoosedList">
                     <p class="right-item clear" v-for="(item,index) in list">
-                      {{key}}
                       <span v-if="key=='L1'" class="fl hjx-blue"><i class="iconfont icon-wenjianjia"></i> {{item.name}}</span>
                       <span v-else class="fl hjx-blue"><i class="iconfont icon-dian"></i> {{item.name}}</span>
                       <i @click="delRightItem(key,index,item)" class="el-icon-remove-outline fr hjx-hover"></i>
                     </p>
-                  </div>
-                  <!-- <p v-show="refleshLoading">加载中...</p> -->
-                  <!-- <p>已经到底了</p> -->
+                  </div> 
                 </pull-to>
-            </div>
-
-            <!-- <div class="choose-field list-container-choosed">
-              <div v-for="(list,key) in hasChoosedList">
-                <p class="right-item clear" v-for="(item,index) in list">
-                  {{key}}
-                  <span v-if="key=='L1'" class="fl hjx-blue"><i class="iconfont icon-wenjianjia"></i> {{item.name}}</span>
-                  <span v-else class="fl hjx-blue"><i class="iconfont icon-dian"></i> {{item.name}}</span>
-                  <i @click="delRightItem(key,index,item)" class="iconfont icon-round_close_fill_light fr hjx-hover"></i>
-                </p>
-              </div>
-            </div>  -->
+            </div> 
           </div>
           <div class="clear btn">
             <el-button @click="submit" type="primary" size="mini">确认</el-button>
@@ -105,277 +87,9 @@ export default {
         L2:[],
       }, //右边已选
       storeList: [],
-      blackAndWhiteFlag: true,
+      businessesFlage: '',
       refleshLoading: false, //上拉加载标志
-      channelList: [ 
-        // {
-        //   id: '1',
-        //   name: '华为',
-        //   status: false,
-        //   storeList: [
-        //     {
-        //       id: '11',
-        //       name: '华为门店1',
-        //       status: false,
-        //       pid: '1',
-        //       ifshow: true,
-
-        //     },
-        //     {
-        //       id: '12',
-        //       name: '华为门店2',
-        //       status: false,
-        //       pid: '1',
-        //       ifshow: true,
-        //     },
-        //     {
-        //       id: '13',
-        //       name: '华为门店3',
-        //       status: false,
-        //       pid: '1',
-        //       ifshow: true,
-        //     },
-        //     {
-        //       id: '134',
-        //       name: '华为门店3',
-        //       status: false,
-        //       pid: '1',
-        //       ifshow: true,
-        //     },
-        //     {
-        //       id: '135',
-        //       name: '华为门店3',
-        //       status: false,
-        //       pid: '1',
-        //       ifshow: true,
-        //     },
-        //     {
-        //       id: '136',
-        //       name: '华为门店3',
-        //       status: false,
-        //       pid: '1',
-        //       ifshow: true,
-        //     },
-        //     {
-        //       id: '137',
-        //       name: '华为门店3',
-        //       status: false,
-        //       pid: '1',
-        //       ifshow: true,
-        //     },
-        //     {
-        //       id: '138',
-        //       name: '华为门店3',
-        //       status: false,
-        //       pid: '1',
-        //       ifshow: true,
-        //     },
-        //     {
-        //       id: '139',
-        //       name: '华为门店3',
-        //       status: false,
-        //       pid: '1',
-        //       ifshow: true,
-        //     },
-        //     {
-        //       id: '1312',
-        //       name: '华为门店3',
-        //       status: false,
-        //       pid: '1',
-        //       ifshow: true,
-        //     },
-        //     {
-        //       id: '1313',
-        //       name: '华为门店3',
-        //       status: false,
-        //       pid: '1',
-        //       ifshow: true,
-        //     },
-        //     {
-        //       id: '1314',
-        //       name: '华为门店3',
-        //       status: false,
-        //       pid: '1',
-        //       ifshow: true,
-        //     },
-        //     {
-        //       id: '1315',
-        //       name: '华为门店3',
-        //       status: false,
-        //       pid: '1',
-        //       ifshow: true,
-        //     },
-        //     {
-        //       id: '1316',
-        //       name: '华为门店3',
-        //       status: false,
-        //       pid: '1',
-        //       ifshow: true,
-        //     },
-        //     {
-        //       id: '1317',
-        //       name: '华为门店3',
-        //       status: false,
-        //       pid: '1',
-        //       ifshow: true,
-        //     },
-        //     {
-        //       id: '1318',
-        //       name: '华为门店3',
-        //       status: false,
-        //       pid: '1',
-        //       ifshow: true,
-        //     },
-        //     {
-        //       id: '1319',
-        //       name: '华为门店3',
-        //       status: false,
-        //       pid: '1',
-        //       ifshow: true,
-        //     },
-        //     {
-        //       id: '1323',
-        //       name: '华为门店3',
-        //       status: false,
-        //       pid: '1',
-        //       ifshow: true,
-        //     },
-        //     {
-        //       id: '1325',
-        //       name: '华为门店3',
-        //       status: false,
-        //       pid: '1',
-        //       ifshow: true,
-        //     },
-
-        //   ]
-        // },
-        // {
-        //   id: '2',
-        //   name: '小米',
-        //   status: false,
-        //   storeList: [
-        //     {
-        //       id: '21',
-        //       name: '小米门店1',
-        //       status: false,
-        //       pid: '2',
-        //       ifshow: true,
-        //     },
-        //     {
-        //       id: '22',
-        //       name: '小米门店2',
-        //       status: false,
-        //       pid: '2',
-        //       ifshow: true,
-        //     },
-        //   ]
-        // }
-      ], 
-      channelList2: [
-        {
-          id: '5',
-          name: '魅族1',
-          status: false,
-          storeList: [
-            {
-              id: '51',
-              name: '魅族门店1',
-              status: false,
-              pid: '5',
-              ifshow: true,
-
-            },
-            {
-              id: '52',
-              name: '魅族门店2',
-              status: false,
-              pid: '5',
-              ifshow: true,
-            },
-            {
-              id: '53',
-              name: '魅族门店3',
-              status: false,
-              pid: '5',
-              ifshow: true,
-            }
-          ]
-        },
-        {
-          id: '72',
-          name: '联想',
-          status: false,
-          storeList: [
-            {
-              id: '861',
-              name: '联想门店1',
-              status: false,
-              pid: '72',
-              ifshow: true,
-            },
-            {
-              id: '8622',
-              name: '联想门店2',
-              status: false,
-              pid: '72',
-              ifshow: true,
-            },
-          ]
-        }
-      ],
-      channelList3: [
-        {
-          id: '1',
-          name: '华为',
-          status: false,
-          storeList: [
-            {
-              id: '11',
-              name: '华为门店1',
-              status: false,
-              pid: '1',
-              ifshow: true,
-
-            },
-            {
-              id: '12',
-              name: '华为门店2',
-              status: false,
-              pid: '1',
-              ifshow: true,
-            },
-            {
-              id: '13',
-              name: '华为门店3',
-              status: false,
-              pid: '1',
-              ifshow: true,
-            }
-          ]
-        },
-        {
-          id: '2',
-          name: '小米',
-          status: false,
-          storeList: [
-            {
-              id: '21',
-              name: '小米门店1',
-              status: false,
-              pid: '2',
-              ifshow: true,
-            },
-            {
-              id: '22',
-              name: '小米门店2',
-              status: false,
-              pid: '2',
-              ifshow: true,
-            },
-          ]
-        }
-      ],
+      channelList: [],  
       searchL1Name: '',
       searchL2Name: '',
       isIndeterminateFirst: false,
@@ -392,10 +106,7 @@ export default {
   computed: {   
   },
   methods: { 
-    /********上拉加载************/
-    isbottom() { //底部状态改变的时候
-
-    },
+    /********上拉加载************/ 
     refresh() {   
       let params = {
         activityId: this.$route.query.id,
@@ -411,6 +122,7 @@ export default {
           return
         }
         this.loadMorePageIndex++
+        this.businessesFlage = res.businessesFlage
 
         // 数组合并
         this.hasChoosedList.L1 = this.hasChoosedList.L1.concat(res.businessesIdList)
@@ -431,7 +143,7 @@ export default {
         console.log('去重后的L2', this.hasChoosedList.L2)
 
         // 排除删除列表中的选项 
-        for (var i = 0, len = this.delList.length ; i < len; i++) {
+        for (var i = 0; i < this.delList.length; i++) {
           if (this.delList[i].pid == undefined) { //父级
             let indexL1 = this.hasChoosedList.L1.findIndex((item, index) => {return item.id == this.delList[i].id})
             if (indexL1 >= 0) {
@@ -448,44 +160,47 @@ export default {
         console.log('排除删除列表后的L2', this.hasChoosedList.L2)
 
         // L2的pid和L1的id对比，如果有那么就删除子集，选了父级，删除子集(L2)
-        for (let i = 0, len = this.hasChoosedList.L2.length; i < len; i++) {
+        for (let i = 0; i < this.hasChoosedList.L2.length; i++) {
           let isRepeatInL1 = this.hasChoosedList.L1.findIndex((val,j) => {return val.id == this.hasChoosedList.L2[i].pid})
           if (isRepeatInL1 >= 0) {
             this.hasChoosedList.L2.splice(i,1)
             i--
           }
-        }
-
-
-
-
-      })
-
-      
-
+        } 
+      }) 
     },
     scroll() {
       console.log('滚动的时候')
     },
     /********提交和取消************/
-    submit() {
-
-      console.log(this.addList)
-      console.log(this.delList)
-      return
-
-      this.$emit('setData', this.choosedList)
+    submit() { 
+      this.$emit('setData', this.hasChoosedList)
       this.$emit('close', false)
       this.first = true
+      this.showSearchL1 = true
     },
     close() {
       this.$emit('close', false)
-      this.init()
-      this.first = true
+      this.init() 
+      this.showSearchL1 = true
+
     },
     init() { //初始化数据
-      this.choosedList = JSON.parse(JSON.stringify(this.data))
       this.first = true
+
+      // 优化添加的
+      this.loadMorePageIndex = '0'
+      this.addList = []
+      this.delList = []
+      this.hasChoosedList = {
+        L1: [],
+        L2: []
+      }
+      this.searchL1Name = ''
+      this.channelList = []
+
+      this.refresh()
+
     }, 
     delRightItem(key, index, item) {
       this.hasChoosedList[key].splice(index, 1)  
@@ -505,18 +220,37 @@ export default {
 
         // 新添加的
         if (isInAddList) { 
-          this.addList.forEach((val, i) => {
-            if (val.id == item.id && val.type == 'channel') {
-              this.addList.splice(i,1)
+          // this.addList.forEach((val, i) => {
+          //   if (val.id == item.id && val.type == 'channel') {
+          //     this.addList.splice(i,1)
+          //   }
+          // })
+
+          // console.log(this.addList, '新添加的11111')
+          // return
+
+
+          for (let i = 0; i < this.addList.length; i++) { 
+            if (this.addList[i].id == item.id && this.addList[i].type == 'channel') {
+              this.addList.splice(i, 1)
+              i--
             }
-          })
+          }
+
         } else { //非新添加的 
           this.delList.push(item) 
-          this.addList.forEach((val, i) => {
-            if (val.id == item.id && val.type == 'channel') {
-              this.addList.splice(i,1)
+          // this.addList.forEach((val, i) => {
+          //   if (val.id == item.id && val.type == 'channel') {
+          //     this.addList.splice(i,1)
+          //   }
+          // })
+
+          for (let i = 0; i < this.addList.length; i++) {
+            if (this.addList[i].id == item.id && this.addList[i].type == 'channel') {
+              this.addList.splice(i, 1)
+              i--
             }
-          })
+          }
         }
 
       } else { //门店
@@ -537,32 +271,36 @@ export default {
 
         // 新添加的
         if (isInAddList) { 
-          this.addList.forEach((val, i) => {
-            if (val.id == item.id && val.type != 'channel') {
-              this.addList.splice(i,1)
+          // this.addList.forEach((val, i) => {
+          //   if (val.id == item.id && val.type != 'channel') {
+          //     this.addList.splice(i,1)
+          //   }
+          // })
+
+          for (let i = 0; i < this.addList.length; i++) {
+            if (this.addList[i].id == item.id && this.addList[i].type != 'channel') {
+              this.addList.splice(i, 1)
+              i--
             }
-          })
+          }
+
         } else { //非新添加的 
           this.delList.push(item) 
-          this.addList.forEach((val, i) => {
-            if (val.id == item.id && val.type != 'channel') {
-              this.addList.splice(i,1)
+          // this.addList.forEach((val, i) => {
+          //   if (val.id == item.id && val.type != 'channel') {
+          //     this.addList.splice(i,1)
+          //   }
+          // })
+
+          for (let i = 0; i < this.addList.length; i++) {
+            if (this.addList[i].id == item.id && this.addList[i].type != 'channel') {
+              this.addList.splice(i, 1)
+              i--
             }
-          })
+          }
         }
 
-      }  
-
-
-
-      // this.$nextTick(() => {
-      //   // this.$refs.scrollDiv.scrollTop = 5
-      //   console.log(this.$refs.scrollDiv.scrollTop, '滚动条位置')
-      // })
-
-      
-      
-
+      }     
     },
     backChannel() {
       this.first = true ; 
@@ -642,11 +380,18 @@ export default {
       }
 
       //需要看看删除列表内有无此数据，如果有那么也需要删除
-      this.delList.forEach((delItem, i) => {
-        if (delItem.id == cell.id) {
-          this.delList.splice(i,1)
+      // this.delList.forEach((delItem, i) => {
+      //   if (delItem.id == cell.id) {
+      //     this.delList.splice(i,1)
+      //   }
+      // })
+      for (let i = 0; i < this.delList.length; i++) {
+        if (this.delList[i].id == cell.id) {
+          this.delList.splice(i, 1)
+          i--
         }
-      })
+      }
+
 
       //渠道勾选时，需要把下面的门店取消
       let list = []
@@ -785,11 +530,19 @@ export default {
         this.addList.push(cell)
 
         //需要看看删除列表内有无此数据，如果有那么也需要删除
-        this.delList.forEach((delItem, i) => {
-          if (delItem.id == cell.id) {
-            this.delList.splice(i,1)
+        // this.delList.forEach((delItem, i) => {
+        //   if (delItem.id == cell.id) {
+        //     this.delList.splice(i,1)
+        //   }
+        // })
+
+        for (let i = 0; i < this.delList.length; i++) {
+          if (this.delList[i].id == cell.id) {
+            this.delList.splice(i, 1)
+            i--
           }
-        }) 
+        }
+
       }   
     },
     //搜索L2
@@ -827,7 +580,11 @@ export default {
     }
   },
   mounted() {
+    this.refresh()
     // this.$store.dispatch('heavyDate/'+this.mappingResult[5])
+  },
+  created() {
+    console.log('created')
   }
 }
 
@@ -837,6 +594,8 @@ export default {
 .relative {position: relative;}
 .cusor {cursor: pointer;}
 .right {position:absolute;right: 4px;top:0;}
+.no-search {font-size: 14px; color: #A9AAAA; position: absolute;left: 15%;top: 250px;}
+
 .hjx-alert-container{position: fixed;top: 0;left: 0;width: 100%;height: 100%;text-align: center;z-index: 2000;}
 .hjx-alert-container .hjx-bg{position: absolute;top:0;left: 0;bottom: 0;right: 0;background-color: rgba(0,0,0,0.5);}
 .alert-title {border-radius: 5px;background-color: #f3f4f5;font-size: 15px;height: 35px;line-height: 35px;font-weight: 600;}

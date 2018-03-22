@@ -112,6 +112,7 @@
         </div>
 
         <el-dialog title="详情" :visible.sync="detailVisible" width="420px"> 
+            <el-input size="small" @input="search(keywords)" placeholder="搜索" prefix-icon="el-icon-search" v-model="keywords" clearable></el-input>
             <div style="height:400px;overflow:auto;">
                 <pull-to @infinite-scroll="refresh">
                   <ul>
@@ -141,8 +142,10 @@ export default {
     data() {
         return {
             // 查看详情dialog
-            detailVisible: false,
-            pageIndex: '0',
+            detailVisible: true,
+            pageIndex: '1',
+            keywords: '', 
+            timer: '',
 
             ifshowDetail:true, //查看详情时所以选项为禁用状态
 
@@ -210,7 +213,49 @@ export default {
             'userName':'userInfo/userName',
         })
     },
-    methods: {
+    methods: { 
+        search(val, type) {
+            console.log(val)
+            console.log(type)
+            clearTimeout(this.timer)
+            this.timer = setTimeout(() => {
+                let params = {
+                  activityId: this.$route.query.id,
+                  searchKey: val,
+                  // pageIndex: this.pageIndex + '',
+                  pageIndex: '0',
+                  pageSize: '100' 
+                }
+
+                if (type == '下拉') {
+                    params.pageIndex = this.pageIndex
+                } 
+                api.search_activity_channel_store_list(params).then((res) => {
+                    if (res._ret != '0') {
+                      this.$alert(res._errStr)
+                      return
+                    } 
+                    
+                    if (type == '下拉') {
+                        this.pageIndex++
+                        this.channelList.L1 = this.channelList.L1.concat(res.businessesIdList)
+                        this.channelList.L2 = this.channelList.L2.concat(res.storeIdList)
+                    } else {
+                        this.channelList.L1 = res.businessesIdList
+                        this.channelList.L2 = res.storeIdList
+                    } 
+                    console.log(res)
+                })
+
+            }, 700) 
+        },
+        // 上拉刷新
+        refresh(falg) {
+            //防止到顶部也触发函数
+            if (falg == undefined) {
+                this.search(this.keywords, '下拉')      
+            } 
+        },
       /******获取并设置初始数据********/
       setDeault(){
             const loading = this.$loading({
@@ -331,14 +376,12 @@ export default {
                 this.channelList.L1 = this.channelList.L1.concat(res.businessesIdList)
                 this.channelList.L2 = this.channelList.L2.concat(res.storeIdList) 
             })
-        },
-        refresh(falg) {
-            //防止到顶部也触发函数
-            if (falg == undefined) {
-                console.log('底部了') 
-                console.log('concat数据')
-            } 
-        }  
+        },  
+    },
+    watch: {
+        keywords() {
+            this.pageIndex = '1'
+        }
     },
     mounted() {
         this.setDeault()  

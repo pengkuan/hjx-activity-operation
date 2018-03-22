@@ -122,7 +122,7 @@
         <hjx-select-alert  :action="'category'" :ifshow="ifshowModel" @close="closeAlert" :data="modelList" @setData="setModelData"></hjx-select-alert>
         <hjx-select-alert  :action="'addr'" :ifshow="ifshowAddr" @close="closeAlert" :data="addrList" @setData="setAddrData"></hjx-select-alert>
         <!-- <hjx-select-alert  :action="'channel'" :ifshow="ifshowChannel" @close="closeAlert" :data="channelList" @setData="setChannelData"></hjx-select-alert> -->
-        <hjx-select-alert-ty  :action="'channel'" :ifshow="ifshowChannel" @close="closeAlert" :data="channelList" @setData="setChannelData"></hjx-select-alert-ty>
+        <hjx-select-alert-ty ref="child"  :action="'channel'" :ifshow="ifshowChannel" @close="closeAlert" :data="channelList" @setData="setChannelData"></hjx-select-alert-ty>
         <div class="operate">
             <el-button @click="onSubmit" type="primary" size="mini">确认</el-button>
             <router-link to="/reward/list"><el-button size="mini">取消</el-button></router-link>
@@ -318,7 +318,7 @@ export default {
             this.channelList.L2 = res.storeIdList
 
     	},
-        async onSubmit() {
+        async onSubmit() { 
             let submitData = {
                 "activityId":this.$route.query.id,
                 "createUserId": this.userId,
@@ -432,6 +432,10 @@ export default {
             }
             
             /********** 提交 ***********/
+            console.log(submitData, '提交的数据')
+            return
+
+
             let res = await api.update_activity_info(submitData)
             if(res._ret != 0){
                 this.$alert(res._errStr)
@@ -457,9 +461,20 @@ export default {
             this.val_modelList() //验证
         },
         /******设置商户门店********/
-        setChannelData(val) {
-            this.channelList = JSON.parse(JSON.stringify(val))
-            this.val_participants() //验证
+        setChannelData(val) { 
+            // this.channelList = JSON.parse(JSON.stringify(val))
+            // this.val_participants() //验证
+
+
+            //店奖优化时增加
+            if( !(val.L1.length>0||val.L2.length>0) ){
+                this.$set(this.errorInfo , 'participants', '请至少设置一个参与对象')
+                return false 
+            }else{
+                this.$set(this.errorInfo , 'participants', '')
+                return true 
+            } 
+            
         },
         showChoose(which){
             if(which == 'category') this.ifshowModel = true
