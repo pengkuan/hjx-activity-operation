@@ -45,7 +45,7 @@
             </p>
 
             <div class="choose-field list-container-choosed" ref="scrollDiv" @scroll="scroll">
-                <pull-to @infinite-scroll="refresh" >
+                <pull-to @infinite-scroll="refresh" @bottom-state-change="isbottom">
                   <div v-for="(list,key) in hasChoosedList">
                     <p class="right-item clear" v-for="(item,index) in list">
                       {{key}}
@@ -84,6 +84,7 @@
 <script type="text/javascript">
 import PullTo from 'vue-pull-to'
 import api from '@/api'
+import util from '@/util'
 import { mapGetters, mapActions } from 'vuex'
 export default {
   name:'hjxSelectAlert',
@@ -91,6 +92,8 @@ export default {
   data() {
     return {
       timer: '',
+      loadMorePageIndex: '0',
+      loadMorePageSize: '100',
       addList: [], //新增列表
       delList: [], //删除列表
       first: true,
@@ -390,15 +393,74 @@ export default {
   },
   methods: { 
     /********上拉加载************/
-    refresh() {  
-      this.refleshLoading = true
-      setTimeout(() => {
+    isbottom() { //底部状态改变的时候
 
-        this.hasChoosedList.L2.push({id:1212, name: '测试中L2'})
-        this.hasChoosedList.L1.push({id:1212, name: '测试中L1'}) 
+    },
+    refresh() {   
+      let params = {
+        activityId: this.$route.query.id,
+        searchKey: '',
+        pageIndex: this.loadMorePageIndex + '',
+        pageSize: this.loadMorePageSize  + ''
+      }
+      this.refleshLoading = true
+      api.search_activity_channel_store_list(params).then((res) => {
         this.refleshLoading = false
-      }, 1000)
-      console.log('上拉了')
+        if (res._ret != '0') {
+          this.$alert(res._errStr)
+          return
+        }
+        this.loadMorePageIndex++
+
+        // 数组合并
+        this.hasChoosedList.L1 = this.hasChoosedList.L1.concat(res.businessesIdList)
+        this.hasChoosedList.L2 = this.hasChoosedList.L2.concat(res.storeIdList)
+
+        // 数据格式化 父级加 type = channel
+        this.hasChoosedList.L1.forEach((item, i) => {
+          item.type = 'channel'
+        })
+
+        console.log('去重前的L1', this.hasChoosedList.L1)
+        console.log('去重前的L2', this.hasChoosedList.L2)
+        // 数组去重
+        this.hasChoosedList.L1 = util.distinct(this.hasChoosedList.L1)
+        this.hasChoosedList.L2 = util.distinct(this.hasChoosedList.L2)
+
+        console.log('去重后的L1', this.hasChoosedList.L1)
+        console.log('去重后的L2', this.hasChoosedList.L2)
+
+        // 排除删除列表中的选项 
+        for (var i = 0, len = this.delList.length ; i < len; i++) {
+          if (this.delList[i].pid == undefined) { //父级
+            let indexL1 = this.hasChoosedList.L1.findIndex((item, index) => {return item.id == this.delList[i].id})
+            if (indexL1 >= 0) {
+              this.hasChoosedList.L1.splice(indexL1, 1) 
+            }
+          } else { //子集
+            let indexL2 = this.hasChoosedList.L2.findIndex((item, index) => {return item.id == this.delList[i].id})
+            if (indexL2 >= 0) {
+              this.hasChoosedList.L2.splice(indexL2, 1) 
+            }
+          } 
+        }   
+        console.log('排除删除列表后的L1', this.hasChoosedList.L1)
+        console.log('排除删除列表后的L2', this.hasChoosedList.L2)
+
+        // L2的pid和L1的id对比，如果有那么就删除子集，选了父级，删除子集(L2)
+        for (let i = 0, len = this.hasChoosedList.L2.length; i < len; i++) {
+          let isRepeatInL1 = this.hasChoosedList.L1.findIndex((val,j) => {return val.id == this.hasChoosedList.L2[i].pid})
+          if (isRepeatInL1 >= 0) {
+            this.hasChoosedList.L2.splice(i,1)
+            i--
+          }
+        }
+
+
+
+
+      })
+
       
 
     },
@@ -434,7 +496,7 @@ export default {
             list.status = false
           }
         })
-        
+
         //先判断添加列表内，是否包含这个渠道，若包含则删除添加的渠道，且不添加到删除列表内，
         //若不包含，那么就就不是新增的，直接添加到删除列表内
         let isInAddList = this.addList.some((val, index) => {
@@ -674,7 +736,7 @@ export default {
                     return list.id == item.id
                   })
                   if (!is) {
-                    this.hasChoosedList.L1.push(item)
+                    this.hasChoosedList.L1.push({id: item.id, name: item.name, type: item.type})
                   } 
                 }
               } else {
