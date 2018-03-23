@@ -108,7 +108,7 @@
         <div>
             <span class="hjx-left-label">商户/门店：</span>
             <span class="hjx-hover ft13 hjx-blue mrg-l14" @click="showChoose('channel')">
-                <el-button v-if="channelList.L1.length>0||channelList.L2.length>0" type="text" >已设置 <i class="iconfont icon-duigou"></i></el-button>
+                <el-button v-if="channelList.L1.length>0||channelList.L2.length>0||ischooseAllL1" type="text" >已设置 <i class="iconfont icon-duigou"></i></el-button>
                 <el-button v-else type="text" >未设置<i class="el-icon-arrow-right el-icon--right"></i></el-button>
             </span>
         </div>
@@ -217,6 +217,7 @@ export default {
                 L1: [],
                 L2: []
             },
+            ischooseAllL1: false, //判断是否全选了
 
             
         }
@@ -326,6 +327,43 @@ export default {
 
     	},
         async onSubmit() { 
+
+            // // 店奖优化新增提交数据
+            // let businessesIdList = {
+            //     addList: this.$refs.child.hasChoosedList.L1
+            // }
+            // let storeIdList = {
+            //     addList: this.$refs.child.hasChoosedList.L2
+            // }
+
+            // 店奖优化新增提交数据
+            let businessesIdList = {
+                addList: [],
+                delList: []
+            }
+            let storeIdList = {
+                addList: [],
+                delList: []
+            }
+            let businessesFlage = this.$refs.child.businessesFlage
+
+            businessesIdList.addList = this.$refs.child.addList.filter((item, i) => {
+                return item.type == 'channel' || item.pid == undefined
+            })
+            businessesIdList.delList = this.$refs.child.delList.filter((item, i) => {
+                return item.type == 'channel' || item.pid == undefined
+            })
+            storeIdList.addList = this.$refs.child.addList.filter((item, i) => {
+                return item.hasOwnProperty('pid')
+            })
+            storeIdList.delList = this.$refs.child.delList.filter((item, i) => {
+                return item.hasOwnProperty('pid')
+            })
+
+
+            // console.log(businessesIdList)
+            // console.log(storeIdList) 
+ 
             let submitData = {
                 "activityId":this.$route.query.id,
                 "createUserId": this.userId,
@@ -342,8 +380,12 @@ export default {
                 "upperLimitAmount":this.upperLimitAmount,//单位为分
                 "brandIdList":this.brandIdList,
                 "productIdList":this.productIdList,
-                "businessesIdList":this.businessesIdList,
-                "storeIdList":this.storeIdList,
+                // "businessesIdList":this.businessesIdList,
+                // "storeIdList":this.storeIdList,
+
+                "businessesIdList":businessesIdList,
+                "storeIdList":storeIdList,
+                "businessesFlage": businessesFlage,
             }
 
             // 校验工号开通时间时 必传字段
@@ -439,8 +481,8 @@ export default {
             }
             
             /********** 提交 ***********/
-            console.log(submitData, '提交的数据')
-            return
+            // console.log(submitData, '提交的数据')
+            // return
 
 
             let res = await api.update_activity_info(submitData)
@@ -452,10 +494,15 @@ export default {
             this.$router.push({ path: '/reward/list' })
         },
         /******关闭选框********/
-        closeAlert(status) {
+        closeAlert(status) { 
+            console.log(status)
             this.ifshowAddr = false
             this.ifshowModel = false
             this.ifshowChannel = false
+            
+            if (status == 'cancel') {
+                this.loadChannelData() 
+            }
         },
         /******设置地址********/
         setAddrData(val) {
@@ -472,15 +519,22 @@ export default {
             // this.channelList = JSON.parse(JSON.stringify(val))
             // this.val_participants() //验证
 
+            // 确定是判断是否把数据都删除了 
+            this.channelList.L1 = val.L1
+            this.channelList.L2 = val.L2
+            this.ischooseAllL1 = this.$refs.child.chooseAllL1
 
             //店奖优化时增加
-            if( !(val.L1.length>0||val.L2.length>0) ){
-                this.$set(this.errorInfo , 'participants', '请至少设置一个参与对象')
-                return false 
-            }else{
-                this.$set(this.errorInfo , 'participants', '')
-                return true 
-            } 
+            if (!this.$refs.child.chooseAllL1) {
+               if( !(val.L1.length>0||val.L2.length>0||this.addrList.L1.length>0||this.addrList.L2.length>0) ){
+                   this.$set(this.errorInfo , 'participants', '请至少设置一个参与对象')
+                   return false 
+               }else{
+                   this.$set(this.errorInfo , 'participants', '')
+                   return true 
+               }  
+            }
+            
             
         },
         showChoose(which){
@@ -671,6 +725,14 @@ export default {
                 }
                 this.channelList.L1 = res.businessesIdList
                 this.channelList.L2 = res.storeIdList 
+                console.log()
+                if( !(this.channelList.L1.length>0||this.channelList.L2.length>0||this.addrList.L1.length>0||this.addrList.L2.length>0) ){
+                    this.$set(this.errorInfo , 'participants', '请至少设置一个参与对象')
+                    return false 
+                }else{
+                    this.$set(this.errorInfo , 'participants', '')
+                    return true 
+                }
             })
         }
     },

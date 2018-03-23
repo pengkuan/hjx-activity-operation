@@ -167,6 +167,14 @@ export default {
             i--
           }
         } 
+
+        if (this.chooseAllL1) {
+          this.hasChoosedList = {
+            L1: [],
+            L2: []
+          }
+        }
+
       }) 
     },
     scroll() {
@@ -180,7 +188,8 @@ export default {
       this.showSearchL1 = true
     },
     close() {
-      this.$emit('close', false)
+      // this.$emit('close', false)
+      this.$emit('close', 'cancel')
       this.init() 
       this.showSearchL1 = true
 
@@ -416,7 +425,10 @@ export default {
         this.copyChannelList = JSON.parse(JSON.stringify(this.channelList))
         this.copyHasChoosedList = JSON.parse(JSON.stringify(this.hasChoosedList))
         this.channelList = []
-        this.hasChoosedList = {}
+        this.hasChoosedList = {
+          L1: [],
+          L2: []
+        }
         this.searchL1Name = ''
       } else {
         this.channelList = this.copyChannelList
