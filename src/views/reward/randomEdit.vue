@@ -213,7 +213,7 @@ export default {
             },
             /********设置商户 门店*******/
             ifshowChannel: false,
-            channelList: { //右边已选
+            channelList: { //右边已选 只是用来判断有没有选择
                 L1: [],
                 L2: []
             },
@@ -254,7 +254,8 @@ export default {
                 this.$alert(res._errStr)
                 return
             }
-            loading.close()
+            loading.close()   
+
             this.activityName = res.activityName
             this.activityDesc = res.activityDesc
             this.amountLimitType = res.amountLimitType
@@ -286,6 +287,8 @@ export default {
 	        	
 	        }
 
+
+
             //设置生效时间
             if (res.timeLimitType == '2') {
                 this.activityStartDate = res.activityStartDate
@@ -300,8 +303,9 @@ export default {
             	this.checkUserCreateTime = [res.checkUserCreateStartTime , res.checkUserCreateEndTime]
             }
             
+
             //设置环保回收方式
-            let recycleArr = ( Number(res.recycleType).toString(2) / 1000 ).toFixed(3)
+            let recycleArr = ( Number(res.recycleType).toString(2) / 1000 ).toFixed(3) 
             recycleArr = recycleArr.substr(recycleArr.length-3,3).split('')
             recycleArr.forEach((item, index) => {
                 if(item == 1) this.recycleTypeList[index].ifChoosed = true
@@ -314,8 +318,11 @@ export default {
             this.modelList.L1 = res.brandIdList
             this.modelList.L2 = res.productIdList
 
-            this.channelList.L1 = res.businessesIdList
-            this.channelList.L2 = res.storeIdList
+            // return
+            //这2个数据都被后台干掉了
+            // this.channelList.L1 = res.businessesIdList
+            // this.channelList.L2 = res.storeIdList
+
 
     	},
         async onSubmit() { 
@@ -392,24 +399,24 @@ export default {
             }
 
             //商户门店 设置
-            if(this.channelList.L1.length == 0){
-                submitData.businessesIdList = ''
-            }else{
-                let idArr = []
-                this.channelList.L1.forEach(item =>{
-                    idArr.push(item.id) //获取机型接口返回id字段为 id
-                })
-                submitData.businessesIdList = idArr.join('#')
-            }
-            if(this.channelList.L2.length == 0){
-                submitData.storeIdList = ''
-            }else{
-                let idArr = []
-                this.channelList.L2.forEach(item =>{
-                    idArr.push(item.id) //获取机型下产品接口返回id字段为 id
-                })
-                submitData.storeIdList = idArr.join('#')
-            }
+            // if(this.channelList.L1.length == 0){
+            //     submitData.businessesIdList = ''
+            // }else{
+            //     let idArr = []
+            //     this.channelList.L1.forEach(item =>{
+            //         idArr.push(item.id) //获取机型接口返回id字段为 id
+            //     })
+            //     submitData.businessesIdList = idArr.join('#')
+            // }
+            // if(this.channelList.L2.length == 0){
+            //     submitData.storeIdList = ''
+            // }else{
+            //     let idArr = []
+            //     this.channelList.L2.forEach(item =>{
+            //         idArr.push(item.id) //获取机型下产品接口返回id字段为 id
+            //     })
+            //     submitData.storeIdList = idArr.join('#')
+            // }
 
             /********** 提交时校验 *********/
             const validateMethod = ['val_activityName','val_activityDesc','val_activityDate','val_activityTime','val_publicAlgorithmCoefficient','val_CountRangeList','val_upperLimitAmount','val_recycleTypeList','val_modelList','val_participants']
@@ -648,10 +655,28 @@ export default {
 		// 删除一条数额设置
         delCountRange(){
         	this.CountRangeList.pop()
+        },
+        // 加载一次渠道数据
+        loadChannelData() {
+            let params = {
+              activityId: this.$route.query.id,
+              searchKey: '',
+              pageIndex: '0',
+              pageSize: '10'
+            }
+            api.search_activity_channel_store_list(params).then((res) => {
+                if (res._ret != '0') {
+                  this.$alert(res._errStr)
+                  return
+                }
+                this.channelList.L1 = res.businessesIdList
+                this.channelList.L2 = res.storeIdList 
+            })
         }
     },
     mounted() {
         this.setDeault()
+        this.loadChannelData()
 	}
 }
 

@@ -1,72 +1,71 @@
 <template>
     <div>
         <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/reward/list' }">éšæœºçº¢åŒ…</el-breadcrumb-item>
-            <el-breadcrumb-item>æ–°å¢</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/reward/list' }">Ëæ»úºì°ü</el-breadcrumb-item>
+            <el-breadcrumb-item>±à¼­</el-breadcrumb-item>
         </el-breadcrumb>
         <br>
-        <el-alert title="åŸºæœ¬ä¿¡æ¯" type="success" :closable="false"></el-alert>
-        <hjx-left-title label="åç§°"></hjx-left-title>
-        <p><hjx-underline-input label="æ´»åŠ¨åç§°" width="200" v-model="activityName"  @change="val_activityName" placeholder="è¯·è¾“å…¥æ´»åŠ¨åç§°"></hjx-underline-input><span class="errorInfo">{{errorInfo['activityName']}}</span></p>
-        <p><hjx-underline-input label="æ´»åŠ¨æè¿°" width="200" v-model="activityDesc" @change="val_activityDesc"  placeholder="è¯·è¾“å…¥æ´»åŠ¨æè¿°"></hjx-underline-input><span class="errorInfo">{{errorInfo['activityDesc']}}</span></p>
-        <hjx-left-title label="ç±»å‹"></hjx-left-title>
+        <el-alert title="»ù±¾ĞÅÏ¢" type="success" :closable="false"></el-alert>
+        <hjx-left-title label="Ãû³Æ"></hjx-left-title>
+        <p><hjx-underline-input label="»î¶¯Ãû³Æ" width="200" v-model="activityName"  @change="val_activityName" placeholder="ÇëÊäÈë»î¶¯Ãû³Æ"></hjx-underline-input><span class="errorInfo">{{errorInfo['activityName']}}</span></p>
+        <p><hjx-underline-input label="»î¶¯ÃèÊö" width="200" v-model="activityDesc" @change="val_activityDesc"  placeholder="ÇëÊäÈë»î¶¯ÃèÊö"></hjx-underline-input><span class="errorInfo">{{errorInfo['activityDesc']}}</span></p>
+        <hjx-left-title label="ÀàĞÍ"></hjx-left-title>
         <div class="mrg-b10">
-            <span class="hjx-left-label">è¿è¥ç±»å‹ï¼š</span>
+            <span class="hjx-left-label">ÔËÓªÀàĞÍ£º</span>
             <el-radio v-for="item in ticketTypeList" v-model="operateType" :label="item.id" :key="item.id">{{item.name}}</el-radio>
         </div>
         <div class="mrg-b10">
-            <span class="hjx-left-label">å‰ç«¯å±•ç¤ºï¼š</span>
-            <el-select class="spc-select" v-model="showPlan" placeholder="è¯·é€‰æ‹©" size="mini">
+            <span class="hjx-left-label">Ç°¶ËÕ¹Ê¾£º</span>
+            <el-select class="spc-select" v-model="showPlan" placeholder="ÇëÑ¡Ôñ" size="mini">
                 <el-option v-for="item in showPlanList" :key="item.id" :label="item.name" :value="item.id">
                 </el-option>
             </el-select>
         </div>
         <br>
-        <el-alert title="ç”Ÿæˆè§„åˆ™" type="success" :closable="false"></el-alert>
-        <hjx-left-title label="æ—¶é—´"></hjx-left-title>
+        <el-alert title="Éú³É¹æÔò" type="success" :closable="false"></el-alert>
+        <hjx-left-title label="Ê±¼ä"></hjx-left-title>
         <div class="mrg-b10">
             <p>
-                <span class="hjx-left-label">ç”Ÿæ•ˆæ—¶é—´ï¼š</span><span class="reward-remind hjx-info">ï¼ˆè¯¥æ—¶é—´æ®µå†…ï¼Œå°†æŒ‰è§„åˆ™è¿›è¡Œæ´»åŠ¨ï¼‰</span>
+                <span class="hjx-left-label">ÉúĞ§Ê±¼ä£º</span><span class="reward-remind hjx-info">£¨¸ÃÊ±¼ä¶ÎÄÚ£¬½«°´¹æÔò½øĞĞ»î¶¯£©</span>
             </p>
             <p class="mrg-l120" v-for="item in timeLimitTypeList">
-                <el-radio v-model="timeLimitType" :label="item.id" :key="item.id" >
+                <el-radio v-model="timeLimitType" :label="item.id" :key="item.id" :disabled="item.id == '2'&& ifInitLimitTime">
                     <span v-if="item.id == '2' && timeLimitType == '2'">
-                        <el-date-picker v-model="activityStartDate"  type="date" @change="val_activityDate" size="small" placeholder="å¼€å§‹æ—¥æœŸ" value-format="yyyy-MM-dd" :picker-options="startDateOption"></el-date-picker>
+                        <el-date-picker v-model="activityStartDate" disabled type="date" @change="val_activityDate" size="small" placeholder="¿ªÊ¼ÈÕÆÚ" value-format="yyyy-MM-dd" :picker-options="startDateOption"></el-date-picker>
                         ~
-                        <el-date-picker v-model="activityEndDate" type="date" size="small" @change="val_activityDate" value-format="yyyy-MM-dd" placeholder="ç»“æŸæ—¥æœŸ" :picker-options="endDateOption"></el-date-picker><span class="errorInfo">{{errorInfo['activityDate']}}</span>
+                        <el-date-picker v-model="activityEndDate" type="date" size="small" @change="val_activityDate" value-format="yyyy-MM-dd" placeholder="½áÊøÈÕÆÚ" :picker-options="endDateOption"></el-date-picker><span class="errorInfo">{{errorInfo['activityDate']}}</span>
                         <br><br>
                         <span class="mrg-l24">
-                            <el-time-select placeholder="æ¯æ—¥èµ·å§‹æ—¶é—´" size="small" @change="val_activityTime"  :editable='false' v-model="activityStartTime" :picker-options="{start: '00:00',step: '00:15',end: '24:00',maxTime:activityEndTime}"></el-time-select>
+                            <el-time-select placeholder="Ã¿ÈÕÆğÊ¼Ê±¼ä" size="small" @change="val_activityTime" disabled :editable='false' v-model="activityStartTime" :picker-options="{start: '00:00',step: '00:15',end: '24:00',maxTime:activityEndTime}"></el-time-select>
                             ~
-                            <el-time-select placeholder="æ¯æ—¥ç»“æŸæ—¶é—´" size="small" @change="val_activityTime"  :editable='false' v-model="activityEndTime" :picker-options="{start: '00:00',step: '00:15',end: '24:00', minTime: minEndTime}"></el-time-select>
+                            <el-time-select placeholder="Ã¿ÈÕ½áÊøÊ±¼ä" size="small" @change="val_activityTime" disabled :editable='false' v-model="activityEndTime" :picker-options="{start: '00:00',step: '00:15',end: '24:00', minTime: minEndTime}"></el-time-select>
                         </span><span class="errorInfo">{{errorInfo['activityTime']}}</span>
                     </span>
                     <span v-else>{{item.name}} 
-                        <span v-if="item.id == '1'" class="reward-remind hjx-info"> ï¼ˆæ—¶é—´ä¸é™ï¼Œé•¿æœŸæœ‰æ•ˆï¼‰</span>
+                        <span v-if="item.id == '1'" class="reward-remind hjx-info"> £¨Ê±¼ä²»ÏŞ£¬³¤ÆÚÓĞĞ§£©</span>
                     </span>
                 </el-radio>
             </p>
         </div>
-
-        <hjx-left-title label="ç®—æ³•"></hjx-left-title>
+        <hjx-left-title label="Ëã·¨"></hjx-left-title>
         <div class="mrg-b10 ">
-            <hjx-underline-input type='number' label="ç®—æ³•ç³»æ•°" width="50" @change="val_publicAlgorithmCoefficient" v-model="publicAlgorithmCoefficient" :textCenter="true"></hjx-underline-input><span class="underline-text">%</span>
-            <span class="underline-text-info reward-remind hjx-info">ï¼ˆå‚ä¸ç®—æ³•è®¡ç®—çš„ç›¸ä¹˜ç³»æ•°ï¼Œä¸ºæ´»åŠ¨æˆæœ¬ï¼‰</span>
+            <hjx-underline-input type='number' label="Ëã·¨ÏµÊı" width="50" @change="val_publicAlgorithmCoefficient" v-model="publicAlgorithmCoefficient" :textCenter="true"></hjx-underline-input><span class="underline-text">%</span>
+            <span class="underline-text-info reward-remind hjx-info">£¨²ÎÓëËã·¨¼ÆËãµÄÏà³ËÏµÊı£¬Îª»î¶¯³É±¾£©</span>
             <span class="errorInfo">{{errorInfo['publicAlgorithmCoefficient']}}</span>
         </div>
         <div class="mrg-b10">
             <div class="mrg-b10">
-                <span class="hjx-left-label">æ•°é¢è®¾ç½®ï¼š</span><span class="reward-remind hjx-info">ï¼ˆè®¾ç½®ä»˜æ¬¾é‡‘é¢åœ¨æŸä¸ªåŒºé—´å†…ï¼Œç›¸åº”çš„çº¢åŒ…é‡‘é¢æœ€é«˜ã€æœ€ä½å€¼ï¼‰</span>
+                <span class="hjx-left-label">Êı¶îÉèÖÃ£º</span><span class="reward-remind hjx-info">£¨ÉèÖÃ¸¶¿î½ğ¶îÔÚÄ³¸öÇø¼äÄÚ£¬ÏàÓ¦µÄºì°ü½ğ¶î×î¸ß¡¢×îµÍÖµ£©</span>
             </div>
             <div class="mrg-l120" v-for="(item , index) in CountRangeList" :key="index">
                 <hjx-underline-input type='number' width="50" v-model="item.payLeast" :disabled="index>0?true:false" @change="val_CountRangeList(index)" :textCenter="true"></hjx-underline-input>
-                <span class="underline-text"> â‰¤ ä»˜æ¬¾é‡‘é¢ < </span>
+                <span class="underline-text"> ¡Ü ¸¶¿î½ğ¶î < </span>
                 <hjx-underline-input type='number' width="50" v-model="item.payMost" :index="index" :textCenter="true" @change="payRangeChange"></hjx-underline-input>
 
                 <span class="underline-text"><i class="iconfont icon-play_forward_fill"></i></span>
 
                 <hjx-underline-input type='number' width="50" v-model="item.bonusLeast" @change="val_CountRangeList(index)" :textCenter="true"></hjx-underline-input>
-                <span class="underline-text"> â‰¤ åº—å¥–é‡‘é¢ â‰¤ </span>
+                <span class="underline-text"> ¡Ü µê½±½ğ¶î ¡Ü </span>
                 <hjx-underline-input type='number' width="50" v-model="item.bonusMost" @change="val_CountRangeList(index)" :textCenter="true"></hjx-underline-input>
                 <span v-if="CountRangeList.length==1" class="underline-text"><i class="iconfont icon-roundaddfill hjx-hover" @click="addCountRange(index)"></i></span>
                 <span v-else-if="(CountRangeList.length>1) && (index == CountRangeList.length - 1)" class="underline-text">
@@ -77,59 +76,57 @@
             </div>
         </div>
 
-        <hjx-left-title label="é£æ§"></hjx-left-title>
+        <hjx-left-title label="·ç¿Ø"></hjx-left-title>
         <div class="mrg-b10 ">
-            <hjx-underline-input label="å‘æ”¾æ€»é¢ä¸Šé™" type='number'  width="70" @change="val_upperLimitAmount" v-model="upperLimitAmount" :textCenter="true"></hjx-underline-input><span class="underline-text">å…ƒ / æ•´ä¸ªæ—¶é—´æ®µ</span>
-            <span class="reward-remind underline-text-info hjx-info">ï¼ˆå‘¨æœŸå†…å‘æ”¾é‡‘é¢è¾¾åˆ°ä¸Šé™åï¼Œæ¯ç¬”çº¢åŒ…å°†æŒ‰å•ç¬”æœ€ä½å€¼å‘æ”¾ï¼‰</span>
+            <hjx-underline-input label="·¢·Å×Ü¶îÉÏÏŞ" type='number' disabled width="70" @change="val_upperLimitAmount" v-model="upperLimitAmount" :textCenter="true"></hjx-underline-input><span class="underline-text">Ôª / Õû¸öÊ±¼ä¶Î</span>
+            <span class="reward-remind underline-text-info hjx-info">£¨ÖÜÆÚÄÚ·¢·Å½ğ¶î´ïµ½ÉÏÏŞºó£¬Ã¿±Êºì°ü½«°´µ¥±Ê×îµÍÖµ·¢·Å£©</span>
             <span class="errorInfo">{{errorInfo['upperLimitAmount']}}</span>
         </div>
 
-        <el-alert title="å‘æ”¾è§„åˆ™" type="success" :closable="false"></el-alert>
-        <hjx-left-title label="è®¢å•"></hjx-left-title>
+        <el-alert title="·¢·Å¹æÔò" type="success" :closable="false"></el-alert>
+        <hjx-left-title label="¶©µ¥"></hjx-left-title>
         <div class="mrg-b10">
             <p>
-                <span class="hjx-left-label">è®¢å•å›æ”¶æ–¹å¼ï¼š</span>
+                <span class="hjx-left-label">¶©µ¥»ØÊÕ·½Ê½£º</span>
                 <el-checkbox v-for="item in recycleTypeList" v-model="item.ifChoosed" @change="val_recycleTypeList" :key="item.id">{{item.name}}</el-checkbox>
                 <span class="errorInfo">{{errorInfo['recycleTypeList']}}</span>
             </p>
-            <p class="reward-remind mrg-l40 hjx-info">ï¼ˆå‹¾é€‰çš„å›æ”¶æ–¹å¼ï¼Œå¯å‚ä¸åˆ°æ´»åŠ¨ä¸­ï¼‰</p>
+            <p class="reward-remind mrg-l40 hjx-info">£¨¹´Ñ¡µÄ»ØÊÕ·½Ê½£¬¿É²ÎÓëµ½»î¶¯ÖĞ£©</p>
             
         </div>
-        <hjx-left-title label="æœºå‹"></hjx-left-title>
+        <hjx-left-title label="»úĞÍ"></hjx-left-title>
         <div>
-            <span class="hjx-left-label">å‚ä¸æœºå‹ï¼š</span>
+            <span class="hjx-left-label">²ÎÓë»úĞÍ£º</span>
             <span class="hjx-hover ft13 hjx-blue mrg-l20" @click="showChoose('category')">
-                <el-button v-if="modelList.L1.length>0||modelList.L2.length>0" type="text" >å·²è®¾ç½® <i class="iconfont icon-duigou"></i></el-button>
-                <el-button v-else type="text">æœªè®¾ç½®<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                <el-button v-if="modelList.L1.length>0||modelList.L2.length>0" type="text" >ÒÑÉèÖÃ <i class="iconfont icon-duigou"></i></el-button>
+                <el-button v-else type="text">Î´ÉèÖÃ<i class="el-icon-arrow-right el-icon--right"></i></el-button>
                 <span class="errorInfo">{{errorInfo['modelList']}}</span>
             </span>
-            <p class="reward-remind mrg-l40 hjx-info">ï¼ˆæ»¡è¶³é€‰ä¸­æœºå‹çš„è®¢å•ï¼Œå¯å‚ä¸åˆ°æ´»åŠ¨ä¸­ï¼‰</p>
+            <p class="reward-remind mrg-l40 hjx-info">£¨Âú×ãÑ¡ÖĞ»úĞÍµÄ¶©µ¥£¬¿É²ÎÓëµ½»î¶¯ÖĞ£©</p>
         </div>
-        <hjx-left-title label="å¯¹è±¡"><span class="errorInfo">{{errorInfo['participants']}}</span></hjx-left-title>
+        <hjx-left-title label="¶ÔÏó"><span class="errorInfo">{{errorInfo['participants']}}</span></hjx-left-title>
         <div>
-            <span class="hjx-left-label">å•†æˆ·/é—¨åº—ï¼š</span>
+            <span class="hjx-left-label">ÉÌ»§/ÃÅµê£º</span>
             <span class="hjx-hover ft13 hjx-blue mrg-l14" @click="showChoose('channel')">
-                <el-button v-if="channelList.L1.length>0||channelList.L2.length>0||ischooseAllL1" type="text" >å·²è®¾ç½® <i class="iconfont icon-duigou"></i></el-button>
-                <!-- <el-button v-if="this.$refs.child.hasChoosedList.L1.length>0||this.$refs.child.hasChoosedList.L2.length>0||this.$refs.child.chooseAllL1" type="text" >å·²è®¾ç½® <i class="iconfont icon-duigou"></i></el-button> -->
-                <el-button v-else type="text" >æœªè®¾ç½®<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                <el-button v-if="channelList.L1.length>0||channelList.L2.length>0" type="text" >ÒÑÉèÖÃ <i class="iconfont icon-duigou"></i></el-button>
+                <el-button v-else type="text" >Î´ÉèÖÃ<i class="el-icon-arrow-right el-icon--right"></i></el-button>
             </span>
         </div>
         <div class="mrg-b10">
-            <span class="hjx-left-label">é—¨åº—åœ°åŸŸï¼š</span>
+            <span class="hjx-left-label">ÃÅµêµØÓò£º</span>
             <span class="hjx-hover ft13 hjx-blue mrg-l20" @click="showChoose('addr')">
-                <el-button v-if="addrList.L1.length>0||addrList.L2.length>0" type="text" >å·²è®¾ç½® <i class="iconfont icon-duigou"></i></el-button>
-                <el-button v-else type="text" >æœªè®¾ç½®<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                <el-button v-if="addrList.L1.length>0||addrList.L2.length>0" type="text" >ÒÑÉèÖÃ <i class="iconfont icon-duigou"></i></el-button>
+                <el-button v-else type="text" >Î´ÉèÖÃ<i class="el-icon-arrow-right el-icon--right"></i></el-button>
             </span>
         </div>
         <hjx-select-alert  :action="'category'" :ifshow="ifshowModel" @close="closeAlert" :data="modelList" @setData="setModelData"></hjx-select-alert>
         <hjx-select-alert  :action="'addr'" :ifshow="ifshowAddr" @close="closeAlert" :data="addrList" @setData="setAddrData"></hjx-select-alert>
         <!-- <hjx-select-alert  :action="'channel'" :ifshow="ifshowChannel" @close="closeAlert" :data="channelList" @setData="setChannelData"></hjx-select-alert> -->
-        <hjx-select-alert-ty ref="child"  :ifshow="ifshowChannel" @close="closeAlert" @setData="setChannelData"></hjx-select-alert-ty>
+        <hjx-select-alert-ty ref="child"  :action="'channel'" :ifshow="ifshowChannel" @close="closeAlert" :data="channelList" @setData="setChannelData"></hjx-select-alert-ty>
         <div class="operate">
-            <el-button @click="onSubmit" type="primary" size="mini">ç¡®è®¤</el-button>
-            <router-link to="/reward/list"><el-button size="mini">å–æ¶ˆ</el-button></router-link>
+            <el-button @click="onSubmit" type="primary" size="mini">È·ÈÏ</el-button>
+            <router-link to="/reward/list"><el-button size="mini">È¡Ïû</el-button></router-link>
         </div>
-        
     </div>
 </template>
 <script>
@@ -138,26 +135,29 @@ import { mapGetters } from 'vuex'
 import hjxPart from '@/base/hjx_part'
 import hjxLeftTitle from '@/base/hjx_left_title'
 import hjxUnderlineInput from '@/base/hjx_underline_input'
-import hjxSelectAlert from '@/base/hjx_select_alert'
-import hjxSelectAlertTy from '@/base/hjx_select_alert_ty'
+import hjxSelectAlertTy from '@/base/hjx_select_alert_edit_ty'
+
+const hjxSelectAlert = resolve => require(['@/base/hjx_select_alert'], resolve) 
+
 export default {
     components: { hjxPart, hjxLeftTitle, hjxUnderlineInput,hjxSelectAlert, hjxSelectAlertTy },
     data() {
         return {
             errorInfo:{},
-            amountLimitType:'1',//æ€»é‡‘é¢é™åˆ¶ç±»å‹ 
+            amountLimitType:'1',//×Ü½ğ¶îÏŞÖÆÀàĞÍ 
             activityName: '',
             activityDesc: '',
-            rewardType: '1',//éšæœºæŠ½å¥–
+            rewardType: '1',//Ëæ»ú³é½±
             operateType:'1',
             ticketTypeList:[
-            	{name:'åº—å¥–ç±»',id:'1'}
+            	{name:'µê½±Àà',id:'1'}
             ],
             showPlan:'1',
             showPlanList:[
-            	{name:'æ–¹æ¡ˆ1',id:'1',}
+            	{name:'·½°¸1',id:'1',}
             ],
-            /************ ç”Ÿæ•ˆæ—¶é—´é™åˆ¶ ************/
+            /************ ÉúĞ§Ê±¼äÏŞÖÆ ************/
+            ifInitLimitTime:false, //ÀàĞÍÒ»²»ÄÜÇĞ»»µ½ÀàĞÍ¶ş
             activityStartDate: '',
             activityEndDate: '',
             activityStartTime: '',
@@ -179,12 +179,12 @@ export default {
             },
             timeLimitType: '1',
             timeLimitTypeList: [
-                { name: 'ä¸é™', id: '1' },
-                { name: 'é™åˆ¶', id: '2' },
+                { name: '²»ÏŞ', id: '1' },
+                { name: 'ÏŞÖÆ', id: '2' },
             ],
             upperLimitAmount:'',
-            /************ æ•°é¢è®¾ç½® ************/
-            addTopCount: 10 , //å¯æ·»åŠ æœ€é«˜æ¡æ•°
+            /************ Êı¶îÉèÖÃ ************/
+            addTopCount: 10 ,
             CountRangeList:[
             	{
             		payLeast:'',
@@ -193,31 +193,32 @@ export default {
             		bonusMost:''
             	},
             ],
-            publicAlgorithmCoefficient:'',//ç®—æ³•ç³»æ•°
+            publicAlgorithmCoefficient:'',//Ëã·¨ÏµÊı
             recycleTypeList:[
-                {name:'å…¬ç›Šå›æ”¶',id:'0',ifChoosed:false},
-                {name:'ç¯ä¿å›æ”¶',id:'1',ifChoosed:false},
-            	{name:'æ£€æµ‹å›æ”¶',id:'2',ifChoosed:false}
+                {name:'¹«Òæ»ØÊÕ',id:'0',ifChoosed:false},
+                {name:'»·±£»ØÊÕ',id:'1',ifChoosed:false},
+                {name:'¼ì²â»ØÊÕ',id:'2',ifChoosed:false}
             ],
-            /********è®¾ç½®çœ å¸‚*******/
+            /********ÉèÖÃÊ¡ ÊĞ*******/
             ifshowAddr: false,
-            addrList: { //å³è¾¹å·²é€‰
+            addrList: { //ÓÒ±ßÒÑÑ¡
                 L1: [],
                 L2: []
             },
-            /********è®¾ç½®å“ç‰Œ æœºå‹*******/
+            /********ÉèÖÃÆ·ÅÆ »úĞÍ*******/
             ifshowModel: false,
-            modelList: { //å³è¾¹å·²é€‰
+            modelList: { //ÓÒ±ßÒÑÑ¡
                 L1: [],
                 L2: []
             },
-            /********è®¾ç½®å•†æˆ· é—¨åº—*******/
+            /********ÉèÖÃÉÌ»§ ÃÅµê*******/
             ifshowChannel: false,
-            channelList: { //å³è¾¹å·²é€‰
+            channelList: { //ÓÒ±ßÒÑÑ¡
                 L1: [],
                 L2: []
             },
-            ischooseAllL1: false,  
+
+            
         }
     },
     computed:{
@@ -236,40 +237,95 @@ export default {
             }
 
             return this.activityStartTime
-        }
+        },
     },
-    methods: { 
-        onSubmit() {
-
-            // åº—å¥–ä¼˜åŒ–æ–°å¢æäº¤æ•°æ®
-            let businessesIdList = {
-                addList: this.$refs.child.hasChoosedList.L1
+    methods: {
+    	/******»ñÈ¡²¢ÉèÖÃ³õÊ¼Êı¾İ********/
+    	async setDeault(){
+            const loading = this.$loading({
+                    lock: true,
+                    text: '»ñÈ¡Êı¾İÖĞ...',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                })
+    		let res =await api.search_activity_detail({activityId:this.$route.query.id})
+            if(res._ret != 0){
+                loading.close()
+                this.$alert(res._errStr)
+                return
             }
-            let storeIdList = {
-                addList: this.$refs.child.hasChoosedList.L2
-            }
-            let businessesFlage = ''  
+            loading.close()   
 
-            if (businessesIdList.addList.length < 0 || storeIdList.addList.length < 0) {
-                this.$alert('è¯·é€‰æ‹©æ¸ /é—¨åº—é“å†æäº¤')
-                return 
-            }
-            if (this.$refs.child.chooseAllL1) { //å…¨é€‰çš„æ—¶å€™
-                businessesFlage = '0'
-                businessesIdList.addList = []
-                storeIdList.addList = []
-            } else {
-                if (this.$refs.child.businessesFlage) {
-                    businessesFlage = '1'
-                } else {
-                    businessesFlage = '2'
-                }
-            }
+            this.activityName = res.activityName
+            this.activityDesc = res.activityDesc
+            this.amountLimitType = res.amountLimitType
+            this.publicAlgorithmCoefficient = res.publicAlgorithmCoefficient
+            this.operateType = res.operateType
+            this.showPlan = res.showPlan
+            this.timeLimitType = res.timeLimitType
+            this.upperLimitAmount = String(res.upperLimitAmount / 100)
+            //Êı¶îÉèÖÃ
+	        if(res.publicGrantSection){
+	        	let countArr = res.publicGrantSection.split('&')
+	        	countArr.forEach((item,index) =>{
+	        		let payArr = item.split('#')[0]
+	        		let bonusArr = item.split('#')[1]
+	        		if(index == 0){
+	        			this.CountRangeList[0].payLeast = payArr.split('|')[0]/100+''
+	        			this.CountRangeList[0].payMost = payArr.split('|')[1]/100+''
+	        			this.CountRangeList[0].bonusLeast = bonusArr.split('|')[0]/100+''
+	        			this.CountRangeList[0].bonusMost = bonusArr.split('|')[1]/100+''
+	        		}else{
+	        			this.CountRangeList.push({
+	        				payLeast : payArr.split('|')[0]/100+'',
+	        				payMost : payArr.split('|')[1]/100+'',
+	        				bonusLeast : bonusArr.split('|')[0]/100+'',
+	        				bonusMost : bonusArr.split('|')[1]/100+''
+	        			})
+	        		}
+	        	})
+	        	
+	        }
 
-            // console.log(businessesIdList, storeIdList, businessesFlage)
-            // return
 
+
+            //ÉèÖÃÉúĞ§Ê±¼ä
+            if (res.timeLimitType == '2') {
+                this.activityStartDate = res.activityStartDate
+                this.activityEndDate = res.activityEndDate
+                this.activityStartTime = res.activityStartTime.slice(0, 5)
+                this.activityEndTime = res.activityEndTime.slice(0, 5)
+            }else{
+                this.ifInitLimitTime = true
+            }
+            //ÉèÖÃÑéÖ¤¹¤ºÅ¿ªÍ¨Ê±¼ä
+            if(res.checkUserCreateTime == '1'){
+            	this.checkUserCreateTime = [res.checkUserCreateStartTime , res.checkUserCreateEndTime]
+            }
+            
+
+            //ÉèÖÃ»·±£»ØÊÕ·½Ê½
+            let recycleArr = ( Number(res.recycleType).toString(2) / 1000 ).toFixed(3)
+            recycleArr = recycleArr.substr(recycleArr.length-3,3).split('')
+            recycleArr.forEach((item, index) => {
+                if(item == 1) this.recycleTypeList[index].ifChoosed = true
+                else this.recycleTypeList[index].ifChoosed = false
+            })
+            //ÉèÖÃÒÑÑ¡ Ê¡ÊĞ¡¢Æ·ÅÆ»úĞÍ¡¢ÉÌ»§ÃÅµê
+            this.addrList.L1 = res.provinceIdList
+            this.addrList.L2 = res.cityIdList
+
+            this.modelList.L1 = res.brandIdList
+            this.modelList.L2 = res.productIdList
+
+            this.channelList.L1 = res.businessesIdList
+            this.channelList.L2 = res.storeIdList
+
+
+    	},
+        async onSubmit() { 
             let submitData = {
+                "activityId":this.$route.query.id,
                 "createUserId": this.userId,
                 "updateUserId": this.userId,
                 "updateUserName":this.userName,
@@ -281,30 +337,26 @@ export default {
                 "timeLimitType":this.timeLimitType,
                 "publicAlgorithmCoefficient":String(this.publicAlgorithmCoefficient),
                 "amountLimitType":this.amountLimitType,
-                "upperLimitAmount":this.upperLimitAmount,//å•ä½ä¸ºåˆ†
+                "upperLimitAmount":this.upperLimitAmount,//µ¥Î»Îª·Ö
                 "brandIdList":this.brandIdList,
                 "productIdList":this.productIdList,
-                // "businessesIdList":this.businessesIdList,
-                // "storeIdList":this.storeIdList,
-
-                "businessesIdList":businessesIdList,
-                "storeIdList":storeIdList,
-                "businessesFlage": businessesFlage,
+                "businessesIdList":this.businessesIdList,
+                "storeIdList":this.storeIdList,
             }
 
-            // æ ¡éªŒå·¥å·å¼€é€šæ—¶é—´æ—¶ å¿…ä¼ å­—æ®µ
+            // Ğ£Ñé¹¤ºÅ¿ªÍ¨Ê±¼äÊ± ±Ø´«×Ö¶Î
             if(this.isCheckUserCreateTime == '1'){
                 submitData.checkUserCreateStartTime =  this.checkUserCreateTime[0]
                 submitData.checkUserCreateEndTime =  this.checkUserCreateTime[0]
             }
             let bitOperation = [0,0,0]
-            //å›æ”¶æ–¹å¼
+            //»ØÊÕ·½Ê½
             this.recycleTypeList.forEach((item,index)=>{
                 if(item.ifChoosed) bitOperation[index] = 1
             })
             submitData.recycleType = this._Util.bitOperation(bitOperation)
             
-            //çœå¸‚è®¾ç½®
+            //Ê¡ÊĞÉèÖÃ
             if(this.addrList.L1.length == 0){
                 submitData.provinceIdList = ''
             }else{
@@ -324,13 +376,13 @@ export default {
                 submitData.cityIdList = idArr.join('#')
             }
 
-            //å“ç‰Œæœºå‹è®¾ç½®
+            //Æ·ÅÆ»úĞÍÉèÖÃ
             if(this.modelList.L1.length == 0){
                 submitData.brandIdList = ''
             }else{
                 let idArr = []
                 this.modelList.L1.forEach(item =>{
-                    idArr.push(item.categoryId) //è·å–æœºå‹æ¥å£è¿”å›idå­—æ®µä¸º categoryId
+                    idArr.push(item.categoryId) //»ñÈ¡»úĞÍ½Ó¿Ú·µ»Øid×Ö¶ÎÎª categoryId
                 })
                 submitData.brandIdList = idArr.join('#')
             }
@@ -339,43 +391,44 @@ export default {
             }else{
                 let idArr = []
                 this.modelList.L2.forEach(item =>{
-                    idArr.push(item.productId) //è·å–æœºå‹ä¸‹äº§å“æ¥å£è¿”å›idå­—æ®µä¸º productId
+                    idArr.push(item.productId) //»ñÈ¡»úĞÍÏÂ²úÆ·½Ó¿Ú·µ»Øid×Ö¶ÎÎª productId
                 })
                 submitData.productIdList = idArr.join('#')
             }
 
-            //å•†æˆ·é—¨åº— è®¾ç½®
-            // if(this.channelList.L1.length == 0){
-            //     submitData.businessesIdList = ''
-            // }else{
-            //     let idArr = []
-            //     this.channelList.L1.forEach(item =>{
-            //         idArr.push(item.id) //è·å–æœºå‹æ¥å£è¿”å›idå­—æ®µä¸º id
-            //     })
-            //     submitData.businessesIdList = idArr.join('#')
-            // }
-            // if(this.channelList.L2.length == 0){
-            //     submitData.storeIdList = ''
-            // }else{
-            //     let idArr = []
-            //     this.channelList.L2.forEach(item =>{
-            //         idArr.push(item.id) //è·å–æœºå‹ä¸‹äº§å“æ¥å£è¿”å›idå­—æ®µä¸º id
-            //     })
-            //     submitData.storeIdList = idArr.join('#')
-            // }
+            //ÉÌ»§ÃÅµê ÉèÖÃ
+            if(this.channelList.L1.length == 0){
+                submitData.businessesIdList = ''
+            }else{
+                let idArr = []
+                this.channelList.L1.forEach(item =>{
+                    idArr.push(item.id) //»ñÈ¡»úĞÍ½Ó¿Ú·µ»Øid×Ö¶ÎÎª id
+                })
+                submitData.businessesIdList = idArr.join('#')
+            }
+            if(this.channelList.L2.length == 0){
+                submitData.storeIdList = ''
+            }else{
+                let idArr = []
+                this.channelList.L2.forEach(item =>{
+                    idArr.push(item.id) //»ñÈ¡»úĞÍÏÂ²úÆ·½Ó¿Ú·µ»Øid×Ö¶ÎÎª id
+                })
+                submitData.storeIdList = idArr.join('#')
+            }
 
-            /********** æäº¤æ—¶æ ¡éªŒ *********/
+            /********** Ìá½»Ê±Ğ£Ñé *********/
             const validateMethod = ['val_activityName','val_activityDesc','val_activityDate','val_activityTime','val_publicAlgorithmCoefficient','val_CountRangeList','val_upperLimitAmount','val_recycleTypeList','val_modelList','val_participants']
             for(const val of validateMethod){
                 if(!this[val]() ) return
             }
 
-            //æ ¡éªŒé€šè¿‡ è®¾ç½®å€¼
-            submitData.publicGrantSection = this.CountRangeList.map(item=>{
+            //Ğ£ÑéÍ¨¹ı ÉèÖÃÖµ
+
+            submitData.publicGrantSection = this.CountRangeList.map(item=>{ 
                 return `${Math.round(item.payLeast*100)}|${Math.round(item.payMost*100)}#${Math.round(item.bonusLeast*100)}|${Math.round(item.bonusMost*100)}`
             }).join('&')
             submitData.upperLimitAmount = String(Math.round(submitData.upperLimitAmount*100))
-            //æ´»åŠ¨æ—¶é—´é€‰æ‹©é™åˆ¶æ—¶ å¿…ä¼ å­—æ®µ
+            //»î¶¯Ê±¼äÑ¡ÔñÏŞÖÆÊ± ±Ø´«×Ö¶Î
             if (this.timeLimitType == '2') {
                 submitData.activityStartDate = this.activityStartDate
                 submitData.activityEndDate = this.activityEndDate
@@ -383,57 +436,58 @@ export default {
                 submitData.activityEndTime = this.activityEndTime + ':00'
             }
             
-            /********** æäº¤ ***********/
-            api.add_activity_info(submitData).then(res=>{
-                if(res._ret != 0){
-                    this.$alert(res._errStr)
-                    return
-                }
-                this.$message(res._errStr)
-                this.$router.push({ path: '/reward/list' })
-            })
+            /********** Ìá½» ***********/
+            console.log(submitData, 'Ìá½»µÄÊı¾İ')
+            return
+
+
+            let res = await api.update_activity_info(submitData)
+            if(res._ret != 0){
+                this.$alert(res._errStr)
+                return
+            }
+            this.$message(res._errStr)
+            this.$router.push({ path: '/reward/list' })
         },
-        /******å…³é—­é€‰æ¡†********/
+        /******¹Ø±ÕÑ¡¿ò********/
         closeAlert(status) {
             this.ifshowAddr = false
             this.ifshowModel = false
             this.ifshowChannel = false
         },
-        /******è®¾ç½®åœ°å€********/
+        /******ÉèÖÃµØÖ·********/
         setAddrData(val) {
             this.addrList = JSON.parse(JSON.stringify(val))
-            this.val_participants() //éªŒè¯
+            this.val_participants() //ÑéÖ¤
         },
-        /******è®¾ç½®æœºå‹********/
+        /******ÉèÖÃ»úĞÍ********/
         setModelData(val) {
             this.modelList = JSON.parse(JSON.stringify(val))
-            this.val_modelList() //éªŒè¯
+            this.val_modelList() //ÑéÖ¤
         },
-        /******è®¾ç½®å•†æˆ·é—¨åº—********/
-        setChannelData(val) {
+        /******ÉèÖÃÉÌ»§ÃÅµê********/
+        setChannelData(val) { 
             // this.channelList = JSON.parse(JSON.stringify(val))
-            // this.val_participants() //éªŒè¯
+            // this.val_participants() //ÑéÖ¤
 
-            //åº—å¥–ä¼˜åŒ–æ—¶å¢åŠ 
-            this.channelList.L1 = val.L1
-            this.channelList.L2 = val.L2
-            this.ischooseAllL1 = this.$refs.child.chooseAllL1
-           if( !(val.L1.length>0||val.L2.length>0) && !this.$refs.child.chooseAllL1){
-               this.$set(this.errorInfo , 'participants', 'è¯·è‡³å°‘è®¾ç½®ä¸€ä¸ªå‚ä¸å¯¹è±¡')
-               return false 
-           }else{
-               this.$set(this.errorInfo , 'participants', '')
-               return true 
-           }  
+
+            //µê½±ÓÅ»¯Ê±Ôö¼Ó
+            if( !(val.L1.length>0||val.L2.length>0) ){
+                this.$set(this.errorInfo , 'participants', 'ÇëÖÁÉÙÉèÖÃÒ»¸ö²ÎÓë¶ÔÏó')
+                return false 
+            }else{
+                this.$set(this.errorInfo , 'participants', '')
+                return true 
+            } 
+            
         },
-        
         showChoose(which){
             if(which == 'category') this.ifshowModel = true
             if(which == 'addr') this.ifshowAddr = true
             if(which == 'channel') this.ifshowChannel = true
         },
         
-        // æ·»åŠ ä¸€æ¡æ•°é¢è®¾ç½®
+        // Ìí¼ÓÒ»ÌõÊı¶îÉèÖÃ
         addCountRange(index){
             this.$set(this.CountRangeList , this.CountRangeList.length ,{
                 payLeast:this.CountRangeList[index].payMost,
@@ -441,81 +495,78 @@ export default {
                 bonusLeast:'',
                 bonusMost:''
             })
-
         },
-        //ä¿®æ”¹æ•°é¢è®¾ç½®
+        //ĞŞ¸ÄÊı¶îÉèÖÃ
         payRangeChange(val,index){
+            //ÑéÖ¤
             this.pre_val_CountRangeList(index , this.CountRangeList[index])
-            //åˆ¤æ–­æ˜¯å¦æœ‰ä¸‹ä¸€æ¡
+            //ÅĞ¶ÏÊÇ·ñÓĞÏÂÒ»Ìõ
             const len = this.CountRangeList.length
             if(index != len-1){
                 this.CountRangeList[index+1].payLeast = val
                 this.pre_val_CountRangeList(index+1 , this.CountRangeList[index+1])
             }
+            
         },
-
-		// åˆ é™¤ä¸€æ¡æ•°é¢è®¾ç½®
-        delCountRange(){
-        	this.CountRangeList.pop()
-        },
-        /**************** éªŒè¯ *******************/
-        //éªŒè¯æ´»åŠ¨åç§°
+        /**************** ÑéÖ¤ *******************/
+        //ÑéÖ¤»î¶¯Ãû³Æ
         val_activityName(){
             if(!this._Util.validate.nameLength(this.activityName)){
-                this.$set(this.errorInfo , 'activityName', 'è¯·è¾“å…¥æ´»åŠ¨åç§°ï¼ˆ4~50å­—ç¬¦ï¼‰')
+                this.$set(this.errorInfo , 'activityName', 'ÇëÊäÈë»î¶¯Ãû³Æ£¨4~50×Ö·û£©')
                 return false 
             }else{
                 this.$set(this.errorInfo , 'activityName', '')
                 return true
             }
         },
-        //éªŒè¯æ´»åŠ¨æè¿°
+        //ÑéÖ¤»î¶¯ÃèÊö
         val_activityDesc(){
             if(!this._Util.validate.desc(this.activityDesc)){
-                this.$set(this.errorInfo , 'activityDesc', 'è¯·è¾“å…¥æ´»åŠ¨æè¿°ï¼ˆ4~50å­—ç¬¦ï¼‰')
+                this.$set(this.errorInfo , 'activityDesc', 'ÇëÊäÈë»î¶¯ÃèÊö£¨4~50×Ö·û£©')
                 return false 
             }else{
                 this.$set(this.errorInfo , 'activityDesc', '')
                 return true 
             }
         },
-        //éªŒè¯ç®—æ³•ç³»æ•°
+        //ÑéÖ¤Ëã·¨ÏµÊı
         val_publicAlgorithmCoefficient(){
             if(!this._Util.validate.precenteFixed2(this.publicAlgorithmCoefficient)){
-                this.$set(this.errorInfo , 'publicAlgorithmCoefficient', 'è¯·è¾“å…¥0~100ç®—æ³•ç³»æ•°ï¼ˆæ”¯æŒ2ä½å°æ•°ï¼‰')
+                this.$set(this.errorInfo , 'publicAlgorithmCoefficient', 'ÇëÊäÈë0~100Ëã·¨ÏµÊı£¨Ö§³Ö2Î»Ğ¡Êı£©')
                 return false 
             }else{
                 this.$set(this.errorInfo , 'publicAlgorithmCoefficient', '')
                 return true 
             }
         },
-        //éªŒè¯æ€»é¢ä¸Šé™
+        //ÑéÖ¤×Ü¶îÉÏÏŞ
         val_upperLimitAmount(){
             if(!this._Util.validate.fixed0(this.upperLimitAmount)){
-                this.$set(this.errorInfo , 'upperLimitAmount', 'è¯·è¾“å…¥å‘æ”¾æ€»é¢ä¸Šé™ï¼ˆä¸æ”¯æŒå°æ•°ï¼‰')
+                this.$set(this.errorInfo , 'upperLimitAmount', 'ÇëÊäÈë·¢·Å×Ü¶îÉÏÏŞ£¨²»Ö§³ÖĞ¡Êı£©')
                 return false 
             }else{
                 this.$set(this.errorInfo , 'upperLimitAmount', '')
                 return true 
             }
         },
-        //éªŒè¯æ•°é¢è®¾ç½®
+        //ÑéÖ¤Êı¶îÉèÖÃ
         pre_val_CountRangeList(index , theItem){
+
             let reg = /^\d+(\.\d{1,2})?$/;
             if(!theItem.payLeast||!theItem.payMost||!theItem.bonusLeast||!theItem.bonusMost){
-                this.$set(this.errorInfo , 'CountRangeList_'+index , 'è¯·å®Œå–„å½“æ¡ä¿¡æ¯')
+                this.$set(this.errorInfo , 'CountRangeList_'+index , 'ÇëÍêÉÆµ±ÌõĞÅÏ¢')
                 return false  
             }else if(!reg.test(theItem.payLeast)||!reg.test(theItem.payMost)||!reg.test(theItem.bonusLeast)||!reg.test(theItem.bonusMost)){
-                this.$set(this.errorInfo , 'CountRangeList_'+index , 'åªæ”¯æŒä¸¤ä½å°æ•°')
+                this.$set(this.errorInfo , 'CountRangeList_'+index , 'Ö»Ö§³ÖÁ½Î»Ğ¡Êı')
                 return false 
             }else if(Number(theItem.payMost) < Number(theItem.payLeast)) {
-                this.$set(this.errorInfo , 'CountRangeList_'+index , 'ä»˜æ¬¾é‡‘é¢ä¸Šé™å€¼ä¸åº”å°äºä¸‹é™å€¼')
+                this.$set(this.errorInfo , 'CountRangeList_'+index , '¸¶¿î½ğ¶îÉÏÏŞÖµ²»Ó¦Ğ¡ÓÚÏÂÏŞÖµ')
                 return false  
             }else if(Number(theItem.bonusMost) < Number(theItem.bonusLeast) ){
-                this.$set(this.errorInfo , 'CountRangeList_'+index , 'å¥–é‡‘é‡‘é¢ä¸Šé™å€¼ä¸åº”å°äºä¸‹é™å€¼')
+                this.$set(this.errorInfo , 'CountRangeList_'+index , '½±½ğ½ğ¶îÉÏÏŞÖµ²»Ó¦Ğ¡ÓÚÏÂÏŞÖµ')
                 return false  
             }else if(Number(theItem.bonusMost) > Number(theItem.payMost) ){
-                this.$set(this.errorInfo , 'CountRangeList_'+index , 'å¥–é‡‘ä¸Šçº¿ä¸åº”å¤§äºä»˜æ¬¾é‡‘é¢ä¸Šé™')
+                this.$set(this.errorInfo , 'CountRangeList_'+index , '½±½ğÉÏÏß²»Ó¦´óÓÚ¸¶¿î½ğ¶îÉÏÏŞ')
                 return false  
             }else{
                 this.$set(this.errorInfo , 'CountRangeList_'+index , '')
@@ -523,17 +574,17 @@ export default {
             }
         },
         val_CountRangeList(index){
-            if(index == undefined){//è¡¨ç¤ºç¡®è®¤æäº¤æ—¶çš„éªŒè¯
+            if(index == undefined){//±íÊ¾È·ÈÏÌá½»Ê±µÄÑéÖ¤
                 for(const [key,val] of this.CountRangeList.entries() ){
                     let theItem = val
                     if( !this.pre_val_CountRangeList(key , theItem) ) return false
                 }
                 return true
-            }else{ //è¡¨ç¤ºè§¦å‘å•æ¡changeäº‹ä»¶æ—¶çš„éªŒè¯
+            }else{ //±íÊ¾´¥·¢µ¥ÌõchangeÊÂ¼şÊ±µÄÑéÖ¤
                 this.pre_val_CountRangeList(index , this.CountRangeList[index])
             }
         },
-        //éªŒè¯å›æ”¶æ–¹å¼
+        //ÑéÖ¤»ØÊÕ·½Ê½
         val_recycleTypeList(){
             let bitOperation = [0,0,0]
             this.recycleTypeList.forEach((item,index)=>{
@@ -541,65 +592,72 @@ export default {
             })
             let recycleType = this._Util.bitOperation(bitOperation)
             if(recycleType == '0'){
-                this.$set(this.errorInfo , 'recycleTypeList', 'è¯·è‡³å°‘é€‰æ‹©ä¸€ä¸ªè®¢å•å›æ”¶æ–¹å¼')   
+                this.$set(this.errorInfo , 'recycleTypeList', 'ÇëÖÁÉÙÑ¡ÔñÒ»¸ö¶©µ¥»ØÊÕ·½Ê½')   
                 return false             
             }else{
                 this.$set(this.errorInfo , 'recycleTypeList', '')
                 return true 
             }
         },
-         //éªŒè¯å‚ä¸æœºå‹
+         //ÑéÖ¤²ÎÓë»úĞÍ
         val_modelList(){
             if( !(this.modelList.L1.length>0||this.modelList.L2.length>0) ){
-                this.$set(this.errorInfo , 'modelList', 'è¯·è®¾ç½®å‚ä¸æœºå‹')
+                this.$set(this.errorInfo , 'modelList', 'ÇëÉèÖÃ²ÎÓë»úĞÍ')
                 return false 
             }else{
                 this.$set(this.errorInfo , 'modelList', '')
                 return true 
             }
         },
-        //éªŒè¯å‚ä¸å¯¹è±¡ 
+        //ÑéÖ¤²ÎÓë¶ÔÏó 
         val_participants(){
             if( !(this.channelList.L1.length>0||this.channelList.L2.length>0||this.addrList.L1.length>0||this.addrList.L2.length>0) ){
-                this.$set(this.errorInfo , 'participants', 'è¯·è‡³å°‘è®¾ç½®ä¸€ä¸ªå‚ä¸å¯¹è±¡')
+                this.$set(this.errorInfo , 'participants', 'ÇëÖÁÉÙÉèÖÃÒ»¸ö²ÎÓë¶ÔÏó')
                 return false 
             }else{
                 this.$set(this.errorInfo , 'participants', '')
                 return true 
             }
         },
-        //éªŒè¯é™åˆ¶æ—¥æœŸ 
+        //ÑéÖ¤ÏŞÖÆÈÕÆÚ 
         val_activityDate(){
-            // å½“é€‰æ‹©ç”Ÿæ•ˆæ—¶é—´ä¸ºé™åˆ¶æ—¶ å¯ç”¨éªŒè¯
+            // µ±Ñ¡ÔñÉúĞ§Ê±¼äÎªÏŞÖÆÊ± ÆôÓÃÑéÖ¤
             if(this.timeLimitType == '1') return true
 
             if( !this.activityStartDate || !this.activityEndDate){
-                this.$set(this.errorInfo , 'activityDate', 'è¯·é€‰æ‹©æ—¥æœŸèŒƒå›´')
+                this.$set(this.errorInfo , 'activityDate', 'ÇëÑ¡ÔñÈÕÆÚ·¶Î§')
                 return false 
             }else if( this.activityStartDate > this.activityEndDate ){
-                this.$set(this.errorInfo , 'activityDate', 'ç»“æŸæ—¥æœŸéœ€å¤§äºç­‰äºå¼€å§‹æ—¥æœŸ')
+                this.$set(this.errorInfo , 'activityDate', '½áÊøÈÕÆÚĞè´óÓÚµÈÓÚ¿ªÊ¼ÈÕÆÚ')
                 return false 
             }else{
                 this.$set(this.errorInfo , 'activityDate', '')
                 return true 
             }
         },
-        //éªŒè¯é™åˆ¶æ—¶é—´
+        //ÑéÖ¤ÏŞÖÆÊ±¼ä
         val_activityTime(){
-            // å½“é€‰æ‹©ç”Ÿæ•ˆæ—¶é—´ä¸ºé™åˆ¶æ—¶ å¯ç”¨éªŒè¯
+            // µ±Ñ¡ÔñÉúĞ§Ê±¼äÎªÏŞÖÆÊ± ÆôÓÃÑéÖ¤
             if(this.timeLimitType == '1') return true
-
+                
             if( this.activityStartTime >= this.activityEndTime ){
-                this.$set(this.errorInfo , 'activityTime', 'ç»“æŸæ—¶é—´éœ€å¤§äºå¼€å§‹æ—¶é—´')
+                this.$set(this.errorInfo , 'activityTime', '½áÊøÊ±¼äĞè´óÓÚ¿ªÊ¼Ê±¼ä')
                 return false 
             }else{
                 this.$set(this.errorInfo , 'activityTime', '')
                 return true 
             }
         },
-        
 
-    }
+
+		// É¾³ıÒ»ÌõÊı¶îÉèÖÃ
+        delCountRange(){
+        	this.CountRangeList.pop()
+        }
+    },
+    mounted() {
+        this.setDeault()
+	}
 }
 
 </script>
@@ -607,19 +665,21 @@ export default {
 	.spc-select{position: relative;margin-bottom: -3px}
 </style>
 <style type="text/css" scoped="scoped">
-    
+    .errorInfo{
+        color:#FA5555;font-size: 12px;margin-left: 18px;
+    }
     p{margin-bottom: 10px}
     .icon-duigou{color:#67c23a;margin-left: 5px;}
-    .underline-text{
-        font-size: 14px;
-        color: #48576a;
-        line-height: 1;
-        vertical-align: bottom;
-        margin:auto 6px;
+	.reward-remind{font-size: 12px;}
+	.underline-text{
+		font-size: 14px;
+	    color: #48576a;
+	    line-height: 1;
+	    vertical-align: bottom;
+	    margin:auto 6px;
         padding-bottom: 8px;
-        display: inline-block;
-    }
-	.reward-remind{font-size: 12px;color:#878D99;}
+    	display: inline-block;
+	}
     .underline-text-info{
         display: inline-block;
         vertical-align: bottom;

@@ -38,7 +38,7 @@
             <p class="second-title hjx-blue no-select">
               已选 
               <span style="color:#000;">({{businessesFlage ? '白名单' : '黑名单'}}
-                <i class="el-icon-refresh" style="color:#409EFF;cursor: pointer;" @click="businessesFlage=!businessesFlage"> 
+                <i class="el-icon-refresh" v-show="showBlackOrWhite" style="color:#409EFF;cursor: pointer;" @click="businessesFlage=!businessesFlage"> 
                 </i>)</span> 
             </p>
             <div class="choose-field list-container-choosed">
@@ -74,6 +74,7 @@ export default {
       chooseAllL1: false,
       copyChannelList: [],
       copyHasChoosedList: {},
+      showBlackOrWhite: true, //切换黑白名单
       hasChoosedList: {
         L1:[],
         L2:[],
@@ -193,8 +194,12 @@ export default {
         this.copyChannelList = JSON.parse(JSON.stringify(this.channelList))
         this.copyHasChoosedList = JSON.parse(JSON.stringify(this.hasChoosedList))
         this.channelList = []
-        this.hasChoosedList = {}
+        this.hasChoosedList = {
+          L1: [],
+          L2: []
+        }
         this.searchL1Name = ''
+        this.businessesFlage = true
       } else {
         this.channelList = this.copyChannelList
         this.hasChoosedList = this.copyHasChoosedList
@@ -297,6 +302,9 @@ export default {
       // } else {
       //   this.chooseAllL1 = false
       // }
+    },
+    chooseAllL1(val) {
+      val ? this.showBlackOrWhite = false : this.showBlackOrWhite = true
     }
   },
   mounted() {
