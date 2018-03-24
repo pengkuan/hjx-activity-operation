@@ -111,7 +111,7 @@
         <div>   
             <span class="hjx-left-label">商户/门店：</span>
             <span class="hjx-hover ft13 hjx-blue mrg-l14" @click="showChoose('channel')">
-                <el-button v-if="channelList.L1.length>0||channelList.L2.length>0" type="text" >已设置 <i class="iconfont icon-duigou"></i></el-button>
+                <el-button v-if="channelList.L1.length>0||channelList.L2.length>0||ischooseAllL1" type="text" >已设置 <i class="iconfont icon-duigou"></i></el-button>
                 <el-button v-else type="text" >未设置<i class="el-icon-arrow-right el-icon--right"></i></el-button>
                 <span class="errorInfo">{{errorInfo['participants']}}</span>
             </span>
@@ -126,7 +126,8 @@
         </div>
         <hjx-select-alert :action="'category'" :ifshow="ifshowModel" @close="closeAlert" :data="modelList" @setData="setModelData"></hjx-select-alert>
         <hjx-select-alert :action="'addr'" :ifshow="ifshowAddr" @close="closeAlert" :data="addrList" @setData="setAddrData"></hjx-select-alert>
-        <hjx-select-alert :action="'channel'" :ifshow="ifshowChannel" @close="closeAlert" :data="channelList" @setData="setChannelData"></hjx-select-alert>
+        <!-- <hjx-select-alert :action="'channel'" :ifshow="ifshowChannel" @close="closeAlert" :data="channelList" @setData="setChannelData"></hjx-select-alert> -->
+        <hjx-select-alert-ty ref="child"  :action="'channel'" :ifshow="ifshowChannel" @close="closeAlert" :data="channelList" @setData="setChannelData"></hjx-select-alert-ty>
         <div class="operate">
             <el-button @click="onSubmit" type="primary" size="mini">确认</el-button>
             <router-link to="/reward/list?show=fixed">
@@ -142,8 +143,10 @@ import hjxPart from '@/base/hjx_part'
 import hjxLeftTitle from '@/base/hjx_left_title'
 import hjxUnderlineInput from '@/base/hjx_underline_input'
 import hjxSelectAlert from '@/base/hjx_select_alert'
+import hjxSelectAlertTy from '@/base/hjx_select_alert_edit_ty'
+
 export default {
-    components: { hjxPart, hjxLeftTitle, hjxUnderlineInput, hjxSelectAlert },
+    components: { hjxPart, hjxLeftTitle, hjxUnderlineInput, hjxSelectAlert, hjxSelectAlertTy },
     data() {
         return {
             errorInfo:{},
@@ -222,6 +225,7 @@ export default {
                 L1: [],
                 L2: []
             },
+            ischooseAllL1: false, //判断是否全选了
 
         }
     },
@@ -297,14 +301,64 @@ export default {
                 this.addrList.L2 = res.cityIdList
 
                 this.modelList.L1 = res.brandIdList
-                this.modelList.L2 = res.productIdList
+                this.modelList.L2 = res.productIdList 
 
-                this.channelList.L1 = res.businessesIdList
-                this.channelList.L2 = res.storeIdList
+
+                // return
+                //这2个数据都被后台干掉了
+                // this.channelList.L1 = res.businessesIdList
+                // this.channelList.L2 = res.storeIdList
 
             })
         },
         onSubmit() {
+
+            // 店奖优化新增提交数据
+            let businessesIdList = {
+                addList: [],
+                delList: []
+            }
+            let storeIdList = {
+                addList: [],
+                delList: []
+            }
+            let businessesFlage = this.$refs.child.businessesFlage
+
+            if (businessesFlage == '0' && !this.$refs.child.chooseAllL1) {
+                businessesFlage = '1'
+            }
+
+            businessesIdList.addList = this.$refs.child.addList.filter((item, i) => {
+                return item.type == 'channel' || item.pid == undefined
+            })
+            businessesIdList.delList = this.$refs.child.delList.filter((item, i) => {
+                return item.type == 'channel' || item.pid == undefined
+            })
+            storeIdList.addList = this.$refs.child.addList.filter((item, i) => {
+                return item.hasOwnProperty('pid')
+            })
+            storeIdList.delList = this.$refs.child.delList.filter((item, i) => {
+                return item.hasOwnProperty('pid')
+            })
+
+            if (this.$refs.child.chooseAllL1) {
+                businessesFlage = '0'
+                businessesIdList = {
+                    addList: [],
+                    delList: []
+                }
+                storeIdList = {
+                    addList: [],
+                    delList: []
+                } 
+            } else {
+                if (!this.$refs.child.hasChoosedList.L1.length && !this.$refs.child.hasChoosedList.L2.length) {
+                    this.$set(this.errorInfo , 'participants', '请至少设置一个参与对象')
+                    return false
+                }
+            }
+
+
             let submitData = {
                 "activityId": this.$route.query.id,
                 "createUserId": this.userId,
@@ -321,6 +375,12 @@ export default {
                 "directGrantSection": Math.round(this.directGrantSection.least*100) + '|' + Math.round(this.directGrantSection.most*100),
                 "amountLimitType": this.amountLimitType,
                 "upperLimitAmount": this.upperLimitAmount , //单位为分
+
+
+                // 这三条数据之前为什么没有呢
+                "businessesIdList":businessesIdList,
+                "storeIdList":storeIdList,
+                "businessesFlage": businessesFlage,
             }
             
             // 校验工号开通时间时 必传字段
@@ -377,26 +437,27 @@ export default {
             }
 
             //商户门店 设置
-            if (this.channelList.L1.length == 0) {
-                submitData.businessesIdList = ''
-            } else {
-                let idArr = []
-                this.channelList.L1.forEach(item => {
-                    idArr.push(item.id) //获取机型接口返回id字段为 id
-                })
-                submitData.businessesIdList = idArr.join('#')
-            }
-            if (this.channelList.L2.length == 0) {
-                submitData.storeIdList = ''
-            } else {
-                let idArr = []
-                this.channelList.L2.forEach(item => {
-                    idArr.push(item.id) //获取机型下产品接口返回id字段为 id
-                })
-                submitData.storeIdList = idArr.join('#')
-            }
+            // if (this.channelList.L1.length == 0) {
+            //     submitData.businessesIdList = ''
+            // } else {
+            //     let idArr = []
+            //     this.channelList.L1.forEach(item => {
+            //         idArr.push(item.id) //获取机型接口返回id字段为 id
+            //     })
+            //     submitData.businessesIdList = idArr.join('#')
+            // }
+            // if (this.channelList.L2.length == 0) {
+            //     submitData.storeIdList = ''
+            // } else {
+            //     let idArr = []
+            //     this.channelList.L2.forEach(item => {
+            //         idArr.push(item.id) //获取机型下产品接口返回id字段为 id
+            //     })
+            //     submitData.storeIdList = idArr.join('#')
+            // }
             /********** 提交时校验 *********/
-            const validateMethod = ['val_activityName','val_activityDesc','val_activityDate','val_activityTime','val_directAmount','val_directGrantSection','val_upperLimitAmount','val_recycleTypeList','val_modelList','val_participants']
+            // const validateMethod = ['val_activityName','val_activityDesc','val_activityDate','val_activityTime','val_directAmount','val_directGrantSection','val_upperLimitAmount','val_recycleTypeList','val_modelList','val_participants']
+            const validateMethod = ['val_activityName','val_activityDesc','val_activityDate','val_activityTime','val_directAmount','val_directGrantSection','val_upperLimitAmount','val_recycleTypeList','val_modelList']
             for(const val of validateMethod){
                 if(!this[val]() ) return
             }
@@ -427,6 +488,22 @@ export default {
             this.ifshowAddr = false
             this.ifshowModel = false
             this.ifshowChannel = false
+
+            if (status == 'cancel') {
+                this.loadChannelData()  
+                this.$refs.child.recovery()
+                this.ischooseAllL1 = this.$refs.child.chooseAllL1
+                this.channelList.L1 = this.$refs.child.hasChoosedList.L1
+                this.channelList.L2 = this.$refs.child.hasChoosedList.L2
+
+                if( !this.channelList.L1.length && !this.channelList.L2.length && !this.ischooseAllL1){ 
+                    this.$set(this.errorInfo , 'participants', '请至少设置一个参与对象')
+                    
+                }else{
+                    this.$set(this.errorInfo , 'participants', '') 
+                }  
+            }
+
         },
         /******设置地址********/
         setAddrData(val) {
@@ -440,14 +517,37 @@ export default {
         },
         /******设置商户门店********/
         setChannelData(val) {
-            this.channelList = JSON.parse(JSON.stringify(val))
-            this.val_participants() //验证
+            // this.channelList = JSON.parse(JSON.stringify(val))
+            // this.val_participants() //验证
+
+
+            // 确定是判断是否把数据都删除了 
+            this.channelList.L1 = val.L1
+            this.channelList.L2 = val.L2
+            this.ischooseAllL1 = this.$refs.child.chooseAllL1 
+
+            console.log(val) 
+
+            if( !val.L1.length && !val.L2.length && !this.ischooseAllL1){ 
+                this.$set(this.errorInfo , 'participants', '请至少设置一个参与对象')
+                
+            }else{
+                this.$set(this.errorInfo , 'participants', '') 
+            }
+
         },
         
         showChoose(which){
             if(which == 'category') this.ifshowModel = true
             if(which == 'addr') this.ifshowAddr = true
-            if(which == 'channel') this.ifshowChannel = true
+            // if(which == 'channel') this.ifshowChannel = true
+            if(which == 'channel') {
+
+                // 每次进来就备份
+                this.$refs.child.backup()
+                this.$refs.child.channelList = []
+                this.ifshowChannel = true 
+            }
         },
         /**************** 验证 *******************/
         //验证活动名称
@@ -569,10 +669,31 @@ export default {
                 return true 
             }
         },
+        // 加载一次渠道数据
+        loadChannelData() {
+            let params = {
+              activityId: this.$route.query.id,
+              searchKey: '',
+              pageIndex: '0',
+              pageSize: '10'
+            }
+            api.search_activity_channel_store_list(params).then((res) => {
+                if (res._ret != '0') {
+                  this.$alert(res._errStr)
+                  return
+                }
+                this.channelList.L1 = res.businessesIdList
+                this.channelList.L2 = res.storeIdList
+                if (res.businessesFlage) {
+                    this.ischooseAllL1 = true
+                }  
+            })
+        }
 
     },
     mounted() {
         this.setDeault()
+        this.loadChannelData()
     },
 }
 

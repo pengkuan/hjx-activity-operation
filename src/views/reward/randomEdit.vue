@@ -329,15 +329,7 @@ export default {
 
     	},
         async onSubmit() { 
-
-            // // 店奖优化新增提交数据
-            // let businessesIdList = {
-            //     addList: this.$refs.child.hasChoosedList.L1
-            // }
-            // let storeIdList = {
-            //     addList: this.$refs.child.hasChoosedList.L2
-            // }
-
+ 
             // 店奖优化新增提交数据
             let businessesIdList = {
                 addList: [],
