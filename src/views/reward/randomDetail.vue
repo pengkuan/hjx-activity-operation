@@ -92,7 +92,7 @@
             </span>
             <p class="reward-remind mrg-l40 hjx-info">(满足选中机型的订单，可参与到活动中)</p>
         </div>
-        <hjx-left-title label="对象"></hjx-left-title>
+        <hjx-left-title label="对象"><span class="errorInfo">机构和地域做交集判断</span></hjx-left-title> 
         <div>
             <span class="hjx-left-label">商户/门店：</span>
             <span class="hjx-hover ft13 hjx-blue mrg-l14" @click="showChooseDetail('channelList','name','name')">

@@ -12,7 +12,7 @@
                 <el-input size="small" @input="searchL1(searchL1Name)" placeholder="搜索商户" prefix-icon="el-icon-search" v-model="searchL1Name" clearable :disabled="chooseAllL1"></el-input>
                 <p class="breadcrumb"><span class="noTap ">商户列表</span></p>
                 <p class="left-item-second">
-                  <el-checkbox v-show="showSearchL1" @change="changeL1(chooseAllL1)" :indeterminate="isIndeterminateFirst" v-model="chooseAllL1"><span class="ft12" >全选所有商户</span></el-checkbox>
+                  <el-checkbox v-show="showSearchL1" @change="changeL1(chooseAllL1)" :indeterminate="isIndeterminateFirst" v-model="chooseAllL1" :disabled="!businessesFlage"><span class="ft12">全选所有商户</span></el-checkbox>
                 </p>
                 <div class="list-container"> 
                   <p class="left-item overflow" v-for="(item, index) in channelList" :class="{'disable':item.status, 'relative':true, 'cusor': true}" @click="handleL1(item)">
@@ -38,7 +38,7 @@
             <p class="second-title hjx-blue no-select">
               已选 
               <span style="color:#000;">({{businessesFlage ? '白名单' : '黑名单'}}
-                <i class="el-icon-refresh" v-show="showBlackOrWhite" style="color:#409EFF;cursor: pointer;" @click="businessesFlage=!businessesFlage"> 
+                <i class="el-icon-refresh" style="color:#409EFF;cursor: pointer;" @click="mySwitch()"> 
                 </i>)</span> 
             </p>
             <div class="choose-field list-container-choosed">
@@ -73,7 +73,10 @@ export default {
       first: true,
       chooseAllL1: false,
       copyChannelList: [],
-      copyHasChoosedList: {},
+      copyHasChoosedList: {
+        L1: [],
+        L2: []
+      },
       showBlackOrWhite: true, //切换黑白名单
       hasChoosedList: {
         L1:[],
@@ -88,6 +91,8 @@ export default {
       isIndeterminateSecond: false,
       showSearchL1:true,//搜索时使用
       showSearchL2:true,//搜索时使用 
+      mydata: {}, //备份数据
+      hideChooseAllL1: false,
     }
   },
   props: {
@@ -97,6 +102,29 @@ export default {
   },
   methods: { 
     /********提交和取消************/
+    mySwitch() {
+      if (this.chooseAllL1 && this.businessesFlage) {
+        this.$alert('黑名单不支持全选，请取消全选后再做切换。')
+        return
+      }
+      this.businessesFlage=!this.businessesFlage
+    },
+    backup() { 
+      for (let json in this.$data) {
+        if (json != 'mydata') { 
+          this.mydata[json] = JSON.parse(JSON.stringify(this.$data[json]))
+        }
+      }
+      console.log('备份的数据', this.mydata)  
+    }, 
+    recovery() {
+      for (let json in this.mydata) {
+        if (json != 'mydata') { 
+          this.$data[json] = this.mydata[json]
+        }
+      }
+      console.log('恢复的数据', this.$data)
+    },
     submit() {
       this.$emit('setData', this.hasChoosedList)
       this.$emit('close', false)
@@ -106,9 +134,9 @@ export default {
       this.showSearchL1 = true
     },
     close() {
-      this.$emit('close', false)
-      this.init() 
-      this.showSearchL1 = true
+      this.$emit('close', 'cancel')
+      // this.init() 
+      // this.showSearchL1 = true
     },
     init() { //初始化数据
       this.first = true 
@@ -190,7 +218,7 @@ export default {
     }, 
     //全选L1
     changeL1(status) { 
-      if (status) {
+      if (status) { 
         this.copyChannelList = JSON.parse(JSON.stringify(this.channelList))
         this.copyHasChoosedList = JSON.parse(JSON.stringify(this.hasChoosedList))
         this.channelList = []
@@ -199,7 +227,7 @@ export default {
           L2: []
         }
         this.searchL1Name = ''
-        this.businessesFlage = true
+        // this.businessesFlage = true
       } else {
         this.channelList = this.copyChannelList
         this.hasChoosedList = this.copyHasChoosedList
@@ -305,6 +333,14 @@ export default {
     },
     chooseAllL1(val) {
       val ? this.showBlackOrWhite = false : this.showBlackOrWhite = true
+    },
+    businessesFlage(val) {
+      console.log(val)
+      // if (!val) { 
+      //   this.showSearchL1 = false
+      // } else {
+      //   this.showSearchL1 = true
+      // }
     }
   },
   mounted() {

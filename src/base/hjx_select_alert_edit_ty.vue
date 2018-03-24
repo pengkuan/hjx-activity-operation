@@ -7,12 +7,14 @@
           <div class="fl box-left">
             <p class="second-title hjx-blue">备选</p>
             <p class="no-search" v-show="!searchL1Name && !chooseAllL1">搜索后将展示相应数据</p>
+            <p class="all-search" v-show="chooseAllL1">全选</p>
             <div class="choose-field">
               <div v-if="first">
                 <el-input size="small" @input="searchL1(searchL1Name)" placeholder="搜索商户" prefix-icon="el-icon-search" v-model="searchL1Name" clearable :disabled="chooseAllL1"></el-input>
                 <p class="breadcrumb"><span class="noTap ">商户列表</span></p>
                 <p class="left-item-second">
-                  <el-checkbox v-show="showSearchL1" @change="changeL1(chooseAllL1)" :indeterminate="isIndeterminateFirst" v-model="chooseAllL1"><span class="ft12" >全选所有商户</span></el-checkbox>
+                  <el-checkbox v-show="showSearchL1" @change="changeL1(chooseAllL1)" :indeterminate="isIndeterminateFirst" v-model="chooseAllL1" 
+                  :disabled="businessesFlage == '2'"><span class="ft12" >全选所有商户</span></el-checkbox>
                 </p>
                 <div class="list-container"> 
                   <p class="left-item overflow" v-for="(item, index) in channelList" :class="{'disable':item.status, 'relative':true, 'cusor': true}" @click="handleL1(item)">
@@ -37,15 +39,16 @@
           <div class="fr box-right" v-loading="refleshLoading">
             <p class="second-title hjx-blue">
               已选 
+              <span style="color:#000;" v-if="businessesFlage == '0'">(白名单)</span> 
               <span style="color:#000;" v-if="businessesFlage == '1'">(白名单)</span> 
-              <span style="color:#000;" v-if="businessesFlage == '0'">(黑名单)</span> 
+              <span style="color:#000;" v-if="businessesFlage == '2'">(黑名单)</span> 
             </p> 
-            <div class="choose-field list-container-choosed" ref="scrollDiv" @scroll="scroll">
+            <div class="choose-field list-container-choosed" ref="scrollDiv">
                 <pull-to @infinite-scroll="refresh">
                   <div v-for="(list,key) in hasChoosedList">
                     <p class="right-item clear" v-for="(item,index) in list">
-                      <span v-if="key=='L1'" class="fl hjx-blue"><i class="iconfont icon-wenjianjia"></i> {{item.name}}</span>
-                      <span v-else class="fl hjx-blue"><i class="iconfont icon-dian"></i> {{item.name}}</span>
+                      <span v-if="key=='L1'" class="fl hjx-blue" :class="{'color':item.color}" ><i class="iconfont icon-wenjianjia"></i> {{item.name}}</span>
+                      <span v-else class="fl hjx-blue" :class="{'color':item.color}"><i class="iconfont icon-dian"></i> {{item.name}}</span>
                       <i @click="delRightItem(key,index,item)" class="el-icon-remove-outline fr hjx-hover"></i>
                     </p>
                   </div> 
@@ -73,6 +76,7 @@ export default {
   components: { PullTo },
   data() {
     return {
+      confirmAll: false, //全选弹框的确认
       timer: '',
       loadMorePageIndex: '0',
       loadMorePageSize: '100',
@@ -81,7 +85,10 @@ export default {
       first: true,
       chooseAllL1: false, 
       copyChannelList: [],
-      copyHasChoosedList: {},
+      copyHasChoosedList: {
+        L1: [],
+        L2: []
+      },
       hasChoosedList: {
         L1:[],
         L2:[],
@@ -96,6 +103,8 @@ export default {
       isIndeterminateSecond: false,
       showSearchL1:true,//搜索时使用
       showSearchL2:true,//搜索时使用 
+      isFirst: false,
+      mydata: {},
     }
   },
   props: {
@@ -168,20 +177,50 @@ export default {
           }
         } 
 
+
+        // 等于0是白名单全选
+        // 等于1是白名单非全选
+        // 等于2是黑名单
+        if (!this.isFirst) {
+          if (res.businessesFlage == '0') {
+            this.chooseAllL1 = true
+            // this.hasChoosedList = {
+            //   L1: [],
+            //   L2: []
+            // } 
+          }
+          this.isFirst = true
+        }
+        
+
         if (this.chooseAllL1) {
           this.hasChoosedList = {
             L1: [],
             L2: []
           }
-        }
+        } 
 
       }) 
     },
-    scroll() {
-      console.log('滚动的时候')
+    backup() { 
+      for (let json in this.$data) {
+        if (json != 'mydata') { 
+          this.mydata[json] = JSON.parse(JSON.stringify(this.$data[json]))
+        }
+      }
+      console.log('备份的数据', this.mydata)  
+    }, 
+    recovery() {
+      for (let json in this.mydata) {
+        if (json != 'mydata') { 
+          this.$data[json] = this.mydata[json]
+        }
+      }
+      console.log('恢复的数据', this.$data)
     },
     /********提交和取消************/
     submit() { 
+      this.searchL1Name = ''
       this.$emit('setData', this.hasChoosedList)
       this.$emit('close', false)
       this.first = true
@@ -189,26 +228,27 @@ export default {
     },
     close() {
       // this.$emit('close', false)
-      this.$emit('close', 'cancel')
+      
       this.init() 
       this.showSearchL1 = true
+
+      this.$emit('close', 'cancel')
 
     },
     init() { //初始化数据
       this.first = true
-
-      // 优化添加的
-      this.loadMorePageIndex = '0'
-      this.addList = []
-      this.delList = []
-      this.hasChoosedList = {
-        L1: [],
-        L2: []
-      }
       this.searchL1Name = ''
-      this.channelList = []
-
-      this.refresh()
+      // 优化添加的
+      // this.loadMorePageIndex = '0'
+      // this.addList = []
+      // this.delList = []
+      // this.hasChoosedList = {
+      //   L1: [],
+      //   L2: []
+      // }
+      // this.channelList = []
+      // this.chooseAllL1 = false
+      // this.refresh()
 
     }, 
     delRightItem(key, index, item) {
@@ -350,7 +390,8 @@ export default {
               return list.id == item.id
             })
             if (!is) {
-              this.hasChoosedList.L2.push(item)
+              item.color = true
+              this.hasChoosedList.L2.unshift(item)
             } 
           }
         } else {
@@ -372,6 +413,7 @@ export default {
 
       item.status = true 
       let cell = {id:item.id, name: item.name, type: 'channel'}
+      console.log(this.hasChoosedList)
       this.hasChoosedList.L1.push(cell)
 
       //勾选时添加到添加数据
@@ -422,14 +464,27 @@ export default {
     //全选L1
     changeL1(status) { 
       if (status) {
-        this.copyChannelList = JSON.parse(JSON.stringify(this.channelList))
-        this.copyHasChoosedList = JSON.parse(JSON.stringify(this.hasChoosedList))
-        this.channelList = []
-        this.hasChoosedList = {
-          L1: [],
-          L2: []
-        }
-        this.searchL1Name = ''
+        // this.chooseAllL1 = false
+        this.confirmAll = true
+        if (this.hasChoosedList.L1.length>0||this.hasChoosedList.L2.length>0) {
+          this.$confirm('全选后，当前选择的商户记录将不被保留, 确认要全选吗?', '提示', {
+            confirmButtonText: '确定全选',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.copyChannelList = JSON.parse(JSON.stringify(this.channelList))
+            this.copyHasChoosedList = JSON.parse(JSON.stringify(this.hasChoosedList))
+            this.channelList = []
+            this.hasChoosedList = {
+              L1: [],
+              L2: []
+            }
+            this.searchL1Name = ''
+            this.chooseAllL1 = true
+          }).catch(() => {
+            this.chooseAllL1 = false 
+          }); 
+        } 
       } else {
         this.channelList = this.copyChannelList
         this.hasChoosedList = this.copyHasChoosedList
@@ -493,12 +548,31 @@ export default {
                     return list.id == item.id
                   })
                   if (!is) {
-                    this.hasChoosedList.L1.push({id: item.id, name: item.name, type: item.type})
+                    this.hasChoosedList.L1.unshift({id: item.id, name: item.name, type: item.type, color: true})
                   } 
+
+                  //处理下级门店的情况 开始
+                  item.storeList.forEach((li,j) => {
+                    if (li.status) { //状态为true
+                      if (this.delList.some(val => val.id == li.id && val.name == li.name )) {  //在删除列表内
+                        li.status = false
+                      } else { //没有被删除
+                        if (!this.hasChoosedList.L2.some(val => val.id == li.id)) { //在L2列表内
+                          this.hasChoosedList.L2.unshift({id: item.id, name: item.name, color: true})
+                        }
+                      }
+                    } else {
+                      if (this.addList.some(val => val.id == li.id && val.name == li.name)) {
+                        li.status = true
+                      }
+                    }  
+                  })
+                  //处理下级门店的情况 结束
+
                 }
               } else {
                 let a = this.addList.some((val, index) => {
-                  return val.id == item.id 
+                  return val.id == item.id && val.name == item.name
                 })
                 if (a) {
                   item.status = true
@@ -594,6 +668,7 @@ export default {
   mounted() {
     this.refresh()
     // this.$store.dispatch('heavyDate/'+this.mappingResult[5])
+    this.backup()
   },
   created() {
     console.log('created')
@@ -607,6 +682,8 @@ export default {
 .cusor {cursor: pointer;}
 .right {position:absolute;right: 4px;top:0;}
 .no-search {font-size: 14px; color: #A9AAAA; position: absolute;left: 15%;top: 250px;}
+.all-search {font-size: 14px; color: #A9AAAA; position: absolute;left: 73%;top: 250px;}
+.color {color: red !important;}
 
 .hjx-alert-container{position: fixed;top: 0;left: 0;width: 100%;height: 100%;text-align: center;z-index: 2000;}
 .hjx-alert-container .hjx-bg{position: absolute;top:0;left: 0;bottom: 0;right: 0;background-color: rgba(0,0,0,0.5);}

@@ -107,12 +107,13 @@
             </span>
             <p class="reward-remind mrg-l40 hjx-info">（满足选中机型的订单，可参与到活动中）</p>
         </div>
-        <hjx-left-title label="对象"><span class="errorInfo">{{errorInfo['participants']}}</span></hjx-left-title>
-        <div>
+        <hjx-left-title label="对象"><span class="errorInfo">机构和地域做交集判断</span></hjx-left-title>
+        <div>   
             <span class="hjx-left-label">商户/门店：</span>
             <span class="hjx-hover ft13 hjx-blue mrg-l14" @click="showChoose('channel')">
                 <el-button v-if="channelList.L1.length>0||channelList.L2.length>0" type="text" >已设置 <i class="iconfont icon-duigou"></i></el-button>
                 <el-button v-else type="text" >未设置<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                <span class="errorInfo">{{errorInfo['participants']}}</span>
             </span>
         </div>
         <div class="mrg-b10">
@@ -120,6 +121,7 @@
             <span class="hjx-hover ft13 hjx-blue mrg-l20" @click="showChoose('addr')">
                 <el-button v-if="addrList.L1.length>0||addrList.L2.length>0" type="text" >已设置 <i class="iconfont icon-duigou"></i></el-button>
                 <el-button v-else type="text" >未设置<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                <span class="errorInfo" v-show="!addrList.L1.length&&!addrList.L2.length">（若不设置地域，则默认全选）</span>
             </span>
         </div>
         <hjx-select-alert :action="'category'" :ifshow="ifshowModel" @close="closeAlert" :data="modelList" @setData="setModelData"></hjx-select-alert>
@@ -530,7 +532,7 @@ export default {
         },
         //验证参与对象 
         val_participants(){
-            if( !(this.channelList.L1.length>0||this.channelList.L2.length>0||this.addrList.L1.length>0||this.addrList.L2.length>0) ){
+            if( !(this.channelList.L1.length>0||this.channelList.L2.length>0) ){
                 this.$set(this.errorInfo , 'participants', '请至少设置一个参与对象')
                 return false 
             }else{
