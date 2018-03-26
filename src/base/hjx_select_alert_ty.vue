@@ -7,6 +7,7 @@
           <div class="fl box-left">
             <p class="second-title hjx-blue">备选</p>
             <p class="no-search" v-show="!searchL1Name && !chooseAllL1">搜索后将展示相应数据</p>
+            <p class="all-search" v-show="chooseAllL1" v-text="allText"></p>
             <div class="choose-field">
               <div v-if="first">
                 <el-input size="small" @input="searchL1(searchL1Name)" placeholder="搜索商户" prefix-icon="el-icon-search" v-model="searchL1Name" clearable :disabled="chooseAllL1"></el-input>
@@ -93,6 +94,7 @@ export default {
       showSearchL2:true,//搜索时使用 
       mydata: {}, //备份数据
       hideChooseAllL1: false,
+      allText: '全选',
     }
   },
   props: {
@@ -219,15 +221,38 @@ export default {
     //全选L1
     changeL1(status) { 
       if (status) { 
-        this.copyChannelList = JSON.parse(JSON.stringify(this.channelList))
-        this.copyHasChoosedList = JSON.parse(JSON.stringify(this.hasChoosedList))
-        this.channelList = []
-        this.hasChoosedList = {
-          L1: [],
-          L2: []
+        if (this.hasChoosedList.L1.length>0||this.hasChoosedList.L2.length>0) {
+          this.allText = ''
+          this.$confirm('全选后，当前选择的商户记录将不被保留, 确认要全选吗?', '提示', {
+            confirmButtonText: '确定全选',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.copyChannelList = JSON.parse(JSON.stringify(this.channelList))
+            this.copyHasChoosedList = JSON.parse(JSON.stringify(this.hasChoosedList))
+            this.channelList = []
+            this.hasChoosedList = {
+              L1: [],
+              L2: []
+            }
+            this.searchL1Name = ''
+            this.chooseAllL1 = true
+            this.allText = '全选'
+          }).catch(() => {
+            this.chooseAllL1 = false 
+            this.allText = '全选'
+          }); 
         }
-        this.searchL1Name = ''
-        // this.businessesFlage = true
+
+
+        // this.copyChannelList = JSON.parse(JSON.stringify(this.channelList))
+        // this.copyHasChoosedList = JSON.parse(JSON.stringify(this.hasChoosedList))
+        // this.channelList = []
+        // this.hasChoosedList = {
+        //   L1: [],
+        //   L2: []
+        // }
+        // this.searchL1Name = '' 
       } else {
         this.channelList = this.copyChannelList
         this.hasChoosedList = this.copyHasChoosedList
@@ -323,24 +348,9 @@ export default {
       }
     },
   },
-  watch: {
-    first(val) {
-      // if (val) {
-      //   // this.chooseAllL2 = false
-      // } else {
-      //   this.chooseAllL1 = false
-      // }
-    },
+  watch: { 
     chooseAllL1(val) {
       val ? this.showBlackOrWhite = false : this.showBlackOrWhite = true
-    },
-    businessesFlage(val) {
-      console.log(val)
-      // if (!val) { 
-      //   this.showSearchL1 = false
-      // } else {
-      //   this.showSearchL1 = true
-      // }
     }
   },
   mounted() {
@@ -356,6 +366,7 @@ export default {
 .right {position:absolute;right: 4px;top:0;}
 .no-select {user-select: none;}
 .no-search {font-size: 14px; color: #A9AAAA; position: absolute;left: 15%;top: 250px;}
+.all-search {font-size: 14px; color: #A9AAAA; position: absolute;left: 75%;top: 250px;}
 
 .hjx-alert-container{position: fixed;top: 0;left: 0;width: 100%;height: 100%;text-align: center;z-index: 2000;}
 .hjx-alert-container .hjx-bg{position: absolute;top:0;left: 0;bottom: 0;right: 0;background-color: rgba(0,0,0,0.5);}

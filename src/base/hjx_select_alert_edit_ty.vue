@@ -660,12 +660,6 @@ export default {
       } else {
         this.chooseAllL1 = false
       }
-    },
-    addList(val,old) {
-      console.log(val, '新增列表')
-    },
-    delList(val, old) {
-      console.log(val, '删除列表')
     }
   },
   mounted() {
@@ -674,7 +668,7 @@ export default {
     this.backup()
   },
   created() {
-    console.log('created')
+    // console.log('created')
   }
 }
 
