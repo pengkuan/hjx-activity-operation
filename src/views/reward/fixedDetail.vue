@@ -413,5 +413,6 @@ p{margin-bottom: 10px}
     font-size: 14px;
     color: #48576a;
 }
+.is-all {line-height: 80px;text-align: center;}
 
 </style>

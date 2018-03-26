@@ -463,9 +463,9 @@ export default {
     }, 
     //全选L1
     changeL1(status) { 
-      if (status) { 
-        this.allText = ''
+      if (status) {  
         if (this.hasChoosedList.L1.length>0||this.hasChoosedList.L2.length>0) {
+          this.allText = ''
           this.$confirm('全选后，当前选择的商户记录将不被保留, 确认要全选吗?', '提示', {
             confirmButtonText: '确定全选',
             cancelButtonText: '取消',
@@ -486,7 +486,7 @@ export default {
             this.allText = '全选'
           }); 
         } 
-      } else {
+      } else { 
         this.channelList = this.copyChannelList
         this.hasChoosedList = this.copyHasChoosedList
       }  
@@ -550,26 +550,7 @@ export default {
                   })
                   if (!is) {
                     this.hasChoosedList.L1.unshift({id: item.id, name: item.name, type: item.type, color: true})
-                  } 
-
-                  //处理下级门店的情况 开始
-                  item.storeList.forEach((li,j) => {
-                    if (li.status) { //状态为true
-                      if (this.delList.some(val => val.id == li.id && val.name == li.name )) {  //在删除列表内
-                        li.status = false
-                      } else { //没有被删除
-                        if (!this.hasChoosedList.L2.some(val => val.id == li.id)) { //在L2列表内
-                          this.hasChoosedList.L2.unshift({id: item.id, name: item.name, color: true})
-                        }
-                      }
-                    } else {
-                      if (this.addList.some(val => val.id == li.id && val.name == li.name)) {
-                        li.status = true
-                      }
-                    }  
-                  })
-                  //处理下级门店的情况 结束
-
+                  }  
                 }
               } else {
                 let a = this.addList.some((val, index) => {
@@ -579,7 +560,28 @@ export default {
                   item.status = true
                 }
               }
+
+              //处理下级门店的情况 开始
+             /* item.storeList.forEach((li,j) => {
+                if (li.status) { //状态为true
+                  if (this.delList.some(val => val.id == li.id && val.name == li.name )) {  //在删除列表内
+                    li.status = false
+                  } else { //没有被删除
+                    if (!this.hasChoosedList.L2.some(val => val.id == li.id)) { //在L2列表内
+                      this.hasChoosedList.L2.unshift({id: item.id, name: item.name, color: true})
+                    }
+                  }
+                } else {
+                  if (this.addList.some(val => val.id == li.id && val.name == li.name)) {
+                    li.status = true
+                  }
+                }  
+              })*/
+              //处理下级门店的情况 结束
+              
             }) 
+
+
 
 
             console.log(this.channelList, '搜索到的channelList')
