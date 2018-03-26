@@ -102,7 +102,7 @@
             </span>
             <span class="reward-remind hjx-info">(满足选中机型的订单，可参与到活动中)</span>
         </div>
-        <hjx-left-title label="对象"><span class="errorInfo">机构和地域做交集判断</span></hjx-left-title>
+        <hjx-left-title label="对象"><span class="errorInfo" style="color:#878D99">机构和地域做交集判断</span></hjx-left-title>
         <div>
             <span class="hjx-left-label">商户/门店：</span>
             <span class="hjx-hover ft13 hjx-blue mrg-l14" @click="showChooseDetail('channelList','name','name')">
@@ -252,7 +252,7 @@ export default {
                   searchKey: val,
                   // pageIndex: this.pageIndex + '',
                   pageIndex: '0',
-                  pageSize: '20' 
+                  pageSize: '100' 
                 }
 
                 if (type == '下拉') {

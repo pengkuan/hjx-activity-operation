@@ -7,7 +7,7 @@
           <div class="fl box-left">
             <p class="second-title hjx-blue">备选</p>
             <p class="no-search" v-show="!searchL1Name && !chooseAllL1">搜索后将展示相应数据</p>
-            <p class="all-search" v-show="chooseAllL1">全选</p>
+            <p class="all-search" v-show="chooseAllL1" v-text="allText"></p>
             <div class="choose-field">
               <div v-if="first">
                 <el-input size="small" @input="searchL1(searchL1Name)" placeholder="搜索商户" prefix-icon="el-icon-search" v-model="searchL1Name" clearable :disabled="chooseAllL1"></el-input>
@@ -75,8 +75,7 @@ export default {
   name:'hjxSelectAlert',
   components: { PullTo },
   data() {
-    return {
-      confirmAll: false, //全选弹框的确认
+    return { 
       timer: '',
       loadMorePageIndex: '0',
       loadMorePageSize: '100',
@@ -105,6 +104,7 @@ export default {
       showSearchL2:true,//搜索时使用 
       isFirst: false,
       mydata: {},
+      allText: '全选',
     }
   },
   props: {
@@ -463,9 +463,8 @@ export default {
     }, 
     //全选L1
     changeL1(status) { 
-      if (status) {
-        // this.chooseAllL1 = false
-        this.confirmAll = true
+      if (status) { 
+        this.allText = ''
         if (this.hasChoosedList.L1.length>0||this.hasChoosedList.L2.length>0) {
           this.$confirm('全选后，当前选择的商户记录将不被保留, 确认要全选吗?', '提示', {
             confirmButtonText: '确定全选',
@@ -481,8 +480,10 @@ export default {
             }
             this.searchL1Name = ''
             this.chooseAllL1 = true
+            this.allText = '全选'
           }).catch(() => {
             this.chooseAllL1 = false 
+            this.allText = '全选'
           }); 
         } 
       } else {
@@ -682,7 +683,7 @@ export default {
 .cusor {cursor: pointer;}
 .right {position:absolute;right: 4px;top:0;}
 .no-search {font-size: 14px; color: #A9AAAA; position: absolute;left: 15%;top: 250px;}
-.all-search {font-size: 14px; color: #A9AAAA; position: absolute;left: 73%;top: 250px;}
+.all-search {font-size: 14px; color: #A9AAAA; position: absolute;left: 75%;top: 250px;}
 .color {color: red !important;}
 
 .hjx-alert-container{position: fixed;top: 0;left: 0;width: 100%;height: 100%;text-align: center;z-index: 2000;}
