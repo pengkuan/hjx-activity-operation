@@ -75,7 +75,7 @@
             <el-table-column prop="orderNum" label="订单编号"></el-table-column>
             <el-table-column label="付款金额">
                 <template slot-scope="scope">
-                    <span> {{(scope.row.orderPrice / 100).toFixed(2)}} </span>
+                    <span> {{scope.row.orderPrice / 100}} </span>
                 </template>
             </el-table-column>
             <el-table-column width="100" label="奖励类型">
