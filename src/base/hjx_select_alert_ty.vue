@@ -10,7 +10,7 @@
             <p class="all-search" v-show="chooseAllL1" v-text="allText"></p>
             <div class="choose-field">
               <div v-if="first">
-                <el-input size="small" @input="searchL1(searchL1Name)" placeholder="搜索商户" prefix-icon="el-icon-search" v-model="searchL1Name" clearable :disabled="chooseAllL1"></el-input>
+                <el-input size="small" @keyup.native.enter="searchL1(searchL1Name)" placeholder="搜索商户，点击enter开始搜索" prefix-icon="el-icon-search" v-model="searchL1Name" clearable :disabled="chooseAllL1"></el-input>
                 <p class="breadcrumb"><span class="noTap ">商户列表</span></p>
                 <p class="left-item-second">
                   <el-checkbox v-show="showSearchL1" @change="changeL1(chooseAllL1)" :indeterminate="isIndeterminateFirst" v-model="chooseAllL1" :disabled="!businessesFlage"><span class="ft12">全选所有商户</span></el-checkbox>
@@ -259,13 +259,14 @@ export default {
       }  
     },
     //搜索L1
-    searchL1(val) { 
+    searchL1(val) {  
        if(!val) {
          this.showSearchL1 = true
          this.channelList = []
          clearTimeout(this.timer)
          return
        } else {
+        if(val.length<2) return
          this.showSearchL1 = false 
          clearTimeout(this.timer)
          this.timer = setTimeout(() => {
@@ -351,6 +352,13 @@ export default {
   watch: { 
     chooseAllL1(val) {
       val ? this.showBlackOrWhite = false : this.showBlackOrWhite = true
+    },
+    searchL1Name(val) {
+      if (!val) {
+        this.showSearchL1 = true
+        this.channelList = []
+        clearTimeout(this.timer)
+      }
     }
   },
   mounted() {

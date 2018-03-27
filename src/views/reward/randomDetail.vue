@@ -114,7 +114,7 @@
             <router-link to="/reward/list"><el-button size="mini">返回</el-button></router-link>
         </div>
 
-        <el-dialog title="详情" :visible.sync="detailVisible" width="420px">  
+        <el-dialog :title="dialogTitle" :visible.sync="detailVisible" width="420px">  
             <div v-loading="channelLoading">
                 <el-input size="small" @input="search(keywords)" 
                     placeholder="搜索" 
@@ -161,6 +161,7 @@ export default {
             channelIsAll: '',   //渠道是否全选标志 
             channelLoading: false, //加载门店loading
             ifshowDetail:true,  //查看详情时所以选项为禁用状态
+            dialogTitle: '',
 
             amountLimitType:'1',//总金额限制类型 
             activityName: '',
@@ -252,6 +253,12 @@ export default {
                       return
                     } 
                     this.channelIsAll = res.businessesFlage
+                    if (res.businessesFlage == '0' || res.businessesFlage == '1') {
+                        this.dialogTitle = '详情（白名单）'
+                    } else{
+                        this.dialogTitle = '详情（黑名单）'
+                    }
+
                     if (type == '下拉') {
                         this.pageIndex++
                         this.channelList.L1 = this.channelList.L1.concat(res.businessesIdList)
