@@ -20,7 +20,9 @@ img{border:none;vertical-align:top;}
 /*位置配置*/
 .hjx-text-center{text-align: center;}
 .hjx-text-right{text-align: right;}
-.hjx-vertical-bottom{vertical-align: bottom;}
+.hjx-vertical-bottom{vertical-align: bottom;}.
+.hjx-fl{float: left}
+.hjx-fr{float: right}
 /*字体大小配置*/
 .ft12{font-size: 12px}
 .ft13{font-size: 13px}
@@ -48,6 +50,7 @@ img{border:none;vertical-align:top;}
 .mrg-l24{margin-left: 24px;}
 .mrg-l40{margin-left: 40px;}
 .mrg-l120{margin-left: 120px;}
+.mrg-t120{margin-top: 120px;}
 /*input配置*/
 ::-webkit-input-placeholder{color:#c0c4cc}
 ::-ms-input-placeholder{color:#c0c4cc}

@@ -8,7 +8,7 @@
             <p class="second-title hjx-blue">备选</p>
             <p class="no-search" v-show="!searchL1Name && !chooseAllL1">搜索后将展示相应数据</p>
             <p class="all-search" v-show="chooseAllL1" v-text="allText"></p>
-            <div class="choose-field">
+            <div class="choose-field" id="choose-field">
               <div v-if="first">
                 <el-input size="small" @keyup.native.enter="searchL1(searchL1Name)"  placeholder="搜索商户，点击enter开始搜索" prefix-icon="el-icon-search" v-model="searchL1Name" clearable :disabled="chooseAllL1"></el-input>
                 <!-- <el-input size="small" @input="searchL1(searchL1Name)"  placeholder="搜索商户" prefix-icon="el-icon-search" v-model="searchL1Name" clearable :disabled="chooseAllL1"></el-input> -->
@@ -21,7 +21,7 @@
                   <p class="left-item overflow" v-for="(item, index) in channelList" :class="{'disable':item.status, 'relative':true, 'cusor': true}" @click="handleL1(item)">
                     <i class="el-icon-circle-plus-outline"></i>
                     <span class="ft12"><i class="iconfont icon-wenjianjia"></i> {{item.name}}</span>
-                    <el-button @click.stop.prevent="setSecond(item.storeList)" type="text" size="mini" class="fr clear-padding" :disabled="item.status"><i class="iconfont icon-xiajiicon"></i>下级</el-button>
+                    <el-button @click.stop.prevent="setSecond(item.id)" type="text" size="mini" class="fr clear-padding" :disabled="item.status"><i class="iconfont icon-xiajiicon"></i>下级</el-button>
                   </p>
                 </div>
               </div>
@@ -33,6 +33,7 @@
                     <span class="ft12"><i class="iconfont icon-dian"></i>{{item.name}}</span> 
                     <i class="el-icon-circle-plus-outline right"></i>
                   </p>
+                  <p v-if="storeList.length == 0" class="hjx-info hjx-text-center mrg-t120">该渠道下暂无门店</p>
                 </div>
               </div>
             </div>
@@ -305,15 +306,20 @@ export default {
 
       } else { //门店
         // console.log(item)
-        this.channelList.forEach((list, index) => {
-          if (item.pid == list.id) { 
-            list.storeList.forEach((term, i) => {
-              if (item.id == term.id) {
-                term.status = false
-              }
-            })
+        this.storeList.forEach((term, i) => {
+          if (item.id == term.id) {
+            term.status = false
           }
         })
+        // this.channelList.forEach((list, index) => {
+        //   if (item.pid == list.id) { 
+        //     list.storeList.forEach((term, i) => {
+        //       if (item.id == term.id) {
+        //         term.status = false
+        //       }
+        //     })
+        //   }
+        // })
 
         let isInAddList = this.addList.some((val, index) => {
           return  val.id == item.id && val.type != 'channel' 
@@ -361,24 +367,18 @@ export default {
     },
     
     /*****设置显示的二级值****/
-    setSecond(storeList) {  
+    async setSecond(channelId) {  
       this.first = false
-      console.log('二级菜单为：', storeList)
-      this.storeList = storeList
-
-
-      // this.storeList.forEach((list, index) => {
-      //   let idx = this.hasChoosedList.L2.findIndex((li, i) => {
-      //     return li.id == list.id
-      //   })
-
-      //   if (idx >= 0) {
-      //     list.status = true
-      //   } 
-      // }) 
-
+      let res = await api.get_channel_store_list_new({activityId:this.$route.query.id,channelId:channelId})
+      this.storeList = res.storeList?res.storeList:[]
       //这个逻辑可言合并
       this.storeList.forEach((item, index) => {
+        item.ifshow = true
+        if (item.status == '1') {
+          item.status  = true
+        } else {
+          item.status = false
+        }
         if (item.status) {
           let flag = this.delList.some((val, i) => {
             return val.id == item.id && val.name == item.name
@@ -404,11 +404,12 @@ export default {
           }
         }
       })
+      console.log(this.storeList)
 
     },
     /********/
     //单选L1
-    handleL1(item) {    
+    async handleL1(item) {    
 
       if (item.status) return
 
@@ -420,23 +421,19 @@ export default {
       //勾选时添加到添加数据
       this.addList.push(cell)
 
-      if (item.storeList && item.storeList.length) {
-        item.storeList.forEach((item, index) => {
-          let idx = this.addList.findIndex((li,i) => {
-            return li.id == item.id && li.name == item.name
-          })
-          if (idx >= 0) {
-            this.addList.splice(idx, 1)
-          }
-        })
-      }
+      // if (item.storeList && item.storeList.length) {
+      //   item.storeList.forEach((item, index) => {
+      //     let idx = this.addList.findIndex((li,i) => {
+      //       return li.id == item.id && li.name == item.name
+      //     })
+      //     if (idx >= 0) {
+      //       this.addList.splice(idx, 1)
+      //     }
+      //   })
+      // }
 
       //需要看看删除列表内有无此数据，如果有那么也需要删除
-      // this.delList.forEach((delItem, i) => {
-      //   if (delItem.id == cell.id) {
-      //     this.delList.splice(i,1)
-      //   }
-      // })
+  
       for (let i = 0; i < this.delList.length; i++) {
         if (this.delList[i].id == cell.id) {
           this.delList.splice(i, 1)
@@ -444,14 +441,10 @@ export default {
         }
       }
 
-
-      //渠道勾选时，需要把下面的门店取消
-      let list = []
-      this.channelList.forEach((me, i) => {
-        if (me.id == item.id) {
-          list = me.storeList
-        }
-      })  
+      //取消渠道勾选时，需要把下面的门店取消
+      let res = await api.get_channel_store_list_new({activityId:this.$route.query.id,channelId:item.id})
+      let list  = res.storeList?res.storeList:[]
+ 
       list.forEach((li, index) => {
         li.status = false
         let idx = this.hasChoosedList.L2.findIndex((that, i) => {
@@ -494,7 +487,6 @@ export default {
     },
     //搜索L1
     searchL1(val) {
-      console.log(1234)
       if(!val) {
         this.showSearchL1 = true
         this.channelList = []
@@ -503,15 +495,18 @@ export default {
       } else {
         if(val.length<2) return
         this.showSearchL1 = false 
-        clearTimeout(this.timer)
-        this.timer = setTimeout(() => {
           let params = {
             activityId: this.$route.query.id,
             channelName: val,
             pageIndex: '0',
             pageSize: '100000' 
           }
+          var loading = this.$loading({
+              text:'正在加载',
+              target:'#choose-field'
+          })
           api.get_channel_list_change(params).then((res) => {
+            loading.close()
             if (res._ret != '0') {
               this.$alert(res._errStr)
               return
@@ -526,16 +521,16 @@ export default {
               } else {
                 item.status = false
               }
-              if (item.storeList.length && item.storeList) {
-                item.storeList.forEach((val,j) => {
-                  val.ifshow = true
-                  if (val.status == '1') {
-                    val.status  = true
-                  } else {
-                    val.status = false
-                  }
-                })
-              }
+              // if (item.storeList.length && item.storeList) {
+              //   item.storeList.forEach((val,j) => {
+              //     val.ifshow = true
+              //     if (val.status == '1') {
+              //       val.status  = true
+              //     } else {
+              //       val.status = false
+              //     }
+              //   })
+              // }
             })
 
             // 把存在删除列表中的，且status是true的，设置为false
@@ -563,46 +558,10 @@ export default {
                   item.status = true
                 }
               }
-
-              //处理下级门店的情况 开始
-             /* item.storeList.forEach((li,j) => {
-                if (li.status) { //状态为true
-                  if (this.delList.some(val => val.id == li.id && val.name == li.name )) {  //在删除列表内
-                    li.status = false
-                  } else { //没有被删除
-                    if (!this.hasChoosedList.L2.some(val => val.id == li.id)) { //在L2列表内
-                      this.hasChoosedList.L2.unshift({id: item.id, name: item.name, color: true})
-                    }
-                  }
-                } else {
-                  if (this.addList.some(val => val.id == li.id && val.name == li.name)) {
-                    li.status = true
-                  }
-                }  
-              })*/
-              //处理下级门店的情况 结束
               
             }) 
 
-
-
-
-            console.log(this.channelList, '搜索到的channelList')
-
-
-
-            // //同步已选列表，如果右边有的，那么就打钩
-            // this.channelList.forEach((item, index) => {
-            //   let idx = this.hasChoosedList.L1.findIndex((list, index) => {
-            //     return list.id == item.id
-            //   })
-            //   if (idx >= 0) {
-            //     item.status = true
-            //   }
-            // })
-
           })
-        },700)   
       }
     },
     /**************************@L2************************/
@@ -620,13 +579,6 @@ export default {
 
         //勾选时添加到添加数据
         this.addList.push(cell)
-
-        //需要看看删除列表内有无此数据，如果有那么也需要删除
-        // this.delList.forEach((delItem, i) => {
-        //   if (delItem.id == cell.id) {
-        //     this.delList.splice(i,1)
-        //   }
-        // })
 
         for (let i = 0; i < this.delList.length; i++) {
           if (this.delList[i].id == cell.id) {
@@ -674,12 +626,8 @@ export default {
   },
   mounted() {
     this.refresh()
-    // this.$store.dispatch('heavyDate/'+this.mappingResult[5])
     this.backup()
   },
-  created() {
-    // console.log('created')
-  }
 }
 
 </script>

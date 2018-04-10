@@ -137,7 +137,10 @@
                 <el-button type="primary" @click="detailVisible = false" size="mini">确 定</el-button>
             </span>
         </el-dialog>
+        <el-alert title="操作流水" type="info" :closable="false"></el-alert><br>
+        <hjx-pipe v-for="(item,index) in handleHistoryList" :key="index"  :strF1="item.name" :strF2="item.preValue? `原：${item.preValue} , 改：${item.nowValue}`:'' ">{{item.operator+' '+item.opeTime}}</hjx-pipe><br>
     </div>
+
 </template>
 <script>
 import api from '@/api/index'
@@ -146,11 +149,12 @@ import hjxPart from '@/base/hjx_part'
 import hjxLeftTitle from '@/base/hjx_left_title'
 import hjxUnderlineInput from '@/base/hjx_underline_input'
 import hjxSelectAlert from '@/base/hjx_select_alert'
+import hjxPipe from '@/base/hjx_pipe'
 
 import PullTo from 'vue-pull-to'
 
 export default {
-    components: { hjxPart, hjxLeftTitle, hjxUnderlineInput,hjxSelectAlert,PullTo },
+    components: { hjxPart, hjxLeftTitle, hjxUnderlineInput,hjxSelectAlert,PullTo,hjxPipe}, 
     data() {
         return {
             // 查看详情dialog
@@ -217,6 +221,7 @@ export default {
                 L1: [],
                 L2: []
             },
+            handleHistoryList:[] //操作流水
 
             
         }
@@ -401,7 +406,17 @@ export default {
                 this.channelList.L1 = this.channelList.L1.concat(res.businessesIdList)
                 this.channelList.L2 = this.channelList.L2.concat(res.storeIdList) 
             })
-        },  
+        }, 
+        //操作流水
+        getActivityHandleHistory(){ 
+            api.get_activity_history_list({ activityId:this.$route.query.id }).then(res=>{
+                if (res._ret != '0') {
+                    this.$alert(res._errStr)
+                    return
+                } 
+                this.handleHistoryList = res.opeList
+            })
+        } 
     },
     watch: {
         keywords() {
@@ -410,6 +425,7 @@ export default {
     },
     mounted() {
         this.setDeault()  
+        this.getActivityHandleHistory()
     }
 }
 

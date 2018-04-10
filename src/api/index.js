@@ -12,9 +12,11 @@ export default {
     get_category_products(params) {return http.fetch('product_center','get_category_products', params)},//获取机型
     get_channel_list(params) {return http.fetch('channel_org','get_channel_list', params)},//获取渠道
     get_channel_store_list(params) {return http.fetch('channel_org','get_channel_store_list', params)},//获取门店
+    get_activity_history_list(params) {return http.fetch('operation_center','get_activity_history_list', params)},//获取活动操作流水
 
 
     //改了的
+    get_channel_store_list_new(params) {return http.fetch('operation_center','get_channel_store_list', params)},//获取渠道下门店（备选）
     get_channel_list_change(params) {return http.fetch('operation_center','get_channel_list', params)},//获取渠道
     search_activity_channel_store_list(params) {return http.fetch('operation_center','search_activity_channel_store_list', params)},//商户门店列表分页
 /**

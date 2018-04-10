@@ -8,7 +8,7 @@
             <p class="second-title hjx-blue">备选</p>
             <p class="no-search" v-show="!searchL1Name && !chooseAllL1">搜索后将展示相应数据</p>
             <p class="all-search" v-show="chooseAllL1" v-text="allText"></p>
-            <div class="choose-field">
+            <div class="choose-field" id="choose-field">
               <div v-if="first">
                 <el-input size="small" @keyup.native.enter="searchL1(searchL1Name)" placeholder="搜索商户，点击enter开始搜索" prefix-icon="el-icon-search" v-model="searchL1Name" clearable :disabled="chooseAllL1"></el-input>
                 <p class="breadcrumb"><span class="noTap ">商户列表</span></p>
@@ -19,7 +19,7 @@
                   <p class="left-item overflow" v-for="(item, index) in channelList" :class="{'disable':item.status, 'relative':true, 'cusor': true}" @click="handleL1(item)">
                       <i class="el-icon-circle-plus-outline"></i>
                       <span class="ft12"><i class="iconfont icon-wenjianjia"></i> {{item.name}}</span>
-                    <el-button @click.stop.prevent="setSecond(item.storeList)" type="text" size="mini" class="fr clear-padding" :disabled="item.status"><i class="iconfont icon-xiajiicon"></i>下级</el-button>
+                    <el-button @click.stop.prevent="setSecond(item.id)" type="text" size="mini" class="fr clear-padding" :disabled="item.status"><i class="iconfont icon-xiajiicon"></i>下级</el-button>
                   </p>
                 </div>
               </div>
@@ -31,6 +31,7 @@
                       <span class="ft12"><i class="iconfont icon-dian"></i>{{item.name}}</span>
                       <i class="el-icon-circle-plus-outline right"></i>
                   </p>
+                  <p v-if="storeList.length == 0" class="hjx-info hjx-text-center mrg-t120">该渠道下暂无门店</p>
                 </div>
               </div>
             </div>
@@ -79,10 +80,10 @@ export default {
         L2: []
       },
       showBlackOrWhite: true, //切换黑白名单
-      hasChoosedList: {
+      hasChoosedList: { //右边已选
         L1:[],
         L2:[],
-      }, //右边已选
+      }, 
       storeList: [],
       businessesFlage: true,
       channelList: [],  
@@ -158,11 +159,9 @@ export default {
           }
         })
       } else { //门店
-        console.log(item)
         this.channelList.forEach((list, index) => {
           if (item.pid == list.id) {
-            console.log(list,111)
-            list.storeList.forEach((term, i) => {
+            this.storeList.forEach((term, i) => {
               if (item.id == term.id) {
                 term.status = false
               }
@@ -180,34 +179,40 @@ export default {
       })
     },
     /*****设置显示的二级值****/
-    setSecond(item) {  
-      this.first = false
-      this.storeList = item
-
-      this.storeList.forEach((list, index) => {
-        let idx = this.hasChoosedList.L2.findIndex((li, i) => {
-          return li.id == list.id
+    setSecond(channelId) {  
+      //获取storeList
+      api.get_channel_store_list_new({activityId:'',channelId:channelId}).then(res=>{
+        this.first = false
+        if(!res.storeList) return
+        this.storeList = res.storeList
+        this.storeList.forEach((item, index) => {
+          item.ifshow = true
+          if (item.status == '1') {
+             item.status  = true
+           } else {
+             item.status = false
+          }
+          let idx = this.hasChoosedList.L2.findIndex((li, i) => {
+            return li.id == item.id
+          }) 
+          if (idx >= 0) {
+            item.status = true
+          } 
         }) 
-        if (idx >= 0) {
-          list.status = true
-        } 
-      }) 
+      })
+      
     },
-    /********/
     //单选L1
-    handleL1(item) {   
+    async handleL1(item) {   
       if (item.status) return 
       item.status = true 
 
       this.hasChoosedList.L1.push({id:item.id, name: item.name, type: 'channel'})
 
       //取消渠道勾选时，需要把下面的门店取消
-      let list = []
-      this.channelList.forEach((me, i) => {
-        if (me.id == item.id) {
-          list = me.storeList
-        }
-      })  
+      let res = await api.get_channel_store_list_new({activityId:'',channelId:item.id})
+      let list  = res.storeList?res.storeList:[]
+ 
       list.forEach((li, index) => {
         li.status = false
         let idx = this.hasChoosedList.L2.findIndex((that, i) => {
@@ -243,16 +248,6 @@ export default {
             this.allText = '全选'
           }); 
         }
-
-
-        // this.copyChannelList = JSON.parse(JSON.stringify(this.channelList))
-        // this.copyHasChoosedList = JSON.parse(JSON.stringify(this.hasChoosedList))
-        // this.channelList = []
-        // this.hasChoosedList = {
-        //   L1: [],
-        //   L2: []
-        // }
-        // this.searchL1Name = '' 
       } else {
         this.channelList = this.copyChannelList
         this.hasChoosedList = this.copyHasChoosedList
@@ -266,17 +261,24 @@ export default {
          clearTimeout(this.timer)
          return
        } else {
-        if(val.length<2) return
+        if(val.length<2) {
+          this.$message('至少输入两位搜索')
+          return
+        }
+
          this.showSearchL1 = false 
-         clearTimeout(this.timer)
-         this.timer = setTimeout(() => {
            let params = {
              activityId: '',
              channelName: val,
              pageIndex: '0',
              pageSize: '100000' 
            }
+           var loading = this.$loading({
+              text:'正在加载',
+              target:'#choose-field'
+          })
            api.get_channel_list_change(params).then((res) => {
+              loading.close()
              if (res._ret != '0') {
                this.$alert(res._errStr)
                return
@@ -291,17 +293,11 @@ export default {
                } else {
                  item.status = false
                }
-               if (item.storeList.length && item.storeList) {
-                 item.storeList.forEach((val,j) => {
-                   val.ifshow = true
-                   if (val.status == '1') {
-                     val.status  = true
-                   } else {
-                     val.status = false
-                   }
-                 })
-               }
+
              })
+
+             console.log(this.channelList)
+             return
 
              // 如果已经选择过了，那么就是禁用状态
              this.channelList.forEach((item, index) => {
@@ -309,13 +305,13 @@ export default {
                  return list.id == item.id
                })
                if (idx != -1) {
+                 console.log(333)
                  item.status = true
                } else {
                  item.status = false
                }
              })  
            })
-         },700)   
        }  
     },
     /**************************@L2************************/

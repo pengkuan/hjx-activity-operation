@@ -34,10 +34,7 @@
                     <el-table-column  prop="activityLevel" label="优先级"></el-table-column>
                     <el-table-column  label="活动名称">
                         <template slot-scope="scope">
-                            <span v-if="scope.row.activityName.length<8">{{scope.row.activityName}}</span>
-                            <span v-else>
-                                {{scope.row.activityName.substring(0,8)}}...
-                            </span>
+                            <span>{{scope.row.activityName}}</span>
                         </template>
                     </el-table-column>
                     <el-table-column width="260px" label="生效时间">
@@ -114,10 +111,7 @@
                     <el-table-column  prop="activityLevel" label="优先级"></el-table-column>
                     <el-table-column  label="活动名称">
                         <template slot-scope="scope">
-                            <span v-if="scope.row.activityName.length<8">{{scope.row.activityName}}</span>
-                            <span v-else>
-                                {{scope.row.activityName.substring(0,8)}}...
-                            </span>
+                            <span>{{scope.row.activityName}}</span>
                         </template>
                     </el-table-column>
                     <el-table-column  width="260px" label="生时间">
