@@ -6,8 +6,8 @@
         </el-breadcrumb>
         <br>
         <el-tabs type="border-card"  v-model="activeName" >
-            <!-- ################### 随机 ###################### -->
-            <el-tab-pane label="随机" name="ramdom">
+            <!-- ################### 普通 ###################### -->
+            <el-tab-pane label="普通" name="ramdom">
                 <!-- 搜索start -->
                 <el-form :inline="true" :model="random_reward.search" ref="random_reward.search"  size="mini" class="demo-form-inline">
                     <el-form-item label="活动名称:" prop="activityName">
@@ -171,7 +171,7 @@ export default {
     data() {
         return {
             activeName:'ramdom',
-            random_reward: { //随机
+            random_reward: { //普通
                 list: [],
                 search: {
                     activityType: "1",
@@ -257,7 +257,7 @@ export default {
             })
         },
         
-        /*****随机*****/
+        /*****普通*****/
         random_reset(formName){
             this.$refs[formName].resetFields()
             this.random_init()

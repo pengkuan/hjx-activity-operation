@@ -392,7 +392,7 @@ export default {
                     this.$alert(res._errStr)
                     return
                 } 
-                this.handleHistoryList = res.opeList
+                this.handleHistoryList = res.opeList.reverse()
             })
         } 
 

@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/reward/list' }">随机红包</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/reward/list' }">普通红包</el-breadcrumb-item>
             <el-breadcrumb-item>编辑</el-breadcrumb-item>
         </el-breadcrumb>
         <br>
@@ -48,12 +48,14 @@
             </p>
         </div>
         <hjx-left-title label="算法"></hjx-left-title>
+        <el-radio class='hjx-left-label' disabled v-model="publicAlgorithmFlag" label="0">固定比例</el-radio>
+        <el-radio v-model="publicAlgorithmFlag" disabled label="1">随机算法</el-radio><br><br>
         <div class="mrg-b10 ">
             <hjx-underline-input type='number' label="算法系数" width="50" @change="val_publicAlgorithmCoefficient" v-model="publicAlgorithmCoefficient" :textCenter="true"></hjx-underline-input><span class="underline-text">%</span>
             <span class="underline-text-info reward-remind hjx-info">（参与算法计算的相乘系数，为活动成本）</span>
             <span class="errorInfo">{{errorInfo['publicAlgorithmCoefficient']}}</span>
         </div>
-        <div class="mrg-b10">
+        <div class="mrg-b10"  v-if="publicAlgorithmFlag == 1">
             <div class="mrg-b10">
                 <span class="hjx-left-label">数额设置：</span><span class="reward-remind hjx-info">（设置付款金额在某个区间内，相应的红包金额最高、最低值）</span>
             </div>
@@ -75,11 +77,20 @@
                 <span class="errorInfo">{{errorInfo['CountRangeList_'+index]}}</span>
             </div>
         </div>
+        <div class="mrg-b10" v-else>
+            <div class="mrg-b10">
+                <span class="hjx-left-label">数额设置：</span><span class="reward-remind hjx-info">（设置付款金额在某个区间内，订单参与发放）</span>
+            </div>
+            <hjx-underline-input class='mrg-l120'  type='number' width="50" @change="val_directGrantSection"  v-model="directGrantSection.least"  :textCenter="true"></hjx-underline-input>
+            <span class="underline-text "> ≤ 付款金额 < </span>
+            <hjx-underline-input type='number' width="50" @change="val_directGrantSection"  v-model="directGrantSection.most" :textCenter="true"></hjx-underline-input>
+            <span class="errorInfo">{{errorInfo['directGrantSection']}}</span>
+        </div>
 
         <hjx-left-title label="风控"></hjx-left-title>
         <div class="mrg-b10 ">
             <hjx-underline-input label="发放总额上限" type='number' disabled width="70" @change="val_upperLimitAmount" v-model="upperLimitAmount" :textCenter="true"></hjx-underline-input><span class="underline-text">元 / 整个时间段</span>
-            <span class="reward-remind underline-text-info hjx-info">（周期内发放金额达到上限后，每笔红包将按单笔最低值发放）</span>
+            <span class="reward-remind underline-text-info hjx-info">（{{publicAlgorithmFlag == '1'?'周期内发放金额达到上限后，每笔红包将按单笔最低值发放':'周期内发放金额达到上限，会触发总额状态生效。但店奖仍会正常发放'}}）</span>
             <span class="errorInfo">{{errorInfo['upperLimitAmount']}}</span>
         </div>
 
@@ -149,7 +160,7 @@ export default {
             amountLimitType:'1',//总金额限制类型 
             activityName: '',
             activityDesc: '',
-            rewardType: '1',//随机抽奖
+            rewardType: '1',//普通抽奖
             operateType:'1',
             ticketTypeList:[
             	{name:'店奖类',id:'1'}
@@ -184,8 +195,10 @@ export default {
                 { name: '不限', id: '1' },
                 { name: '限制', id: '2' },
             ],
+            publicAlgorithmFlag:'0',//算法标识
+            directGrantSection:{least:'',most:''}, //算法标识为0时的付款区间
             upperLimitAmount:'',
-            /************ 数额设置 ************/
+            /************ 算法标识为1时的数额设置 ************/
             addTopCount: 10 ,
             CountRangeList:[
             	{
@@ -267,28 +280,37 @@ export default {
             this.showPlan = res.showPlan
             this.timeLimitType = res.timeLimitType
             this.upperLimitAmount = String(res.upperLimitAmount / 100)
-            //数额设置
-	        if(res.publicGrantSection){
-	        	let countArr = res.publicGrantSection.split('&')
-	        	countArr.forEach((item,index) =>{
-	        		let payArr = item.split('#')[0]
-	        		let bonusArr = item.split('#')[1]
-	        		if(index == 0){
-	        			this.CountRangeList[0].payLeast = payArr.split('|')[0]/100+''
-	        			this.CountRangeList[0].payMost = payArr.split('|')[1]/100+''
-	        			this.CountRangeList[0].bonusLeast = bonusArr.split('|')[0]/100+''
-	        			this.CountRangeList[0].bonusMost = bonusArr.split('|')[1]/100+''
-	        		}else{
-	        			this.CountRangeList.push({
-	        				payLeast : payArr.split('|')[0]/100+'',
-	        				payMost : payArr.split('|')[1]/100+'',
-	        				bonusLeast : bonusArr.split('|')[0]/100+'',
-	        				bonusMost : bonusArr.split('|')[1]/100+''
-	        			})
-	        		}
-	        	})
-	        	
-	        }
+            if(res.publicAlgorithmFlag){ //此字段为新添加字段
+                this.publicAlgorithmFlag = res.publicAlgorithmFlag
+            }
+            if(this.publicAlgorithmFlag == '0'){
+                //设置付款金额
+                this.directGrantSection.least = res.publicGrantSection.split('|')[0]/100+''
+                this.directGrantSection.most = res.publicGrantSection.split('|')[1]/100+''
+            }else{
+                //数额设置
+                if(res.publicGrantSection){
+                    let countArr = res.publicGrantSection.split('&')
+                    countArr.forEach((item,index) =>{
+                        let payArr = item.split('#')[0]
+                        let bonusArr = item.split('#')[1]
+                        if(index == 0){
+                            this.CountRangeList[0].payLeast = payArr.split('|')[0]/100+''
+                            this.CountRangeList[0].payMost = payArr.split('|')[1]/100+''
+                            this.CountRangeList[0].bonusLeast = bonusArr.split('|')[0]/100+''
+                            this.CountRangeList[0].bonusMost = bonusArr.split('|')[1]/100+''
+                        }else{
+                            this.CountRangeList.push({
+                                payLeast : payArr.split('|')[0]/100+'',
+                                payMost : payArr.split('|')[1]/100+'',
+                                bonusLeast : bonusArr.split('|')[0]/100+'',
+                                bonusMost : bonusArr.split('|')[1]/100+''
+                            })
+                        }
+                    })
+                    
+                }
+            }
 
 
 
@@ -374,10 +396,6 @@ export default {
                     return false
                 }
             }
-
-            console.log(this.$refs.child.chooseAllL1, '90909090-----------')
-            console.log(businessesFlage, '1909090')
-            // console.log(storeIdList) 
  
             let submitData = {
                 "activityId":this.$route.query.id,
@@ -395,12 +413,10 @@ export default {
                 "upperLimitAmount":this.upperLimitAmount,//单位为分
                 "brandIdList":this.brandIdList,
                 "productIdList":this.productIdList,
-                // "businessesIdList":this.businessesIdList,
-                // "storeIdList":this.storeIdList,
-
                 "businessesIdList":businessesIdList,
                 "storeIdList":storeIdList,
                 "businessesFlage": businessesFlage,
+                "publicAlgorithmFlag" :this.publicAlgorithmFlag
             }
 
             // 校验工号开通时间时 必传字段
@@ -455,38 +471,25 @@ export default {
                 submitData.productIdList = idArr.join('#')
             }
 
-            //商户门店 设置
-            // if(this.channelList.L1.length == 0){
-            //     submitData.businessesIdList = ''
-            // }else{
-            //     let idArr = []
-            //     this.channelList.L1.forEach(item =>{
-            //         idArr.push(item.id) //获取机型接口返回id字段为 id
-            //     })
-            //     submitData.businessesIdList = idArr.join('#')
-            // }
-            // if(this.channelList.L2.length == 0){
-            //     submitData.storeIdList = ''
-            // }else{
-            //     let idArr = []
-            //     this.channelList.L2.forEach(item =>{
-            //         idArr.push(item.id) //获取机型下产品接口返回id字段为 id
-            //     })
-            //     submitData.storeIdList = idArr.join('#')
-            // }
-
             /********** 提交时校验 *********/
-            // const validateMethod = ['val_activityName','val_activityDesc','val_activityDate','val_activityTime','val_publicAlgorithmCoefficient','val_CountRangeList','val_upperLimitAmount','val_recycleTypeList','val_modelList','val_participants']
-            const validateMethod = ['val_activityName','val_activityDesc','val_activityDate','val_activityTime','val_publicAlgorithmCoefficient','val_CountRangeList','val_upperLimitAmount','val_recycleTypeList','val_modelList']
+            const validateMethod = ['val_activityName','val_activityDesc','val_activityDate','val_activityTime','val_publicAlgorithmCoefficient','val_upperLimitAmount','val_recycleTypeList','val_modelList']
+            if(this.publicAlgorithmFlag == '1' ){ 
+                validateMethod.splice(5,0,'val_CountRangeList')
+            }else{
+                validateMethod.splice(5,0,'val_directGrantSection')
+            }
             for(const val of validateMethod){
                 if(!this[val]() ) return
             }
 
             //校验通过 设置值
-
-            submitData.publicGrantSection = this.CountRangeList.map(item=>{ 
-                return `${Math.round(item.payLeast*100)}|${Math.round(item.payMost*100)}#${Math.round(item.bonusLeast*100)}|${Math.round(item.bonusMost*100)}`
-            }).join('&')
+            if(this.publicAlgorithmFlag == '1'){
+                submitData.publicGrantSection = this.CountRangeList.map(item=>{
+                    return `${Math.round(item.payLeast*100)}|${Math.round(item.payMost*100)}#${Math.round(item.bonusLeast*100)}|${Math.round(item.bonusMost*100)}`
+                }).join('&')
+            }else{
+                submitData.publicGrantSection = Math.round(this.directGrantSection.least*100)+'|'+Math.round(this.directGrantSection.most*100)
+            }
             submitData.upperLimitAmount = String(Math.round(submitData.upperLimitAmount*100))
             //活动时间选择限制时 必传字段
             if (this.timeLimitType == '2') {
@@ -496,11 +499,6 @@ export default {
                 submitData.activityEndTime = this.activityEndTime + ':00'
             }
             
-            /********** 提交 ***********/
-            // console.log(submitData, '提交的数据')
-            // return
-
-
             let res = await api.update_activity_info(submitData)
             if(res._ret != 0){
                 this.$alert(res._errStr)
@@ -611,6 +609,19 @@ export default {
                 return false 
             }else{
                 this.$set(this.errorInfo , 'activityDesc', '')
+                return true 
+            }
+        },
+        //验证付款金额
+        val_directGrantSection(){
+            if((!this._Util.validate.fixed0(this.directGrantSection.least)) ||
+                (!this._Util.validate.fixed0(this.directGrantSection.most))  ||
+                Number(this.directGrantSection.least)>Number(this.directGrantSection.most)
+            ){
+                this.$set(this.errorInfo , 'directGrantSection', '付款金额上限值不应小于下限值（不支持小数）')
+                return false 
+            }else{
+                this.$set(this.errorInfo , 'directGrantSection', '')
                 return true 
             }
         },

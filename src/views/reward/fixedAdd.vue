@@ -342,27 +342,8 @@ export default {
                 submitData.productIdList = idArr.join('#')
             }
 
-            //商户门店 设置
-            // if(this.channelList.L1.length == 0){
-            //     submitData.businessesIdList = ''
-            // }else{
-            //     let idArr = []
-            //     this.channelList.L1.forEach(item =>{
-            //         idArr.push(item.id) //获取机型接口返回id字段为 id
-            //     })
-            //     submitData.businessesIdList = idArr.join('#')
-            // }
-            // if(this.channelList.L2.length == 0){
-            //     submitData.storeIdList = ''
-            // }else{
-            //     let idArr = []
-            //     this.channelList.L2.forEach(item =>{
-            //         idArr.push(item.id) //获取机型下产品接口返回id字段为 id
-            //     })
-            //     submitData.storeIdList = idArr.join('#')
-            // }
+           
             /********** 提交时校验 *********/
-            // const validateMethod = ['val_activityName','val_activityDesc','val_activityDate','val_activityTime','val_directAmount','val_directGrantSection','val_upperLimitAmount','val_recycleTypeList','val_modelList','val_participants']
             const validateMethod = ['val_activityName','val_activityDesc','val_activityDate','val_activityTime','val_directAmount','val_directGrantSection','val_upperLimitAmount','val_recycleTypeList','val_modelList']
             for(const val of validateMethod){
                 if(!this[val]() ) return

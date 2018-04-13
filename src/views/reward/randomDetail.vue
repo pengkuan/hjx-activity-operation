@@ -1,7 +1,7 @@
 <template>
     <div>  
         <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/reward/list' }">随机红包</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/reward/list' }">普通红包</el-breadcrumb-item>
             <el-breadcrumb-item>详情</el-breadcrumb-item>
         </el-breadcrumb>
         <br>
@@ -45,11 +45,15 @@
         </div>
         <hjx-left-title label="算法"></hjx-left-title>
         <div class="mrg-b10 ">
+            <span class="hjx-left-label">类型：</span>
+            <span class='detailData'>{{publicAlgorithmFlag == '0'?'固定比例':'随机算法'}}</span>
+        </div>
+        <div class="mrg-b10 ">
             <span class="hjx-left-label">算法系数：</span>
             <span class='detailData'>{{publicAlgorithmCoefficient}} %</span>
             <span class="reward-remind hjx-info">（参与算法计算的相乘系数，为活动成本）</span>
         </div>
-        <div class="mrg-b10">
+        <div class="mrg-b10" v-if="publicAlgorithmFlag == 1">
             <div class="mrg-b10">
               <span class="hjx-left-label">数额设置：</span><span class="reward-remind hjx-info">（参与算法计算的相乘系数，为活动成本）</span>
             </div>
@@ -63,12 +67,22 @@
               <span class='detailData'>{{item.bonusMost}}</span>
             </div>
         </div>
+        <div class="mrg-b10" v-else>
+            <div class="mrg-b10">
+              <span class="hjx-left-label">数额设置：</span><span class="reward-remind hjx-info">（设置付款金额在某个区间内，订单参与发放）</span>
+            </div>
+            <div class="mrg-l120 mrg-b10">
+                <span class='detailData'>{{directGrantSection.least}}</span>
+                <span class="detailData"> ≤ 付款金额 < </span>
+                <span class='detailData' >{{directGrantSection.most}}</span>
+            </div>
+        </div>
 
         <hjx-left-title label="风控"></hjx-left-title>
         <div class="mrg-b20 ">
             <span class="hjx-left-label">发放总额上限：</span>
             <span class="detailData">{{upperLimitAmount}} 元 / 整个时间段</span>
-            <span class="reward-remind hjx-info">（周期内发放金额达到上限后，每笔红包将按单笔最低值发放）</span>
+            <span class="reward-remind underline-text-info hjx-info">（{{publicAlgorithmFlag == '1'?'周期内发放金额达到上限后，每笔红包将按单笔最低值发放':'周期内发放金额达到上限，会触发总额状态生效。但店奖仍会正常发放'}}）</span>
         </div>
 
         <el-alert title="发放规则" type="success" :closable="false"></el-alert>
@@ -170,7 +184,7 @@ export default {
             amountLimitType:'1',//总金额限制类型 
             activityName: '',
             activityDesc: '',
-            rewardType: '1',//随机抽奖
+            rewardType: '1',//普通抽奖
             operateType:'1',
             ticketTypeList:[
               {name:'店奖券',id:'1'}
@@ -197,6 +211,8 @@ export default {
                 bonusMost:''
               },
             ],
+            publicAlgorithmFlag:'1',//算法标识
+            directGrantSection:{least:'',most:''}, //算法标识为0时的付款区间
             publicAlgorithmCoefficient:'',//算法系数
             recycleTypeList:[
                 {name:'公益回收',id:'0',ifChoosed:false},
@@ -284,8 +300,8 @@ export default {
                 this.search(this.keywords, '下拉')      
             } 
         },
-      /******获取并设置初始数据********/
-      setDeault(){
+        /******获取并设置初始数据********/
+        setDeault(){
             const loading = this.$loading({
                     lock: true,
                     text: '获取数据中...',
@@ -293,42 +309,52 @@ export default {
                     background: 'rgba(0, 0, 0, 0.7)'
                 })
         api.search_activity_detail({activityId:this.$route.query.id}).then(res=>{
-                if(res._ret != 0){
-                    loading.close()
-                    this.$alert(res._errStr)
-                    return
-                }
+            if(res._ret != 0){
                 loading.close()
-                this.activityName = res.activityName
-                this.activityDesc = res.activityDesc
-                this.amountLimitType = res.amountLimitType
-                this.publicAlgorithmCoefficient = res.publicAlgorithmCoefficient
-                this.operateType = res.operateType
-                this.showPlan = res.showPlan
-                this.timeLimitType = res.timeLimitType
-                this.upperLimitAmount = res.upperLimitAmount / 100
-                //数额设置
-            if(res.publicGrantSection){
-              let countArr = res.publicGrantSection.split('&')
-              countArr.forEach((item,index) =>{
-                let payArr = item.split('#')[0]
-                let bonusArr = item.split('#')[1]
-                if(index == 0){
-                  this.CountRangeList[0].payLeast = payArr.split('|')[0]/100+''
-                  this.CountRangeList[0].payMost = payArr.split('|')[1]/100+''
-                  this.CountRangeList[0].bonusLeast = bonusArr.split('|')[0]/100+''
-                  this.CountRangeList[0].bonusMost = bonusArr.split('|')[1]/100+''
-                }else{
-                  this.CountRangeList.push({
-                    payLeast : payArr.split('|')[0]/100+'',
-                    payMost : payArr.split('|')[1]/100+'',
-                    bonusLeast : bonusArr.split('|')[0]/100+'',
-                    bonusMost : bonusArr.split('|')[1]/100+''
-                  })
-                }
-              })
-              
+                this.$alert(res._errStr)
+                return
             }
+            loading.close()
+            this.activityName = res.activityName
+            this.activityDesc = res.activityDesc
+            this.amountLimitType = res.amountLimitType
+            this.publicAlgorithmCoefficient = res.publicAlgorithmCoefficient
+            this.operateType = res.operateType
+            this.showPlan = res.showPlan
+            this.timeLimitType = res.timeLimitType
+            this.upperLimitAmount = res.upperLimitAmount / 100
+            //数额设置
+            if(res.publicAlgorithmFlag){ //此字段为新添加字段
+                this.publicAlgorithmFlag = res.publicAlgorithmFlag
+            }
+            if(this.publicAlgorithmFlag == '0'){
+                //设置付款金额
+                this.directGrantSection.least = res.publicGrantSection.split('|')[0]/100+''
+                this.directGrantSection.most = res.publicGrantSection.split('|')[1]/100+''
+            }else{
+                if(res.publicGrantSection){
+                    let countArr = res.publicGrantSection.split('&')
+                    countArr.forEach((item,index) =>{
+                        let payArr = item.split('#')[0]
+                        let bonusArr = item.split('#')[1]
+                        if(index == 0){
+                          this.CountRangeList[0].payLeast = payArr.split('|')[0]/100+''
+                          this.CountRangeList[0].payMost = payArr.split('|')[1]/100+''
+                          this.CountRangeList[0].bonusLeast = bonusArr.split('|')[0]/100+''
+                          this.CountRangeList[0].bonusMost = bonusArr.split('|')[1]/100+''
+                        }else{
+                          this.CountRangeList.push({
+                            payLeast : payArr.split('|')[0]/100+'',
+                            payMost : payArr.split('|')[1]/100+'',
+                            bonusLeast : bonusArr.split('|')[0]/100+'',
+                            bonusMost : bonusArr.split('|')[1]/100+''
+                          })
+                        }
+                    })
+                }
+            }
+
+            
 
                 //设置生效时间
                 if(res.timeLimitType == '2'){
@@ -414,7 +440,7 @@ export default {
                     this.$alert(res._errStr)
                     return
                 } 
-                this.handleHistoryList = res.opeList
+                this.handleHistoryList = res.opeList.reverse()
             })
         } 
     },
