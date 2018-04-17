@@ -19,7 +19,7 @@
             <el-form-item label="奖励类型:" prop="activityType">
                 <el-select class="aaa" v-model="search.activityType" placeholder="请选择奖励类型">
                     <el-option label="全部" value="0"></el-option>
-                    <el-option label="随机" value="1"></el-option>
+                    <el-option label="普通" value="1"></el-option>
                     <el-option label="定额定向" value="2"></el-option>
                 </el-select>
             </el-form-item>
@@ -80,7 +80,7 @@
             </el-table-column>
             <el-table-column width="100" label="奖励类型">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.activityType == '1' ">随机</span>
+                    <span v-if="scope.row.activityType == '1' ">普通</span>
                     <span v-else-if="scope.row.activityType == '2' ">定额定向</span>
                 </template>
             </el-table-column>
